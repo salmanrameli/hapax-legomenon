@@ -33,7 +33,7 @@ function App() {
     return (
         <Container fluid id="App">
             <Row>
-                <Col className='d-inline-flex'>{mode == global.MODE_HOME ? '' : <div className="d-inline-flex align-items-center me-2" onClick={_ => {setMode(global.MODE_HOME)}}><HouseFill /></div>}<h1 className="my-2">Ubiquitous-Funicular</h1></Col>
+                <Col className='d-inline-flex'>{mode == global.MODE_HOME ? '' : <div className="d-inline-flex align-items-center me-2" onClick={_ => {setMode(global.MODE_HOME)}}><HouseFill size={25} /></div>}<h1 className="my-2">Ubiquitous-Funicular</h1></Col>
             </Row>
             {show()}
         </Container>        

@@ -6,6 +6,10 @@ export function Dump(arg1) {
   return window['go']['main']['App']['Dump'](arg1);
 }
 
+export function EncodeImagesFromPath(arg1) {
+  return window['go']['main']['App']['EncodeImagesFromPath'](arg1);
+}
+
 export function SelectImages() {
   return window['go']['main']['App']['SelectImages']();
 }

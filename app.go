@@ -55,17 +55,21 @@ func (a *App) SelectImages() ([]string, error) {
 	})
 
 	if err != nil {
+		fmt.Printf("unable to read selected images")
 		return nil, err
 	}
 
-	imageData := make([]string, 0, len(path))
+	return path, nil
+}
 
-	for _, item := range path {
-		data, err := os.ReadFile(item)
+func (a *App) EncodeImagesFromPath(paths []string) ([]string, error) {
+	imageData := make([]string, 0, len(paths))
+
+	for _, path := range paths {
+		data, err := os.ReadFile(path)
 
 		if err != nil {
-			fmt.Printf("unable to read selected image(s)")
-
+			fmt.Printf("unable to read selected images from the given paths")
 			return nil, err
 		}
 
