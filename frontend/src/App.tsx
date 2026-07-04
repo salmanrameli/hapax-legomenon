@@ -5,7 +5,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { global } from './constants/constants';
 import Main from './train/main';
-import { HouseFill } from 'react-bootstrap-icons';
+import { GearWideConnected, HouseFill } from 'react-bootstrap-icons';
 
 function App() {
     const [mode, setMode] = useState<number>(global.MODE_HOME)
@@ -14,12 +14,21 @@ function App() {
         switch(mode) {
             case global.MODE_HOME:
                 return (
-                    <Row className="justify-content-center align-items-center vh-100">
-                        <Col className="text-center">
-                            <Button variant="outline-primary" size="lg" onClick={() => setMode(global.MODE_TRAIN)}>Train with Images</Button>
+                    <Row>
+                        <Col className="col-12 col-md-6 text-center" style={{height:"300px"}}>
+                            <div className='d-flex h-100 justify-content-center align-items-center border rounded-3'>
+                                <Button variant="outline-primary" size="lg" onClick={() => setMode(global.MODE_TRAIN)}>Train with Images</Button>
+                            </div>
                         </Col>
-                        <Col className='text-center'>
-                            <Button variant="outline-primary" size="lg" onClick={() => setMode(global.MODE_GENERATE_PROMPT)}>Generate Prompt</Button>
+                        <Col className='col-12 col-md-6 text-center' style={{height:"300px"}}>
+                            <div className='d-flex h-100 justify-content-center align-items-center border rounded-3'>
+                                <Button variant="outline-primary" size="lg" onClick={() => setMode(global.MODE_GENERATE_PROMPT)}>Generate Prompt</Button>
+                            </div>
+                        </Col>
+                        <Col className='col-12 mt-3'>
+                            <div className='d-flex border rounded-3 p-2'>
+                                <h5 className='mb-0'><GearWideConnected style={{marginTop:"-3px"}} /> Configure Settings</h5>
+                            </div>
                         </Col>
                     </Row>
                 )
