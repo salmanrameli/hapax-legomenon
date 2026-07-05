@@ -10,4 +10,4 @@ export function GetGeneratePromptConfigValue():Promise<main.AppConfig>;
 
 export function SelectImages():Promise<Array<string>>;
 
-export function StoreGeneratePromptConfig(arg1:string,arg2:string):Promise<void>;
+export function StoreGeneratePromptConfig(arg1:main.AppConfig):Promise<void>;

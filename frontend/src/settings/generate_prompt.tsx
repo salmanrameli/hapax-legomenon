@@ -4,27 +4,34 @@ import Form from 'react-bootstrap/Form';
 import { GeneratePromptOptions } from "../constants/mode";
 import { GetGeneratePromptConfigValue, StoreGeneratePromptConfig } from "../../wailsjs/go/main/App"
 
+interface IAppConfig {
+    ModeGeneratePrompt: string,
+    ModeGenerateImage: string
+}
+
 function SettingGeneratePrompt() {
-    const [modeGeneratePrompt, setModeGeneratePrompt] = useState<string>("")
-    const [modeDefaultGeneratePrompt, setModeDefaultGeneratePrompt] = useState<string>("")
-    const [modeGenerateImage, setModeGenerateImage] = useState<string>("")
-    const [modeDefaultGenerateImage, setModeDefaultGenerateImage] = useState<string>("")
+    const [settingPrompt, setSettingPrompt] = useState<IAppConfig>({ModeGeneratePrompt:"", ModeGenerateImage:""})
+    const [settingPromptDefault, setSettingPromptDefault] = useState<IAppConfig>({ModeGeneratePrompt:"", ModeGenerateImage:""})
 
     useEffect(() => {
         GetGeneratePromptConfigValue().then((value) => {
-            setModeGeneratePrompt(value.mode_generate_prompt)
-            setModeDefaultGeneratePrompt(value.mode_generate_prompt)
-            setModeGenerateImage(value.mode_generate_image)
+            setSettingPrompt({ModeGeneratePrompt: value.mode_generate_prompt, ModeGenerateImage: value.mode_generate_image})
+            setSettingPromptDefault({ModeGeneratePrompt: value.mode_generate_prompt, ModeGenerateImage: value.mode_generate_image})
         })
     }, [])
 
     const handleModeGeneratePromptChange = (e:any) => {
-        setModeGeneratePrompt(e.target.value)
+        setSettingPrompt({ModeGeneratePrompt:e.target.value, ModeGenerateImage:settingPrompt.ModeGenerateImage})
     }
 
     function handleSaveModeGeneratePrompt() {
-        StoreGeneratePromptConfig(modeGeneratePrompt, modeGenerateImage).then(() => {
-            setModeDefaultGeneratePrompt(modeGeneratePrompt)
+        StoreGeneratePromptConfig({
+            mode_generate_prompt: settingPrompt.ModeGeneratePrompt,
+            mode_generate_image: settingPrompt.ModeGenerateImage
+        }).then(() => {
+            // setModeDefaultGeneratePrompt(modeGeneratePrompt)
+
+            setSettingPromptDefault({ModeGeneratePrompt: settingPrompt.ModeGeneratePrompt, ModeGenerateImage: settingPrompt.ModeGenerateImage})
         })
     }
 
@@ -45,7 +52,7 @@ function SettingGeneratePrompt() {
                         name="modeGeneratePrompt"
                         id="generate-prompt-local"
                         value={GeneratePromptOptions.LOCAL.value}
-                        checked={modeGeneratePrompt === GeneratePromptOptions.LOCAL.value}
+                        checked={settingPrompt.ModeGeneratePrompt === GeneratePromptOptions.LOCAL.value}
                         onChange={handleModeGeneratePromptChange}
                     />
                 </Col>
@@ -56,12 +63,12 @@ function SettingGeneratePrompt() {
                         name="modeGeneratePrompt"
                         id="generate-prompt-cloud"
                         value={GeneratePromptOptions.CLOUD.value}
-                        checked={modeGeneratePrompt === GeneratePromptOptions.CLOUD.value}
+                        checked={settingPrompt.ModeGeneratePrompt === GeneratePromptOptions.CLOUD.value}
                         onChange={handleModeGeneratePromptChange}
                     />
                 </Col>
                 <Col className="col-12">
-                    <Button variant="success" disabled={modeGeneratePrompt == modeDefaultGeneratePrompt} onClick={handleSaveModeGeneratePrompt} className="mt-2">Save</Button>
+                    <Button variant="success" disabled={settingPrompt.ModeGeneratePrompt == settingPromptDefault.ModeGeneratePrompt} onClick={handleSaveModeGeneratePrompt} className="mt-2">Save</Button>
                 </Col>
             </Row>
         </Form>

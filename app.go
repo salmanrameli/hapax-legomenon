@@ -241,7 +241,7 @@ func (a *App) GetGeneratePromptConfigValue() (*AppConfig, error) {
 	return &config, nil
 }
 
-func (a *App) StoreGeneratePromptConfig(source_prompt string, source_image string) error {
+func (a *App) StoreGeneratePromptConfig(value *AppConfig) error {
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
@@ -265,8 +265,8 @@ func (a *App) StoreGeneratePromptConfig(source_prompt string, source_image strin
 	encoder.SetIndent("", "  ")
 
 	err = encoder.Encode(&AppConfig{
-		ModeGeneratePrompt: source_prompt,
-		ModeGenerateImage:  source_image,
+		ModeGeneratePrompt: value.ModeGeneratePrompt,
+		ModeGenerateImage:  value.ModeGenerateImage,
 	})
 
 	if err != nil {

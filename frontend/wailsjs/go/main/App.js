@@ -18,6 +18,6 @@ export function SelectImages() {
   return window['go']['main']['App']['SelectImages']();
 }
 
-export function StoreGeneratePromptConfig(arg1, arg2) {
-  return window['go']['main']['App']['StoreGeneratePromptConfig'](arg1, arg2);
+export function StoreGeneratePromptConfig(arg1) {
+  return window['go']['main']['App']['StoreGeneratePromptConfig'](arg1);
 }
