@@ -10,14 +10,30 @@ export function EncodeImagesFromPath(arg1) {
   return window['go']['main']['App']['EncodeImagesFromPath'](arg1);
 }
 
-export function GetGeneratePromptConfigValue() {
-  return window['go']['main']['App']['GetGeneratePromptConfigValue']();
+export function GetAppConfigValue() {
+  return window['go']['main']['App']['GetAppConfigValue']();
+}
+
+export function GetCloudConfigValue() {
+  return window['go']['main']['App']['GetCloudConfigValue']();
+}
+
+export function GetLocalConfigValue() {
+  return window['go']['main']['App']['GetLocalConfigValue']();
 }
 
 export function SelectImages() {
   return window['go']['main']['App']['SelectImages']();
 }
 
-export function StoreGeneratePromptConfig(arg1) {
-  return window['go']['main']['App']['StoreGeneratePromptConfig'](arg1);
+export function StoreAppConfigValue(arg1) {
+  return window['go']['main']['App']['StoreAppConfigValue'](arg1);
+}
+
+export function StoreCloudConfigValue(arg1) {
+  return window['go']['main']['App']['StoreCloudConfigValue'](arg1);
+}
+
+export function StoreLocalConfigValue(arg1) {
+  return window['go']['main']['App']['StoreLocalConfigValue'](arg1);
 }

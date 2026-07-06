@@ -6,7 +6,8 @@ import Col from 'react-bootstrap/Col';
 import { Mode } from './constants/mode';
 import Main from './train/main';
 import { GearWideConnected, HouseFill } from 'react-bootstrap-icons';
-import SettingsMain from './settings/settings_main';
+import PromptMain from './settings/prompt_main';
+import ImageMain from './settings/image_main';
 
 function App() {
     const [mode, setMode] = useState<number>(Mode.MODE_HOME)
@@ -28,7 +29,12 @@ function App() {
                         </Col>
                         <Col className='col-12 mt-3'>
                             <div className='d-flex border rounded-3 p-3'>
-                                <h5 role='button' className='mb-0' onClick={() => setMode(Mode.MODE_SETTING)}><GearWideConnected style={{marginTop:"-3px"}} /> Settings</h5>
+                                <h5 role='button' className='mb-0' onClick={() => setMode(Mode.MODE_SETTING_PROMPT)}><GearWideConnected style={{marginTop:"-3px"}} /> Configure Prompt Generation Setting</h5>
+                            </div>
+                        </Col>
+                        <Col className='col-12 mt-3'>
+                            <div className='d-flex border rounded-3 p-3'>
+                                <h5 role='button' className='mb-0' onClick={() => setMode(Mode.MODE_SETTING_IMAGE)}><GearWideConnected style={{marginTop:"-3px"}} /> Configure Image Generation Setting</h5>
                             </div>
                         </Col>
                     </Row>
@@ -37,13 +43,15 @@ function App() {
                 return (<Main />)
             case Mode.MODE_GENERATE_PROMPT:
                 return (<></>)
-            case Mode.MODE_SETTING:
-                return (<SettingsMain />)
+            case Mode.MODE_SETTING_PROMPT:
+                return (<PromptMain />)
+            case Mode.MODE_SETTING_IMAGE:
+            return (<ImageMain />)
         }
     }
 
     return (
-        <Container fluid id="App">
+        <Container fluid id="App" className="pb-4">
             <Row>
                 <Col className='d-inline-flex' style={{cursor:"default"}}>{mode == Mode.MODE_HOME ? '' : <div className="d-inline-flex align-items-center me-2" onClick={_ => {setMode(Mode.MODE_HOME)}}><HouseFill size={25} /></div>}<h1 className="my-2">Ubiquitous-Funicular</h1></Col>
             </Row>

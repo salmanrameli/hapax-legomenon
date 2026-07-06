@@ -211,7 +211,7 @@ func (a *App) EncodeImagesFromPath(paths []string) ([]string, error) {
 	return imageData, nil
 }
 
-func (a *App) GetGeneratePromptConfigValue() (*AppConfig, error) {
+func (a *App) GetAppConfigValue() (*AppConfig, error) {
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
@@ -241,11 +241,71 @@ func (a *App) GetGeneratePromptConfigValue() (*AppConfig, error) {
 	return &config, nil
 }
 
-func (a *App) StoreGeneratePromptConfig(value *AppConfig) error {
+func (a *App) GetLocalConfigValue() (*LocalConfig, error) {
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
-		log.Fatalf("StoreGeneratePromptConfig error: %v", err)
+		log.Fatalf("GetLocalConfigValue getProjectConfigPaths error getting directory: %v", err)
+
+		return &LocalConfig{}, err
+	}
+
+	content, err := os.ReadFile(projectDetail.ProjectConfigLocal)
+
+	if err != nil {
+		log.Fatalf("GetLocalConfigValue error opening file: %v", err)
+
+		return &LocalConfig{}, err
+	}
+
+	var config LocalConfig
+
+	err = json.Unmarshal(content, &config)
+
+	if err != nil {
+		log.Fatalf("GetLocalConfigValue error parsing JSON: %v", err)
+
+		return &LocalConfig{}, err
+	}
+
+	return &config, nil
+}
+
+func (a *App) GetCloudConfigValue() (*CloudConfig, error) {
+	projectDetail, err := a.getProjectConfigPaths()
+
+	if err != nil {
+		log.Fatalf("GetCloudConfigValue getProjectConfigPaths error getting directory: %v", err)
+
+		return &CloudConfig{}, err
+	}
+
+	content, err := os.ReadFile(projectDetail.ProjectConfigCloud)
+
+	if err != nil {
+		log.Fatalf("GetCloudConfigValue error opening file: %v", err)
+
+		return &CloudConfig{}, err
+	}
+
+	var config CloudConfig
+
+	err = json.Unmarshal(content, &config)
+
+	if err != nil {
+		log.Fatalf("GetCloudConfigValue error parsing JSON: %v", err)
+
+		return &CloudConfig{}, err
+	}
+
+	return &config, nil
+}
+
+func (a *App) StoreAppConfigValue(value *AppConfig) error {
+	projectDetail, err := a.getProjectConfigPaths()
+
+	if err != nil {
+		log.Fatalf("StoreAppConfigValue getProjectConfigPaths error getting directory: %v", err)
 
 		return err
 	}
@@ -253,7 +313,7 @@ func (a *App) StoreGeneratePromptConfig(value *AppConfig) error {
 	file, err := os.OpenFile(projectDetail.ProjectConfig, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 
 	if err != nil {
-		log.Fatalf("StoreGeneratePromptConfig failed to open file: %v", err)
+		log.Fatalf("StoreAppConfigValue failed to open file: %v", err)
 
 		return err
 	}
@@ -270,7 +330,83 @@ func (a *App) StoreGeneratePromptConfig(value *AppConfig) error {
 	})
 
 	if err != nil {
-		log.Fatalf("StoreGeneratePromptConfig failed to write JSON: %v", err)
+		log.Fatalf("StoreAppConfigValue failed to write JSON: %v", err)
+
+		return err
+	}
+
+	return nil
+}
+
+func (a *App) StoreLocalConfigValue(value *LocalConfig) error {
+	projectDetail, err := a.getProjectConfigPaths()
+
+	if err != nil {
+		log.Fatalf("StoreLocalConfigValue getProjectConfigPaths error getting directory: %v", err)
+
+		return err
+	}
+
+	file, err := os.OpenFile(projectDetail.ProjectConfigLocal, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+
+	if err != nil {
+		log.Fatalf("StoreLocalConfigValue failed to open file: %v", err)
+
+		return err
+	}
+
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+
+	encoder.SetIndent("", "  ")
+
+	err = encoder.Encode(&LocalConfig{
+		URLGeneratePrompt: value.URLGeneratePrompt,
+		URLGenerateImage:  value.URLGenerateImage,
+	})
+
+	if err != nil {
+		log.Fatalf("StoreLocalConfigValue failed to write JSON: %v", err)
+
+		return err
+	}
+
+	return nil
+}
+
+func (a *App) StoreCloudConfigValue(value *CloudConfig) error {
+	projectDetail, err := a.getProjectConfigPaths()
+
+	if err != nil {
+		log.Fatalf("StoreCloudConfigValue getProjectConfigPaths error getting directory: %v", err)
+
+		return err
+	}
+
+	file, err := os.OpenFile(projectDetail.ProjectConfigCloud, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+
+	if err != nil {
+		log.Fatalf("StoreCloudConfigValue failed to open file: %v", err)
+
+		return err
+	}
+
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+
+	encoder.SetIndent("", "  ")
+
+	err = encoder.Encode(&CloudConfig{
+		URLGeneratePrompt:      value.URLGeneratePrompt,
+		API_KEY_GeneratePrompt: value.API_KEY_GeneratePrompt,
+		URLGenerateImage:       value.URLGenerateImage,
+		API_KEY_GenerateImage:  value.API_KEY_GenerateImage,
+	})
+
+	if err != nil {
+		log.Fatalf("StoreCloudConfigValue failed to write JSON: %v", err)
 
 		return err
 	}

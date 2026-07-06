@@ -2,19 +2,15 @@ import { useEffect, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap"
 import Form from 'react-bootstrap/Form';
 import { GeneratePromptOptions } from "../constants/mode";
-import { GetGeneratePromptConfigValue, StoreGeneratePromptConfig } from "../../wailsjs/go/main/App"
+import { GetAppConfigValue, StoreAppConfigValue } from "../../wailsjs/go/main/App"
+import { IAppConfig, ISettingGeneratePrompt } from "../interfaces/config.interfaces";
 
-interface IAppConfig {
-    ModeGeneratePrompt: string,
-    ModeGenerateImage: string
-}
-
-function SettingGeneratePrompt() {
+function SettingGeneratePrompt(props: ISettingGeneratePrompt) {
     const [settingPrompt, setSettingPrompt] = useState<IAppConfig>({ModeGeneratePrompt:"", ModeGenerateImage:""})
     const [settingPromptDefault, setSettingPromptDefault] = useState<IAppConfig>({ModeGeneratePrompt:"", ModeGenerateImage:""})
 
     useEffect(() => {
-        GetGeneratePromptConfigValue().then((value) => {
+        GetAppConfigValue().then((value) => {
             setSettingPrompt({ModeGeneratePrompt: value.mode_generate_prompt, ModeGenerateImage: value.mode_generate_image})
             setSettingPromptDefault({ModeGeneratePrompt: value.mode_generate_prompt, ModeGenerateImage: value.mode_generate_image})
         })
@@ -22,21 +18,17 @@ function SettingGeneratePrompt() {
 
     const handleModeGeneratePromptChange = (e:any) => {
         setSettingPrompt({ModeGeneratePrompt:e.target.value, ModeGenerateImage:settingPrompt.ModeGenerateImage})
+
+        props.onChangeSource(e.target.value)
     }
 
     function handleSaveModeGeneratePrompt() {
-        StoreGeneratePromptConfig({
+        StoreAppConfigValue({
             mode_generate_prompt: settingPrompt.ModeGeneratePrompt,
             mode_generate_image: settingPrompt.ModeGenerateImage
         }).then(() => {
-            // setModeDefaultGeneratePrompt(modeGeneratePrompt)
-
             setSettingPromptDefault({ModeGeneratePrompt: settingPrompt.ModeGeneratePrompt, ModeGenerateImage: settingPrompt.ModeGenerateImage})
         })
-    }
-
-    function handleSaveModeGenerateImage() {
-
     }
 
     return(

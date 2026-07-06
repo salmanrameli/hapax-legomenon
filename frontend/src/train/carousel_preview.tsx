@@ -2,12 +2,12 @@ import { Button } from 'react-bootstrap';
 import Carousel from 'react-bootstrap/Carousel';
 import { ArrowLeftShort, ArrowRightShort, Trash3Fill } from 'react-bootstrap-icons';
 
-interface CarouselPreviewProps {
+interface ICarouselPreviewProps {
     previews: string[]
     onRemoveImage: (url:string, index: number) => void
 }
 
-function CarouselPreview(props: CarouselPreviewProps) {
+function CarouselPreview(props: ICarouselPreviewProps) {
     return (
         <Carousel slide={false} interval={null} prevIcon={<ArrowLeftShort color={"black"} size={60} style={{marginLeft:"-150px"}} />} nextIcon={<ArrowRightShort color={"black"} size={60} style={{marginRight:"-150px"}} />}>
             {props.previews.map((url, index) => (
