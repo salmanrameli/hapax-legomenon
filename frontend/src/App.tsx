@@ -4,10 +4,10 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { Mode } from './constants/mode';
-import Main from './train/main';
 import { GearWideConnected, HouseFill } from 'react-bootstrap-icons';
 import PromptMain from './settings/prompt_main';
 import ImageMain from './settings/image_main';
+import TrainingMain from './settings/train_main';
 
 function App() {
     const [mode, setMode] = useState<number>(Mode.MODE_HOME)
@@ -29,6 +29,11 @@ function App() {
                         </Col>
                         <Col className='col-12 mt-3'>
                             <div className='d-flex border rounded-3 p-3'>
+                                <h5 role='button' className='mb-0' onClick={() => setMode(Mode.MODE_TRAIN)}><GearWideConnected style={{marginTop:"-3px"}} /> Configure Image Training Setting</h5>
+                            </div>
+                        </Col>
+                        <Col className='col-12 mt-3'>
+                            <div className='d-flex border rounded-3 p-3'>
                                 <h5 role='button' className='mb-0' onClick={() => setMode(Mode.MODE_SETTING_PROMPT)}><GearWideConnected style={{marginTop:"-3px"}} /> Configure Prompt Generation Setting</h5>
                             </div>
                         </Col>
@@ -40,7 +45,7 @@ function App() {
                     </Row>
                 )
             case Mode.MODE_TRAIN:
-                return (<Main />)
+                return (<TrainingMain />)
             case Mode.MODE_GENERATE_PROMPT:
                 return (<></>)
             case Mode.MODE_SETTING_PROMPT:

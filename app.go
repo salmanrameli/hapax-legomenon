@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
+	"ubiquitous-funicular/constants"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -16,28 +18,32 @@ type App struct {
 	ctx context.Context
 }
 
-type AppConfig struct {
-	ModeGeneratePrompt string `json:"mode_generate_prompt"`
-	ModeGenerateImage  string `json:"mode_generate_image"`
-}
-
-type LocalConfig struct {
-	URLGeneratePrompt string `json:"url_generate_prompt"`
-	URLGenerateImage  string `json:"url_generate_image"`
-}
-
-type CloudConfig struct {
-	URLGeneratePrompt      string `json:"url_generate_prompt"`
-	API_KEY_GeneratePrompt string `json:"api_key_generate_prompt"`
-	URLGenerateImage       string `json:"url_generate_image"`
-	API_KEY_GenerateImage  string `json:"api_key_generate_image"`
-}
-
 type ProjectConfigPathStructure struct {
-	ProjectPath        string
-	ProjectConfig      string
-	ProjectConfigLocal string
-	ProjectConfigCloud string
+	ProjectPath          string
+	ConfigTraining       string
+	ConfigGeneratePrompt string
+	ConfigGenerateImage  string
+}
+
+type ConfigTraining struct {
+	Mode        string `json:"mode"`
+	URLLocal    string `json:"url_local"`
+	URLCloud    string `json:"url_cloud"`
+	APIKeyCloud string `json:"api_key_cloud"`
+}
+
+type ConfigGeneratePrompt struct {
+	Mode        string `json:"mode"`
+	URLLocal    string `json:"url_local"`
+	URLCloud    string `json:"url_cloud"`
+	APIKeyCloud string `json:"api_key_cloud"`
+}
+
+type ConfigGenerateImage struct {
+	Mode        string `json:"mode"`
+	URLLocal    string `json:"url_local"`
+	URLCloud    string `json:"url_cloud"`
+	APIKeyCloud string `json:"api_key_cloud"`
 }
 
 // NewApp creates a new App application struct
@@ -54,16 +60,16 @@ func (a *App) getProjectConfigPaths() (*ProjectConfigPathStructure, error) {
 		return &ProjectConfigPathStructure{}, err
 	}
 
-	projectsPath := userConfigDir + APP_USER_CONFIG_DIR
-	projectsConfig := "/" + APP_SETTING
-	projectsConfigLocal := "/" + APP_SETTING_LOCAL
-	projectsConfigCloud := "/" + APP_SETTING_CLOUD
+	projectsPath := userConfigDir + constants.APP_USER_CONFIG_DIR
+	configTraining := "/" + constants.APP_SETTING_TRAINING
+	configGeneratePrompt := "/" + constants.APP_SETTING_PROMPT
+	configGenerateImage := "/" + constants.APP_SETTING_GENERATE_IMAGE
 
 	return &ProjectConfigPathStructure{
-		ProjectPath:        projectsPath,
-		ProjectConfig:      projectsPath + projectsConfig,
-		ProjectConfigLocal: projectsPath + projectsConfigLocal,
-		ProjectConfigCloud: projectsPath + projectsConfigCloud,
+		ProjectPath:          projectsPath,
+		ConfigTraining:       projectsPath + configTraining,
+		ConfigGeneratePrompt: projectsPath + configGeneratePrompt,
+		ConfigGenerateImage:  projectsPath + configGenerateImage,
 	}, nil
 }
 
@@ -80,9 +86,10 @@ func (a *App) startup(ctx context.Context) {
 		return
 	}
 
-	fmt.Println("app user global config directory: " + projectDetail.ProjectConfig)
-	fmt.Println("app user local config directory: " + projectDetail.ProjectConfigLocal)
-	fmt.Println("app user cloud config directory: " + projectDetail.ProjectConfigCloud)
+	fmt.Println("app user project directory: " + projectDetail.ProjectPath)
+	fmt.Println("app user training config file path: " + projectDetail.ConfigTraining)
+	fmt.Println("app user generate prompt config file path: " + projectDetail.ConfigGeneratePrompt)
+	fmt.Println("app user generate image config file path: " + projectDetail.ConfigGenerateImage)
 
 	_, err = os.Stat(projectDetail.ProjectPath)
 
@@ -93,86 +100,125 @@ func (a *App) startup(ctx context.Context) {
 			return
 		}
 
-		appConfig, err := os.Create(projectDetail.ProjectConfig)
+		configTraining, err := os.Create(projectDetail.ConfigTraining)
 
 		if err != nil {
-			fmt.Println("app startup error in creating projects global config file", err)
+			fmt.Println("app startup error in creating projects training config file", err)
 
 			return
 		}
 
-		defer appConfig.Close()
+		defer configTraining.Close()
 
-		defaultAppConfig := AppConfig{
-			ModeGeneratePrompt: "local",
-			ModeGenerateImage:  "local",
+		defaultConfigTraining := ConfigTraining{
+			Mode:        constants.TrainImageMode.LocalValue(),
+			URLLocal:    "",
+			URLCloud:    "",
+			APIKeyCloud: "",
 		}
 
-		encoder := json.NewEncoder(appConfig)
+		encoder := json.NewEncoder(configTraining)
 		encoder.SetIndent("", "    ")
 
-		err = encoder.Encode(defaultAppConfig)
+		err = encoder.Encode(defaultConfigTraining)
 
 		if err != nil {
-			fmt.Println("unable to write default application config", err)
+			fmt.Println("unable to write default training config", err)
 
 			return
 		}
 
-		localConfig, err := os.Create(projectDetail.ProjectConfigLocal)
+		configPrompt, err := os.Create(projectDetail.ConfigGeneratePrompt)
 
 		if err != nil {
-			fmt.Println("app startup error in creating projects local config file", err)
+			fmt.Println("app startup error in creating projects generate prompt config file", err)
 
 			return
 		}
 
-		defer localConfig.Close()
+		defer configPrompt.Close()
 
-		defaultLocalConfig := LocalConfig{
-			URLGeneratePrompt: "",
-			URLGenerateImage:  "",
+		defaultPromptConfig := ConfigGeneratePrompt{
+			Mode:        constants.GeneratePromptMode.LocalValue(),
+			URLLocal:    "",
+			URLCloud:    "",
+			APIKeyCloud: "",
 		}
 
-		encoder = json.NewEncoder(localConfig)
+		encoder = json.NewEncoder(configPrompt)
 		encoder.SetIndent("", "    ")
 
-		err = encoder.Encode(defaultLocalConfig)
+		err = encoder.Encode(defaultPromptConfig)
 
 		if err != nil {
-			fmt.Println("unable to write default application local config", err)
+			fmt.Println("unable to write default generate prompt config", err)
 
 			return
 		}
 
-		cloudConfig, err := os.Create(projectDetail.ProjectConfigCloud)
+		configImage, err := os.Create(projectDetail.ConfigGenerateImage)
 
 		if err != nil {
-			fmt.Println("app startup error in creating projects cloud config file", err)
+			fmt.Println("app startup error in creating projects generate image config file", err)
 
 			return
 		}
 
-		defer cloudConfig.Close()
+		defer configImage.Close()
 
-		defaultCloudConfig := CloudConfig{
-			URLGeneratePrompt:      "",
-			API_KEY_GeneratePrompt: "",
-			URLGenerateImage:       "",
-			API_KEY_GenerateImage:  "",
+		defaultImageConfig := ConfigGenerateImage{
+			Mode:        constants.GenerateImageMode.LocalValue(),
+			URLLocal:    "",
+			URLCloud:    "",
+			APIKeyCloud: "",
 		}
 
-		encoder = json.NewEncoder(cloudConfig)
+		encoder = json.NewEncoder(configImage)
 		encoder.SetIndent("", "    ")
 
-		err = encoder.Encode(defaultCloudConfig)
+		err = encoder.Encode(defaultImageConfig)
 
 		if err != nil {
-			fmt.Println("unable to write default application cloud config", err)
+			fmt.Println("unable to write default application generate image config", err)
 
 			return
 		}
 	}
+}
+
+func (a *App) StartImageTraining() (string, error) {
+	trainingConfig, err := a.GetTrainingConfigValue()
+
+	if err != nil {
+		log.Fatalf("StartImageTraining GetAppConfigValue error: %v", err)
+
+		return "", err
+	}
+
+	if trainingConfig.Mode == constants.TrainImageMode.LocalValue() {
+
+	} else {
+
+	}
+
+	pythonInterpreter := "python3"
+	scriptPath := "python/train_image.py"
+	arg1 := "hello"
+	arg2 := "world"
+
+	cmd := exec.Command(pythonInterpreter, scriptPath, arg1, arg2)
+
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Fatalf("Failed to execute script: %v\nOutput: %s", err, string(output))
+
+		return "", err
+	}
+
+	fmt.Println("Python Script Output:")
+	fmt.Println(string(output))
+
+	return string(output), nil
 }
 
 func (a *App) SelectImages() ([]string, error) {
@@ -211,109 +257,109 @@ func (a *App) EncodeImagesFromPath(paths []string) ([]string, error) {
 	return imageData, nil
 }
 
-func (a *App) GetAppConfigValue() (*AppConfig, error) {
+func (a *App) GetTrainingConfigValue() (*ConfigTraining, error) {
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
-		log.Fatalf("GetGeneratePromptConfigValue projectDetail error getting directory: %v", err)
+		log.Fatalf("GetTrainingConfigValue getProjectConfigPaths error getting directory: %v", err)
 
-		return &AppConfig{}, err
+		return &ConfigTraining{}, err
 	}
 
-	content, err := os.ReadFile(projectDetail.ProjectConfig)
+	content, err := os.ReadFile(projectDetail.ConfigTraining)
+
+	if err != nil {
+		log.Fatalf("GetTrainingConfigValue error opening file: %v", err)
+
+		return &ConfigTraining{}, err
+	}
+
+	var config ConfigTraining
+
+	err = json.Unmarshal(content, &config)
+
+	if err != nil {
+		log.Fatalf("GetTrainingConfigValue error parsing JSON: %v", err)
+
+		return &ConfigTraining{}, err
+	}
+
+	return &config, nil
+}
+
+func (a *App) GetGeneratePromptConfigValue() (*ConfigGeneratePrompt, error) {
+	projectDetail, err := a.getProjectConfigPaths()
+
+	if err != nil {
+		log.Fatalf("GetGeneratePromptConfigValue getProjectConfigPaths error getting directory: %v", err)
+
+		return &ConfigGeneratePrompt{}, err
+	}
+
+	content, err := os.ReadFile(projectDetail.ConfigGeneratePrompt)
 
 	if err != nil {
 		log.Fatalf("GetGeneratePromptConfigValue error opening file: %v", err)
 
-		return &AppConfig{}, err
+		return &ConfigGeneratePrompt{}, err
 	}
 
-	var config AppConfig
+	var config ConfigGeneratePrompt
 
 	err = json.Unmarshal(content, &config)
 
 	if err != nil {
-		log.Fatalf("Error parsing JSON: %v", err)
+		log.Fatalf(" GetGeneratePromptConfigValue error parsing JSON: %v", err)
 
-		return &AppConfig{}, err
+		return &ConfigGeneratePrompt{}, err
 	}
 
 	return &config, nil
 }
 
-func (a *App) GetLocalConfigValue() (*LocalConfig, error) {
+func (a *App) GetGenerateImageConfigValue() (*ConfigGenerateImage, error) {
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
-		log.Fatalf("GetLocalConfigValue getProjectConfigPaths error getting directory: %v", err)
+		log.Fatalf("GetGenerateImageConfigValue getProjectConfigPaths error getting directory: %v", err)
 
-		return &LocalConfig{}, err
+		return &ConfigGenerateImage{}, err
 	}
 
-	content, err := os.ReadFile(projectDetail.ProjectConfigLocal)
+	content, err := os.ReadFile(projectDetail.ConfigGenerateImage)
 
 	if err != nil {
-		log.Fatalf("GetLocalConfigValue error opening file: %v", err)
+		log.Fatalf("GetGenerateImageConfigValue error opening file: %v", err)
 
-		return &LocalConfig{}, err
+		return &ConfigGenerateImage{}, err
 	}
 
-	var config LocalConfig
+	var config ConfigGenerateImage
 
 	err = json.Unmarshal(content, &config)
 
 	if err != nil {
-		log.Fatalf("GetLocalConfigValue error parsing JSON: %v", err)
+		log.Fatalf("GetGenerateImageConfigValue rror parsing JSON: %v", err)
 
-		return &LocalConfig{}, err
+		return &ConfigGenerateImage{}, err
 	}
 
 	return &config, nil
 }
 
-func (a *App) GetCloudConfigValue() (*CloudConfig, error) {
+func (a *App) StoreTrainingConfigValue(value *ConfigTraining) error {
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
-		log.Fatalf("GetCloudConfigValue getProjectConfigPaths error getting directory: %v", err)
-
-		return &CloudConfig{}, err
-	}
-
-	content, err := os.ReadFile(projectDetail.ProjectConfigCloud)
-
-	if err != nil {
-		log.Fatalf("GetCloudConfigValue error opening file: %v", err)
-
-		return &CloudConfig{}, err
-	}
-
-	var config CloudConfig
-
-	err = json.Unmarshal(content, &config)
-
-	if err != nil {
-		log.Fatalf("GetCloudConfigValue error parsing JSON: %v", err)
-
-		return &CloudConfig{}, err
-	}
-
-	return &config, nil
-}
-
-func (a *App) StoreAppConfigValue(value *AppConfig) error {
-	projectDetail, err := a.getProjectConfigPaths()
-
-	if err != nil {
-		log.Fatalf("StoreAppConfigValue getProjectConfigPaths error getting directory: %v", err)
+		log.Fatalf("StoreTrainingConfigValue getProjectConfigPaths error getting directory: %v", err)
 
 		return err
 	}
 
-	file, err := os.OpenFile(projectDetail.ProjectConfig, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	file, err := os.OpenFile(projectDetail.ConfigTraining, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 
 	if err != nil {
-		log.Fatalf("StoreAppConfigValue failed to open file: %v", err)
+		log.Fatalf("StoreTrainingConfigValue failed to open file: %v", err)
 
 		return err
 	}
@@ -324,13 +370,15 @@ func (a *App) StoreAppConfigValue(value *AppConfig) error {
 
 	encoder.SetIndent("", "  ")
 
-	err = encoder.Encode(&AppConfig{
-		ModeGeneratePrompt: value.ModeGeneratePrompt,
-		ModeGenerateImage:  value.ModeGenerateImage,
+	err = encoder.Encode(&ConfigTraining{
+		Mode:        value.Mode,
+		URLLocal:    value.URLLocal,
+		URLCloud:    value.URLCloud,
+		APIKeyCloud: value.APIKeyCloud,
 	})
 
 	if err != nil {
-		log.Fatalf("StoreAppConfigValue failed to write JSON: %v", err)
+		log.Fatalf("StoreTrainingConfigValue failed to write JSON: %v", err)
 
 		return err
 	}
@@ -338,19 +386,19 @@ func (a *App) StoreAppConfigValue(value *AppConfig) error {
 	return nil
 }
 
-func (a *App) StoreLocalConfigValue(value *LocalConfig) error {
+func (a *App) StoreGeneratePromptConfigValue(value *ConfigGeneratePrompt) error {
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
-		log.Fatalf("StoreLocalConfigValue getProjectConfigPaths error getting directory: %v", err)
+		log.Fatalf("StoreGeneratePromptConfigValue getProjectConfigPaths error getting directory: %v", err)
 
 		return err
 	}
 
-	file, err := os.OpenFile(projectDetail.ProjectConfigLocal, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	file, err := os.OpenFile(projectDetail.ConfigGeneratePrompt, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 
 	if err != nil {
-		log.Fatalf("StoreLocalConfigValue failed to open file: %v", err)
+		log.Fatalf("StoreGeneratePromptConfigValue failed to open file: %v", err)
 
 		return err
 	}
@@ -361,13 +409,15 @@ func (a *App) StoreLocalConfigValue(value *LocalConfig) error {
 
 	encoder.SetIndent("", "  ")
 
-	err = encoder.Encode(&LocalConfig{
-		URLGeneratePrompt: value.URLGeneratePrompt,
-		URLGenerateImage:  value.URLGenerateImage,
+	err = encoder.Encode(&ConfigGeneratePrompt{
+		Mode:        value.Mode,
+		URLLocal:    value.URLLocal,
+		URLCloud:    value.URLCloud,
+		APIKeyCloud: value.APIKeyCloud,
 	})
 
 	if err != nil {
-		log.Fatalf("StoreLocalConfigValue failed to write JSON: %v", err)
+		log.Fatalf("StoreGeneratePromptConfigValue failed to write JSON: %v", err)
 
 		return err
 	}
@@ -375,19 +425,19 @@ func (a *App) StoreLocalConfigValue(value *LocalConfig) error {
 	return nil
 }
 
-func (a *App) StoreCloudConfigValue(value *CloudConfig) error {
+func (a *App) StoreGenerateImageConfigValue(value *ConfigGenerateImage) error {
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
-		log.Fatalf("StoreCloudConfigValue getProjectConfigPaths error getting directory: %v", err)
+		log.Fatalf("StoreGenerateImageConfigValue getProjectConfigPaths error getting directory: %v", err)
 
 		return err
 	}
 
-	file, err := os.OpenFile(projectDetail.ProjectConfigCloud, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	file, err := os.OpenFile(projectDetail.ConfigGenerateImage, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 
 	if err != nil {
-		log.Fatalf("StoreCloudConfigValue failed to open file: %v", err)
+		log.Fatalf("StoreGenerateImageConfigValue failed to open file: %v", err)
 
 		return err
 	}
@@ -398,15 +448,15 @@ func (a *App) StoreCloudConfigValue(value *CloudConfig) error {
 
 	encoder.SetIndent("", "  ")
 
-	err = encoder.Encode(&CloudConfig{
-		URLGeneratePrompt:      value.URLGeneratePrompt,
-		API_KEY_GeneratePrompt: value.API_KEY_GeneratePrompt,
-		URLGenerateImage:       value.URLGenerateImage,
-		API_KEY_GenerateImage:  value.API_KEY_GenerateImage,
+	err = encoder.Encode(&ConfigGenerateImage{
+		Mode:        value.Mode,
+		URLLocal:    value.URLLocal,
+		URLCloud:    value.URLCloud,
+		APIKeyCloud: value.APIKeyCloud,
 	})
 
 	if err != nil {
-		log.Fatalf("StoreCloudConfigValue failed to write JSON: %v", err)
+		log.Fatalf("StoreGenerateImageConfigValue failed to write JSON: %v", err)
 
 		return err
 	}

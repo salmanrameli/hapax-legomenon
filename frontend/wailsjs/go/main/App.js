@@ -10,30 +10,34 @@ export function EncodeImagesFromPath(arg1) {
   return window['go']['main']['App']['EncodeImagesFromPath'](arg1);
 }
 
-export function GetAppConfigValue() {
-  return window['go']['main']['App']['GetAppConfigValue']();
+export function GetGenerateImageConfigValue() {
+  return window['go']['main']['App']['GetGenerateImageConfigValue']();
 }
 
-export function GetCloudConfigValue() {
-  return window['go']['main']['App']['GetCloudConfigValue']();
+export function GetGeneratePromptConfigValue() {
+  return window['go']['main']['App']['GetGeneratePromptConfigValue']();
 }
 
-export function GetLocalConfigValue() {
-  return window['go']['main']['App']['GetLocalConfigValue']();
+export function GetTrainingConfigValue() {
+  return window['go']['main']['App']['GetTrainingConfigValue']();
 }
 
 export function SelectImages() {
   return window['go']['main']['App']['SelectImages']();
 }
 
-export function StoreAppConfigValue(arg1) {
-  return window['go']['main']['App']['StoreAppConfigValue'](arg1);
+export function StartImageTraining() {
+  return window['go']['main']['App']['StartImageTraining']();
 }
 
-export function StoreCloudConfigValue(arg1) {
-  return window['go']['main']['App']['StoreCloudConfigValue'](arg1);
+export function StoreGenerateImageConfigValue(arg1) {
+  return window['go']['main']['App']['StoreGenerateImageConfigValue'](arg1);
 }
 
-export function StoreLocalConfigValue(arg1) {
-  return window['go']['main']['App']['StoreLocalConfigValue'](arg1);
+export function StoreGeneratePromptConfigValue(arg1) {
+  return window['go']['main']['App']['StoreGeneratePromptConfigValue'](arg1);
+}
+
+export function StoreTrainingConfigValue(arg1) {
+  return window['go']['main']['App']['StoreTrainingConfigValue'](arg1);
 }

@@ -6,6 +6,11 @@ export const Mode = {
     MODE_SETTING_IMAGE: 5
 }
 
+export const TrainingOptions = {
+    LOCAL: {label: "Local", value: "local"},
+    CLOUD: {label: "Cloud", value: "cloud"}
+}
+
 export const GeneratePromptOptions = {
     LOCAL: {label: "Local", value: "local"},
     CLOUD: {label: "Cloud", value: "cloud"}

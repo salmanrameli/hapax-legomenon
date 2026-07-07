@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { SelectImages, EncodeImagesFromPath, Dump } from "../../wailsjs/go/main/App"
+import { SelectImages, EncodeImagesFromPath, Dump, StartImageTraining } from "../../wailsjs/go/main/App"
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -41,6 +41,15 @@ function Main() {
         })
     }
 
+    function startTraining() {
+        Dump('start training')
+
+        StartImageTraining().then((value) => {
+            Dump("training completed")
+            Dump(value)
+        })
+    }
+
     const removeImage = (urlToRemove: any, index: number) => {
         setImagePaths((prev) => prev.filter((_, i) => i !== index)) // remove image from array of paths to be processed by the LLM
 
@@ -73,7 +82,7 @@ function Main() {
             </Col>
             <Col className={`${previews.length == 0 ? "d-none" : "col-12"}`}>
                 <div className="d-flex flex-wrap p-3 justify-content-center align-items-center">
-                    <Button variant="success">Start Training <PlayFill /></Button>
+                    <Button variant="success" onClick={startTraining}>Start Training <PlayFill /></Button>
                 </div>
             </Col>
         </Row>

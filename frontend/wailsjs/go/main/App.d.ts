@@ -6,16 +6,18 @@ export function Dump(arg1:any):Promise<void>;
 
 export function EncodeImagesFromPath(arg1:Array<string>):Promise<Array<string>>;
 
-export function GetAppConfigValue():Promise<main.AppConfig>;
+export function GetGenerateImageConfigValue():Promise<main.ConfigGenerateImage>;
 
-export function GetCloudConfigValue():Promise<main.CloudConfig>;
+export function GetGeneratePromptConfigValue():Promise<main.ConfigGeneratePrompt>;
 
-export function GetLocalConfigValue():Promise<main.LocalConfig>;
+export function GetTrainingConfigValue():Promise<main.ConfigTraining>;
 
 export function SelectImages():Promise<Array<string>>;
 
-export function StoreAppConfigValue(arg1:main.AppConfig):Promise<void>;
+export function StartImageTraining():Promise<string>;
 
-export function StoreCloudConfigValue(arg1:main.CloudConfig):Promise<void>;
+export function StoreGenerateImageConfigValue(arg1:main.ConfigGenerateImage):Promise<void>;
 
-export function StoreLocalConfigValue(arg1:main.LocalConfig):Promise<void>;
+export function StoreGeneratePromptConfigValue(arg1:main.ConfigGeneratePrompt):Promise<void>;
+
+export function StoreTrainingConfigValue(arg1:main.ConfigTraining):Promise<void>;
