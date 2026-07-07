@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"ubiquitous-funicular/constants"
+	"ubiquitous-funicular/structs"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -18,46 +19,18 @@ type App struct {
 	ctx context.Context
 }
 
-type ProjectConfigPathStructure struct {
-	ProjectPath          string
-	ConfigTraining       string
-	ConfigGeneratePrompt string
-	ConfigGenerateImage  string
-}
-
-type ConfigTraining struct {
-	Mode        string `json:"mode"`
-	URLLocal    string `json:"url_local"`
-	URLCloud    string `json:"url_cloud"`
-	APIKeyCloud string `json:"api_key_cloud"`
-}
-
-type ConfigGeneratePrompt struct {
-	Mode        string `json:"mode"`
-	URLLocal    string `json:"url_local"`
-	URLCloud    string `json:"url_cloud"`
-	APIKeyCloud string `json:"api_key_cloud"`
-}
-
-type ConfigGenerateImage struct {
-	Mode        string `json:"mode"`
-	URLLocal    string `json:"url_local"`
-	URLCloud    string `json:"url_cloud"`
-	APIKeyCloud string `json:"api_key_cloud"`
-}
-
 // NewApp creates a new App application struct
 func NewApp() *App {
 	return &App{}
 }
 
-func (a *App) getProjectConfigPaths() (*ProjectConfigPathStructure, error) {
+func (a *App) getProjectConfigPaths() (*structs.ProjectConfigPathStructure, error) {
 	userConfigDir, err := os.UserConfigDir()
 
 	if err != nil {
 		fmt.Println("unable to locate user config directory", err)
 
-		return &ProjectConfigPathStructure{}, err
+		return &structs.ProjectConfigPathStructure{}, err
 	}
 
 	projectsPath := userConfigDir + constants.APP_USER_CONFIG_DIR
@@ -65,7 +38,7 @@ func (a *App) getProjectConfigPaths() (*ProjectConfigPathStructure, error) {
 	configGeneratePrompt := "/" + constants.APP_SETTING_PROMPT
 	configGenerateImage := "/" + constants.APP_SETTING_GENERATE_IMAGE
 
-	return &ProjectConfigPathStructure{
+	return &structs.ProjectConfigPathStructure{
 		ProjectPath:          projectsPath,
 		ConfigTraining:       projectsPath + configTraining,
 		ConfigGeneratePrompt: projectsPath + configGeneratePrompt,
@@ -110,7 +83,7 @@ func (a *App) startup(ctx context.Context) {
 
 		defer configTraining.Close()
 
-		defaultConfigTraining := ConfigTraining{
+		defaultConfigTraining := structs.ConfigTraining{
 			Mode:        constants.TrainImageMode.LocalValue(),
 			URLLocal:    "",
 			URLCloud:    "",
@@ -138,7 +111,7 @@ func (a *App) startup(ctx context.Context) {
 
 		defer configPrompt.Close()
 
-		defaultPromptConfig := ConfigGeneratePrompt{
+		defaultPromptConfig := structs.ConfigGeneratePrompt{
 			Mode:        constants.GeneratePromptMode.LocalValue(),
 			URLLocal:    "",
 			URLCloud:    "",
@@ -166,7 +139,7 @@ func (a *App) startup(ctx context.Context) {
 
 		defer configImage.Close()
 
-		defaultImageConfig := ConfigGenerateImage{
+		defaultImageConfig := structs.ConfigGenerateImage{
 			Mode:        constants.GenerateImageMode.LocalValue(),
 			URLLocal:    "",
 			URLCloud:    "",
@@ -257,13 +230,13 @@ func (a *App) EncodeImagesFromPath(paths []string) ([]string, error) {
 	return imageData, nil
 }
 
-func (a *App) GetTrainingConfigValue() (*ConfigTraining, error) {
+func (a *App) GetTrainingConfigValue() (*structs.ConfigTraining, error) {
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
 		log.Fatalf("GetTrainingConfigValue getProjectConfigPaths error getting directory: %v", err)
 
-		return &ConfigTraining{}, err
+		return &structs.ConfigTraining{}, err
 	}
 
 	content, err := os.ReadFile(projectDetail.ConfigTraining)
@@ -271,29 +244,29 @@ func (a *App) GetTrainingConfigValue() (*ConfigTraining, error) {
 	if err != nil {
 		log.Fatalf("GetTrainingConfigValue error opening file: %v", err)
 
-		return &ConfigTraining{}, err
+		return &structs.ConfigTraining{}, err
 	}
 
-	var config ConfigTraining
+	var config structs.ConfigTraining
 
 	err = json.Unmarshal(content, &config)
 
 	if err != nil {
 		log.Fatalf("GetTrainingConfigValue error parsing JSON: %v", err)
 
-		return &ConfigTraining{}, err
+		return &structs.ConfigTraining{}, err
 	}
 
 	return &config, nil
 }
 
-func (a *App) GetGeneratePromptConfigValue() (*ConfigGeneratePrompt, error) {
+func (a *App) GetGeneratePromptConfigValue() (*structs.ConfigGeneratePrompt, error) {
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
 		log.Fatalf("GetGeneratePromptConfigValue getProjectConfigPaths error getting directory: %v", err)
 
-		return &ConfigGeneratePrompt{}, err
+		return &structs.ConfigGeneratePrompt{}, err
 	}
 
 	content, err := os.ReadFile(projectDetail.ConfigGeneratePrompt)
@@ -301,29 +274,29 @@ func (a *App) GetGeneratePromptConfigValue() (*ConfigGeneratePrompt, error) {
 	if err != nil {
 		log.Fatalf("GetGeneratePromptConfigValue error opening file: %v", err)
 
-		return &ConfigGeneratePrompt{}, err
+		return &structs.ConfigGeneratePrompt{}, err
 	}
 
-	var config ConfigGeneratePrompt
+	var config structs.ConfigGeneratePrompt
 
 	err = json.Unmarshal(content, &config)
 
 	if err != nil {
 		log.Fatalf(" GetGeneratePromptConfigValue error parsing JSON: %v", err)
 
-		return &ConfigGeneratePrompt{}, err
+		return &structs.ConfigGeneratePrompt{}, err
 	}
 
 	return &config, nil
 }
 
-func (a *App) GetGenerateImageConfigValue() (*ConfigGenerateImage, error) {
+func (a *App) GetGenerateImageConfigValue() (*structs.ConfigGenerateImage, error) {
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
 		log.Fatalf("GetGenerateImageConfigValue getProjectConfigPaths error getting directory: %v", err)
 
-		return &ConfigGenerateImage{}, err
+		return &structs.ConfigGenerateImage{}, err
 	}
 
 	content, err := os.ReadFile(projectDetail.ConfigGenerateImage)
@@ -331,23 +304,23 @@ func (a *App) GetGenerateImageConfigValue() (*ConfigGenerateImage, error) {
 	if err != nil {
 		log.Fatalf("GetGenerateImageConfigValue error opening file: %v", err)
 
-		return &ConfigGenerateImage{}, err
+		return &structs.ConfigGenerateImage{}, err
 	}
 
-	var config ConfigGenerateImage
+	var config structs.ConfigGenerateImage
 
 	err = json.Unmarshal(content, &config)
 
 	if err != nil {
 		log.Fatalf("GetGenerateImageConfigValue rror parsing JSON: %v", err)
 
-		return &ConfigGenerateImage{}, err
+		return &structs.ConfigGenerateImage{}, err
 	}
 
 	return &config, nil
 }
 
-func (a *App) StoreTrainingConfigValue(value *ConfigTraining) error {
+func (a *App) StoreTrainingConfigValue(value *structs.ConfigTraining) error {
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
@@ -370,7 +343,7 @@ func (a *App) StoreTrainingConfigValue(value *ConfigTraining) error {
 
 	encoder.SetIndent("", "  ")
 
-	err = encoder.Encode(&ConfigTraining{
+	err = encoder.Encode(&structs.ConfigTraining{
 		Mode:        value.Mode,
 		URLLocal:    value.URLLocal,
 		URLCloud:    value.URLCloud,
@@ -386,7 +359,7 @@ func (a *App) StoreTrainingConfigValue(value *ConfigTraining) error {
 	return nil
 }
 
-func (a *App) StoreGeneratePromptConfigValue(value *ConfigGeneratePrompt) error {
+func (a *App) StoreGeneratePromptConfigValue(value *structs.ConfigGeneratePrompt) error {
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
@@ -409,7 +382,7 @@ func (a *App) StoreGeneratePromptConfigValue(value *ConfigGeneratePrompt) error 
 
 	encoder.SetIndent("", "  ")
 
-	err = encoder.Encode(&ConfigGeneratePrompt{
+	err = encoder.Encode(&structs.ConfigGeneratePrompt{
 		Mode:        value.Mode,
 		URLLocal:    value.URLLocal,
 		URLCloud:    value.URLCloud,
@@ -425,7 +398,7 @@ func (a *App) StoreGeneratePromptConfigValue(value *ConfigGeneratePrompt) error 
 	return nil
 }
 
-func (a *App) StoreGenerateImageConfigValue(value *ConfigGenerateImage) error {
+func (a *App) StoreGenerateImageConfigValue(value *structs.ConfigGenerateImage) error {
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
@@ -448,7 +421,7 @@ func (a *App) StoreGenerateImageConfigValue(value *ConfigGenerateImage) error {
 
 	encoder.SetIndent("", "  ")
 
-	err = encoder.Encode(&ConfigGenerateImage{
+	err = encoder.Encode(&structs.ConfigGenerateImage{
 		Mode:        value.Mode,
 		URLLocal:    value.URLLocal,
 		URLCloud:    value.URLCloud,
