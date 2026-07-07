@@ -5,9 +5,9 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { Mode } from './constants/mode';
 import { GearWideConnected, HouseFill } from 'react-bootstrap-icons';
-import PromptMain from './settings/prompt_main';
-import ImageMain from './settings/image_main';
-import TrainingMain from './settings/train_main';
+import PromptMain from './settings/generate_prompt/prompt_main';
+import ImageMain from './settings/generate_image/image_main';
+import TrainingMain from './settings/training/train_main';
 
 function App() {
     const [mode, setMode] = useState<number>(Mode.MODE_HOME)
@@ -44,14 +44,14 @@ function App() {
                         </Col>
                     </Row>
                 )
-            case Mode.MODE_TRAIN:
-                return (<TrainingMain />)
             case Mode.MODE_GENERATE_PROMPT:
                 return (<></>)
+            case Mode.MODE_TRAIN:
+                return (<TrainingMain />)
             case Mode.MODE_SETTING_PROMPT:
                 return (<PromptMain />)
             case Mode.MODE_SETTING_IMAGE:
-            return (<ImageMain />)
+                return (<ImageMain />)
         }
     }
 
