@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/base64"
 	"encoding/json"
@@ -159,37 +160,54 @@ func (a *App) startup(ctx context.Context) {
 	}
 }
 
-func (a *App) StartImageTraining() (string, error) {
+func (a *App) StartImageTraining(imagesPath []string) (string, error) {
 	trainingConfig, err := a.GetTrainingConfigValue()
 
 	if err != nil {
-		log.Fatalf("StartImageTraining GetAppConfigValue error: %v", err)
+		log.Fatalf("StartImageTraining GetTrainingConfigValue error: %v", err)
 
 		return "", err
 	}
 
+	var modelURL string
+
 	if trainingConfig.Mode == constants.TrainImageMode.LocalValue() {
-
+		modelURL = trainingConfig.URLLocal
 	} else {
-
+		modelURL = trainingConfig.URLCloud
 	}
 
 	pythonInterpreter := "python3"
 	scriptPath := "python/train_image.py"
-	arg1 := "hello"
-	arg2 := "world"
 
-	cmd := exec.Command(pythonInterpreter, scriptPath, arg1, arg2)
+	result, err := a.EncodeImagesFromPath(imagesPath)
 
-	output, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Fatalf("Failed to execute script: %v\nOutput: %s", err, string(output))
+		log.Fatalf("StartImageTraining EncodeImagesFromPath error: %v", err)
 
 		return "", err
 	}
 
-	fmt.Println("Python Script Output:")
-	fmt.Println(string(output))
+	cmd := exec.Command(
+		pythonInterpreter,
+		scriptPath,
+		modelURL, // this is the sys.argv[1] in python
+	)
+
+	var stdinBuf bytes.Buffer
+	stdinBuf.WriteString(result[0])
+	cmd.Stdin = &stdinBuf
+
+	output, err := cmd.CombinedOutput()
+
+	if err != nil {
+		log.Fatalf("StartImageTraining failed to execute script: %v\nOutput: %s", err, string(output))
+
+		return "", err
+	}
+
+	// fmt.Println("Python Script Output:")
+	// fmt.Println(string(output))
 
 	return string(output), nil
 }

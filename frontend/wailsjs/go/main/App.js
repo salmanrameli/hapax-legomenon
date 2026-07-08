@@ -26,8 +26,8 @@ export function SelectImages() {
   return window['go']['main']['App']['SelectImages']();
 }
 
-export function StartImageTraining() {
-  return window['go']['main']['App']['StartImageTraining']();
+export function StartImageTraining(arg1) {
+  return window['go']['main']['App']['StartImageTraining'](arg1);
 }
 
 export function StoreGenerateImageConfigValue(arg1) {

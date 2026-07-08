@@ -1,4 +1,4 @@
-export namespace main {
+export namespace structs {
 	
 	export class ConfigGenerateImage {
 	    mode: string;

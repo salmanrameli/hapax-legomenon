@@ -1,14 +1,19 @@
 import { useState } from "react"
-import { SelectImages, EncodeImagesFromPath, Dump, StartImageTraining } from "../../wailsjs/go/main/App"
+import { SelectImages, EncodeImagesFromPath, StartImageTraining } from "../../wailsjs/go/main/App"
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import CarouselPreview from "./carousel_preview";
 import { PlayFill } from "react-bootstrap-icons";
+import { TrainingMode } from "../constants/mode";
+import Processing from "./process";
+import Result from "./result";
 
 function Main() {
     const [imagePaths, setImagePaths] = useState<string[]>([])
     const [previews, setPreviews] = useState<string[]>([])
+    const [mode, setMode] = useState<number>(TrainingMode.MODE_HOME)
+    const [response, setResponse] = useState<string>("")
 
     function handleOpenFileDialog() {    
         SelectImages().then((paths) => {
@@ -42,11 +47,14 @@ function Main() {
     }
 
     function startTraining() {
-        Dump('start training')
+        setMode(TrainingMode.MODE_TRAINING)
 
-        StartImageTraining().then((value) => {
-            Dump("training completed")
-            Dump(value)
+        StartImageTraining(imagePaths).then((value) => {
+            if (value) {
+                setResponse(value)
+                setMode(TrainingMode.MODE_RESULT)
+            }
+            
         })
     }
 
@@ -58,34 +66,51 @@ function Main() {
         URL.revokeObjectURL(urlToRemove)
     };
 
+    function render() {
+        switch(mode) {
+            case (TrainingMode.MODE_HOME):
+                return (
+                    <Row>
+                        <Col className="col-12">
+                            <div className="d-flex mt-2 gap-2 flex-wrap justify-content-center rounded-5 p-3 border border-1 border-primary">
+                                {previews.length == 0 ?
+                                    <div className="d-flex justify-content-center align-items-center" style={{height: "400px", width:"100%"}}>
+                                        <Button onClick={_ => handleOpenFileDialog()} variant="primary">Import Images</Button>
+                                    </div>
+                                    : 
+                                    <CarouselPreview previews={previews} onRemoveImage={removeImage} />}
+                            </div>
+                        </Col>
+                        <Col className={`${previews.length == 0 ? "d-none" : "col-12"}`}>
+                            <div className="d-flex mt-2 flex-wrap rounded-5 p-3 border border-1 border-primary">
+                                <h3>Path:</h3>
+                                <ul className="w-100 mb-0">
+                                    {imagePaths.map(item => 
+                                        <li>{item}</li>
+                                    )}
+                                </ul>
+                            </div>
+                        </Col>
+                        <Col className={`${previews.length == 0 ? "d-none" : "col-12"}`}>
+                            <div className="d-flex flex-wrap p-3 justify-content-center align-items-center">
+                                <Button variant="success" onClick={startTraining}>Start Training <PlayFill /></Button>
+                            </div>
+                        </Col>
+                    </Row>
+                )
+            case (TrainingMode.MODE_TRAINING):
+                return (
+                    <Processing />
+                )
+            case (TrainingMode.MODE_RESULT):
+                return (
+                    <Result response={response} />
+                )
+        }
+    }
+
     return (
-        <Row>
-            <Col className="col-12">
-                <div className="d-flex mt-2 gap-2 flex-wrap justify-content-center rounded-5 p-3 border border-1 border-primary">
-                    {previews.length == 0 ?
-                        <div className="d-flex justify-content-center align-items-center" style={{height: "400px", width:"100%"}}>
-                            <Button onClick={_ => handleOpenFileDialog()} variant="primary">Import Images</Button>
-                        </div>
-                        : 
-                        <CarouselPreview previews={previews} onRemoveImage={removeImage} />}
-                </div>
-            </Col>
-            <Col className={`${previews.length == 0 ? "d-none" : "col-12"}`}>
-                <div className="d-flex mt-2 flex-wrap rounded-5 p-3 border border-1 border-primary">
-                    <h3>Path:</h3>
-                    <ul className="w-100 mb-0">
-                        {imagePaths.map(item => 
-                            <li>{item}</li>
-                        )}
-                    </ul>
-                </div>
-            </Col>
-            <Col className={`${previews.length == 0 ? "d-none" : "col-12"}`}>
-                <div className="d-flex flex-wrap p-3 justify-content-center align-items-center">
-                    <Button variant="success" onClick={startTraining}>Start Training <PlayFill /></Button>
-                </div>
-            </Col>
-        </Row>
+        render()
     )
 }
 
