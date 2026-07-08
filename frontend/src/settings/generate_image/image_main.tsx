@@ -1,9 +1,9 @@
 import { Button, Col, Row } from "react-bootstrap"
 import SettingGenerateImage from "./generate_image";
 import { useEffect, useState } from "react";
-import { GetGenerateImageConfigValue, StoreGenerateImageConfigValue } from "../../wailsjs/go/main/App"
+import { GetGenerateImageConfigValue, StoreGenerateImageConfigValue } from "../../../wailsjs/go/main/App"
 import ConfigImage from "./config_image";
-import { IConfigGenerateImage } from "../interfaces/config.interfaces";
+import { IConfigGenerateImage } from "../../interfaces/config.interfaces";
 
 function ImageMain() {
     const [generateImageDetail, setGenerateImageDetail] = useState<IConfigGenerateImage>({Mode:"", URLLocal: "", URLCloud: "", APIKeyCloud:""})

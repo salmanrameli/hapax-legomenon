@@ -1,9 +1,9 @@
 import { Button, Col, Row } from "react-bootstrap"
 import SettingGeneratePrompt from "./generate_prompt";
 import { useEffect, useState } from "react";
-import { GetGeneratePromptConfigValue, StoreGeneratePromptConfigValue } from "../../wailsjs/go/main/App"
+import { GetGeneratePromptConfigValue, StoreGeneratePromptConfigValue } from "../../../wailsjs/go/main/App"
 import ConfigPrompt from "./config_prompt";
-import { IConfigGeneratePrompt } from "../interfaces/config.interfaces";
+import { IConfigGeneratePrompt } from "../../interfaces/config.interfaces";
 
 function PromptMain() {
     const [generatePromptDetail, setGeneratePromptDetail] = useState<IConfigGeneratePrompt>({Mode:"", URLLocal: "", URLCloud: "", APIKeyCloud:""})

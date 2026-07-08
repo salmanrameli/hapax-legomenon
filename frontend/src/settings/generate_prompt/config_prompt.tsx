@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Col } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
-import { GeneratePromptOptions } from '../constants/mode';
-import { IConfigGeneratePrompt, IConfigGeneratePromptParams } from '../interfaces/config.interfaces';
+import { GeneratePromptOptions } from '../../constants/mode';
+import { IConfigGeneratePrompt, IConfigGeneratePromptParams } from '../../interfaces/config.interfaces';
 
 function ConfigPrompt(props: IConfigGeneratePromptParams) {
     const [promptConfig, setPromptConfig] = useState<IConfigGeneratePrompt>({Mode:props.defaultValue.Mode, URLLocal:props.defaultValue.URLLocal, URLCloud:"", APIKeyCloud:""})

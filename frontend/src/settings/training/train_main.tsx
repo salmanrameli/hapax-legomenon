@@ -1,7 +1,7 @@
 import { Button, Col, Row } from "react-bootstrap"
 import { useEffect, useState } from "react";
-import { GetTrainingConfigValue, StoreTrainingConfigValue } from "../../wailsjs/go/main/App"
-import { IConfigTraining } from "../interfaces/config.interfaces";
+import { GetTrainingConfigValue, StoreTrainingConfigValue } from "../../../wailsjs/go/main/App"
+import { IConfigTraining } from "../../interfaces/config.interfaces";
 import ConfigTraining from "./config_training";
 import SettingTraining from "./train";
 

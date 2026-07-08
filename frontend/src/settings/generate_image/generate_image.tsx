@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Col, Row } from "react-bootstrap"
 import Form from 'react-bootstrap/Form';
-import { GenerateImageOptions } from "../constants/mode";
-import { IConfigGenerateImage, ISettingGenerateImage } from "../interfaces/config.interfaces";
+import { GenerateImageOptions } from "../../constants/mode";
+import { IConfigGenerateImage, ISettingGenerateImage } from "../../interfaces/config.interfaces";
 
 function SettingGenerateImage(props: ISettingGenerateImage) {
     const [settingImage, setSettingImage] = useState<IConfigGenerateImage>({Mode:"", URLLocal:"", URLCloud:"", APIKeyCloud:""})

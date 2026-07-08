@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Col } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
-import { TrainingOptions } from '../constants/mode';
-import { IConfigTraining, IConfigTrainingParams } from '../interfaces/config.interfaces';
+import { TrainingOptions } from '../../constants/mode';
+import { IConfigTraining, IConfigTrainingParams } from '../../interfaces/config.interfaces';
 
 function ConfigTraining(props: IConfigTrainingParams) {
     const [trainingConfig, setTrainingConfig] = useState<IConfigTraining>({Mode:props.defaultValue.Mode, URLLocal:props.defaultValue.URLLocal, URLCloud:"", APIKeyCloud:""})
