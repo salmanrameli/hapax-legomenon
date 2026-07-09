@@ -19,27 +19,27 @@ function App() {
                 return (
                     <Row>
                         <Col className="col-12 col-md-6 text-center" style={{height:"300px"}}>
-                            <div className='d-flex h-100 justify-content-center align-items-center border rounded-3'>
-                                <Button variant="outline-primary" size="lg" onClick={() => setMode(Mode.MODE_TRAIN)}>Train with Images</Button>
+                            <div className='d-flex h-100 justify-content-center align-items-center border border-dark border-2'>
+                                <Button variant="dark" size="lg" onClick={() => setMode(Mode.MODE_TRAIN)}>Train with Images</Button>
                             </div>
                         </Col>
                         <Col className='col-12 col-md-6 text-center' style={{height:"300px"}}>
-                            <div className='d-flex h-100 justify-content-center align-items-center border rounded-3'>
-                                <Button variant="outline-primary" size="lg" onClick={() => setMode(Mode.MODE_GENERATE_PROMPT)}>Generate Prompt</Button>
+                            <div className='d-flex h-100 justify-content-center align-items-center border border-dark border-2'>
+                                <Button variant="dark" size="lg" onClick={() => setMode(Mode.MODE_GENERATE_PROMPT)}>Generate Prompt</Button>
                             </div>
                         </Col>
                         <Col className='col-12 mt-3'>
-                            <div className='d-flex border rounded-3 p-3'>
+                            <div className='d-flex border border-dark border-2 p-3'>
                                 <h5 role='button' className='mb-0' onClick={() => setMode(Mode.MODE_SETTING_TRAINING)}><GearWideConnected style={{marginTop:"-3px"}} /> Configure Image Training Setting</h5>
                             </div>
                         </Col>
                         <Col className='col-12 mt-3'>
-                            <div className='d-flex border rounded-3 p-3'>
+                            <div className='d-flex border border-dark border-2 p-3'>
                                 <h5 role='button' className='mb-0' onClick={() => setMode(Mode.MODE_SETTING_PROMPT)}><GearWideConnected style={{marginTop:"-3px"}} /> Configure Prompt Generation Setting</h5>
                             </div>
                         </Col>
                         <Col className='col-12 mt-3'>
-                            <div className='d-flex border rounded-3 p-3'>
+                            <div className='d-flex border border-dark border-2 p-3'>
                                 <h5 role='button' className='mb-0' onClick={() => setMode(Mode.MODE_SETTING_IMAGE)}><GearWideConnected style={{marginTop:"-3px"}} /> Configure Image Generation Setting</h5>
                             </div>
                         </Col>

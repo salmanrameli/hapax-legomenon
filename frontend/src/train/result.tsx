@@ -38,7 +38,7 @@ function Result(props: ITrainingResult) {
             {
                 !props.isFinishedProcessing && 
                 <Col className="col-12">
-                    <div className="d-flex gap-2 flex-wrap justify-content-center rounded-5 p-3 border border-1 border-primary">
+                    <div className="d-flex gap-2 flex-wrap justify-content-center p-3 border border-dark border-2">
                         <h1><Spinner animation="border" variant="info" /> Analyzing image{props.totalImage > 1 ? "s" : ""} in progress</h1>
                         <div className="w-100">
                             <ProgressBar className="w-100" variant="success" now={(props.countImage / props.totalImage) * 100} />
@@ -58,7 +58,7 @@ function Result(props: ITrainingResult) {
                                 )
                             })}
                         </Nav>
-                        <div className="d-flex mt-2 gap-2 flex-wrap justify-content-center rounded-5 p-3 border border-1 border-primary">
+                        <div className="d-flex mt-2 gap-2 flex-wrap justify-content-center p-3 border border-dark border-2">
                             <img src={displayedImage} alt="Preview" className="w-100 justify-content-center d-inline-grid mb-2" style={{ maxWidth: "500px", objectFit: "cover" }} />
                             <h5 className="w-100">Time taken to analyze: {displayedElapsedTime}</h5>
                             <div dangerouslySetInnerHTML={{__html: displayedResult}} />

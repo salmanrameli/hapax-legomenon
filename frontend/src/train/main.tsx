@@ -95,17 +95,17 @@ function Main() {
                 return (
                     <Row>
                         <Col className="col-12">
-                            <div className="d-flex mt-2 gap-2 flex-wrap justify-content-center rounded-5 p-3 border border-1 border-primary">
+                            <div className="d-flex mt-2 gap-2 flex-wrap justify-content-center p-3 border border-dark border-2">
                                 {previews.length == 0 ?
                                     <div className="d-flex justify-content-center align-items-center" style={{height: "400px", width:"100%"}}>
-                                        <Button onClick={_ => handleOpenFileDialog()} variant="primary">Import Images</Button>
+                                        <Button size="lg" onClick={_ => handleOpenFileDialog()} variant="dark">Import Images</Button>
                                     </div>
                                     : 
                                     <CarouselPreview previews={previews} onRemoveImage={removeImage} />}
                             </div>
                         </Col>
                         <Col className={`${previews.length == 0 ? "d-none" : "col-12"}`}>
-                            <div className="d-flex mt-2 flex-wrap rounded-5 p-3 border border-1 border-primary">
+                            <div className="d-flex mt-2 flex-wrap p-3 border border-dark border-2">
                                 <h3>Path:</h3>
                                 <ul className="w-100 mb-0">
                                     {imagePaths.map(item => 

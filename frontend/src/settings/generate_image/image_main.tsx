@@ -67,10 +67,10 @@ function ImageMain() {
     return (
         <Row>
             <Col className={"col-12"}>
-                <div className="d-inline-flex w-100 flex-wrap p-3 border border-1 rounded-3 border-primary">
+                <div className="d-inline-flex w-100 flex-wrap p-3 border border-dark border-2">
                     <SettingGenerateImage data={generateImageDetail} onChangeSource={handleChangeSourceImage} onSaveChanges={handleSaveChanges} />
                 </div>
-                <div className="d-inline-flex w-100 mt-2 flex-wrap p-3 border border-1 rounded-3 border-primary">
+                <div className="d-inline-flex w-100 mt-2 flex-wrap p-3 border border-dark border-2">
                     {show && <ConfigImage source={generateImageDetail.Mode} defaultValue={generateImageDetail!} onChangeConfig={handleChangeConfig} onSaveChanges={handleSaveChanges} />}
                 </div>
                 <Button variant="success" onClick={handleSaveChanges} disabled={disableSaveButton} className="mt-2">Save</Button>
