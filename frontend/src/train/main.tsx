@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { SelectImages, EncodeImagesFromPath, StartImageTraining } from "../../wailsjs/go/main/App"
+import { SelectImages, EncodeImagesFromPath, StartImageTraining, Dump } from "../../wailsjs/go/main/App"
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -13,7 +13,10 @@ function Main() {
     const [imagePaths, setImagePaths] = useState<string[]>([])
     const [previews, setPreviews] = useState<string[]>([])
     const [mode, setMode] = useState<number>(TrainingMode.MODE_HOME)
-    const [response, setResponse] = useState<string>("")
+    const [responses, setResponses] = useState<string[]>([])
+    const [isFinishedProcessing, setIsFinishedProcessing] = useState<boolean>(false)
+    const [processCount, setProcessCount] = useState<number>(0)
+    const [elapsedTimes, setElapsedTimes] = useState<number[]>([])
 
     function handleOpenFileDialog() {    
         SelectImages().then((paths) => {
@@ -46,16 +49,36 @@ function Main() {
         })
     }
 
-    function startTraining() {
-        setMode(TrainingMode.MODE_TRAINING)
+    async function startTraining() {
+        setMode(TrainingMode.MODE_RESULT)
 
-        StartImageTraining(imagePaths).then((value) => {
-            if (value) {
-                setResponse(value)
-                setMode(TrainingMode.MODE_RESULT)
-            }
-            
-        })
+        let countProcessedImages = 0
+
+        for (const item of imagePaths) {
+            const start = performance.now();
+
+            await StartImageTraining(item).then((value: string) => {
+                if (value) {
+                    setResponses((prevItems) => [...prevItems, value])
+
+                    setProcessCount(++countProcessedImages)
+
+                    const end = performance.now();
+
+                    const elapsedSeconds = (end - start) / 1000;
+
+                    setElapsedTimes((prevItems) => [...prevItems, elapsedSeconds])
+
+                    if (countProcessedImages == imagePaths.length) {
+                        setIsFinishedProcessing(true)
+                    }
+                }
+            }).then(() => {
+                if (processCount == imagePaths.length) {
+                    setIsFinishedProcessing(true)
+                }
+            })
+        }
     }
 
     const removeImage = (urlToRemove: any, index: number) => {
@@ -104,7 +127,14 @@ function Main() {
                 )
             case (TrainingMode.MODE_RESULT):
                 return (
-                    <Result response={response} />
+                    <Result 
+                        isFinishedProcessing={isFinishedProcessing} 
+                        countImage={processCount} 
+                        totalImage={imagePaths.length} 
+                        images={previews}
+                        responses={responses}
+                        elapsedSeconds={elapsedTimes}
+                    />
                 )
         }
     }

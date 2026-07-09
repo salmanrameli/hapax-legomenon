@@ -160,7 +160,7 @@ func (a *App) startup(ctx context.Context) {
 	}
 }
 
-func (a *App) StartImageTraining(imagesPath []string) (string, error) {
+func (a *App) StartImageTraining(imagePath string) (string, error) {
 	trainingConfig, err := a.GetTrainingConfigValue()
 
 	if err != nil {
@@ -180,7 +180,7 @@ func (a *App) StartImageTraining(imagesPath []string) (string, error) {
 	pythonInterpreter := "python3"
 	scriptPath := "python/train_image.py"
 
-	result, err := a.EncodeImagesFromPath(imagesPath)
+	result, err := a.EncodeImagesFromPath([]string{imagePath})
 
 	if err != nil {
 		log.Fatalf("StartImageTraining EncodeImagesFromPath error: %v", err)

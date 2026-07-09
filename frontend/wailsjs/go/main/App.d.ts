@@ -14,7 +14,7 @@ export function GetTrainingConfigValue():Promise<structs.ConfigTraining>;
 
 export function SelectImages():Promise<Array<string>>;
 
-export function StartImageTraining(arg1:Array<string>):Promise<string>;
+export function StartImageTraining(arg1:string):Promise<string>;
 
 export function StoreGenerateImageConfigValue(arg1:structs.ConfigGenerateImage):Promise<void>;
 

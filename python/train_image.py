@@ -28,8 +28,8 @@ def main():
         print("Error: No data received", file=sys.stderr)
         return
 
-    FALLBACK_POV = (
-        'Conduct a visual inventory of this image. Use HTML tags instead of markdown for formatting'
+    DEFAULT_POV = (
+        'Conduct a visual inventory of this image. Always use HTML format. Write the title of each category, followed by colon, and finally the result from the category. Separate each categories with two br tags'
         'Work through these layers in sequence. Give EXACTLY two sentences per layer — no more for the rich layers, no less for the sparse ones. '
         '(1) light — quality, direction, color temperature, shadows; '
         '(2) space — depth, scale, geometry, framing; '
@@ -50,7 +50,7 @@ def main():
             },
             {
                 "role": "user", 
-                "content": FALLBACK_POV,
+                "content": DEFAULT_POV,
                 "images": [base64_data]
             }
         ],
@@ -65,13 +65,12 @@ def main():
     ]
 
     result = subprocess.run(command, input=json.dumps(payload_dict), capture_output=True, text=True)
-    
+
     response_data = json.loads(result.stdout)
 
     print(response_data["message"]["content"])
 
     return response_data["message"]["content"]
-
 
 if __name__ == "__main__":
     main()
