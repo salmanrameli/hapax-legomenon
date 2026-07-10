@@ -30,7 +30,7 @@ func (a *App) getProjectConfigPaths() (*structs.ProjectConfigPathStructure, erro
 	userConfigDir, err := os.UserConfigDir()
 
 	if err != nil {
-		fmt.Println("unable to locate user config directory", err)
+		log.Fatalf("unable to locate user config directory: %s", err)
 
 		return &structs.ProjectConfigPathStructure{}, err
 	}
@@ -58,7 +58,7 @@ func (a *App) startup(ctx context.Context) {
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
-		fmt.Println("startup getProjectConfigPaths error", err)
+		log.Fatalf("startup getProjectConfigPaths error: %s", err)
 
 		return
 	}
@@ -69,19 +69,65 @@ func (a *App) startup(ctx context.Context) {
 	// fmt.Println("app user generate image config file path: " + projectDetail.ConfigGenerateImage)
 	// fmt.Println("app user token database file path: " + projectDetail.TokenDatabase)
 
-	_, err = os.Stat(projectDetail.ProjectPath)
+	a.checkProjectDir(projectDetail.ProjectPath)
+
+	a.configureTokenDatabaseFile(projectDetail.TokenDatabase)
+
+	a.configureTrainingConfig(projectDetail.ConfigTraining)
+
+	a.configureGeneratePromptConfig(projectDetail.ConfigGeneratePrompt)
+
+	a.configureGenerateImageConfig(projectDetail.ConfigGenerateImage)
+}
+
+func (a *App) checkProjectDir(path string) {
+	_, err := os.Stat(path)
 
 	if os.IsNotExist(err) {
-		if err := os.Mkdir(projectDetail.ProjectPath, os.ModePerm); err != nil {
-			fmt.Println("app startup error in creating application project directory", err)
+		if err := os.Mkdir(path, os.ModePerm); err != nil {
+			log.Fatalf("app checkProjectDir error in creating application project directory: %s", err)
+
+			return
+		}
+	}
+}
+
+func (a *App) configureTokenDatabaseFile(path string) {
+	_, err := os.Stat(path)
+
+	if os.IsNotExist(err) {
+		file, err := os.Create(path)
+
+		if err != nil {
+			log.Fatalf("app configureTokenDatabaseFile error in creating projects token database file: %s", err)
 
 			return
 		}
 
-		configTraining, err := os.Create(projectDetail.ConfigTraining)
+		defer file.Close()
+
+		writer := csv.NewWriter(file)
+
+		defer writer.Flush()
+
+		header := []string{"tier", "ok", "module", "sub_module", "token_concept", "surabaya_specific", "poids_structurel", "xeno_index"}
+
+		if err := writer.Write(header); err != nil {
+			log.Fatalf("app configureTokenDatabaseFile error in writing token databse header: %s", err)
+
+			return
+		}
+	}
+}
+
+func (a *App) configureTrainingConfig(path string) {
+	_, err := os.Stat(path)
+
+	if os.IsNotExist(err) {
+		configTraining, err := os.Create(path)
 
 		if err != nil {
-			fmt.Println("app startup error in creating projects training config file", err)
+			log.Fatalf("app configureTrainingConfig error in creating projects training config file: %s", err)
 
 			return
 		}
@@ -101,15 +147,21 @@ func (a *App) startup(ctx context.Context) {
 		err = encoder.Encode(defaultConfigTraining)
 
 		if err != nil {
-			fmt.Println("unable to write default training config", err)
+			log.Fatalf("app configureTrainingConfig unable to write default training config: %s", err)
 
 			return
 		}
+	}
+}
 
-		configPrompt, err := os.Create(projectDetail.ConfigGeneratePrompt)
+func (a *App) configureGeneratePromptConfig(path string) {
+	_, err := os.Stat(path)
+
+	if os.IsNotExist(err) {
+		configPrompt, err := os.Create(path)
 
 		if err != nil {
-			fmt.Println("app startup error in creating projects generate prompt config file", err)
+			log.Fatalf("app configureGeneratePromptConfig error in creating projects generate prompt config file: %s", err)
 
 			return
 		}
@@ -123,21 +175,27 @@ func (a *App) startup(ctx context.Context) {
 			APIKeyCloud: "",
 		}
 
-		encoder = json.NewEncoder(configPrompt)
+		encoder := json.NewEncoder(configPrompt)
 		encoder.SetIndent("", "    ")
 
 		err = encoder.Encode(defaultPromptConfig)
 
 		if err != nil {
-			fmt.Println("unable to write default generate prompt config", err)
+			log.Fatalf("app configureGeneratePromptConfig unable to write default generate prompt config: %s", err)
 
 			return
 		}
+	}
+}
 
-		configImage, err := os.Create(projectDetail.ConfigGenerateImage)
+func (a *App) configureGenerateImageConfig(path string) {
+	_, err := os.Stat(path)
+
+	if os.IsNotExist(err) {
+		configImage, err := os.Create(path)
 
 		if err != nil {
-			fmt.Println("app startup error in creating projects generate image config file", err)
+			log.Fatalf("app configureGenerateImageConfig error in creating projects generate image config file: %s", err)
 
 			return
 		}
@@ -151,33 +209,13 @@ func (a *App) startup(ctx context.Context) {
 			APIKeyCloud: "",
 		}
 
-		encoder = json.NewEncoder(configImage)
+		encoder := json.NewEncoder(configImage)
 		encoder.SetIndent("", "    ")
 
 		err = encoder.Encode(defaultImageConfig)
 
 		if err != nil {
-			fmt.Println("unable to write default application generate image config", err)
-
-			return
-		}
-
-		file, err := os.Create(projectDetail.TokenDatabase)
-
-		if err != nil {
-			log.Fatalf("app startup error in creating projects token database file: %s", err)
-		}
-
-		defer file.Close()
-
-		writer := csv.NewWriter(file)
-
-		defer writer.Flush()
-
-		header := []string{"tier", "ok", "module", "sub_module", "token_concept", "surabaya_specific", "poids_structurel", "xeno_index"}
-
-		if err := writer.Write(header); err != nil {
-			log.Fatalf("app startup error in writing token databse header: %s", err)
+			log.Fatalf("app configureGenerateImageConfig unable to write default application generate image config: %s", err)
 
 			return
 		}
@@ -297,7 +335,8 @@ func (a *App) SelectImages() ([]string, error) {
 	})
 
 	if err != nil {
-		fmt.Printf("unable to read selected images")
+		log.Fatalf("unable to read selected images: %s", err)
+
 		return nil, err
 	}
 
@@ -311,7 +350,8 @@ func (a *App) EncodeImagesFromPath(paths []string) ([]string, error) {
 		data, err := os.ReadFile(path)
 
 		if err != nil {
-			fmt.Printf("unable to read selected images from the given paths")
+			log.Fatalf("unable to read selected images from the given paths: %s", err)
+
 			return nil, err
 		}
 
