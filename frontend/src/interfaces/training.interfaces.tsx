@@ -3,6 +3,16 @@ export interface ITrainingResult {
     totalImage: number
     images: string[]
     isFinishedProcessing: boolean
-    responses: string[]
+    responses: IImageAnalysisResponse[]
     elapsedSeconds: number[]
+}
+
+export interface IImageAnalysisResponse {
+    index: number,
+    text: string
+}
+
+export interface ITrainingSelectResult {
+    results: IImageAnalysisResponse[]
+    goBack: () => void
 }

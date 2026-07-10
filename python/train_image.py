@@ -29,7 +29,7 @@ def main():
         return
 
     DEFAULT_POV = (
-        'Conduct a visual inventory of this image. Always use HTML format. Write the title of each category, followed by colon, and finally the result from the category. Separate each categories with two br tags'
+        'Conduct a visual inventory of this image. Do not use any formatting style. The only exception is using br tag to separate between each categories. Write the title of each category, followed by colon, and finally the result from the category. Separate each categories with two br tags'
         'Work through these layers in sequence. Give EXACTLY two sentences per layer — no more for the rich layers, no less for the sparse ones. '
         '(1) light — quality, direction, color temperature, shadows; '
         '(2) space — depth, scale, geometry, framing; '

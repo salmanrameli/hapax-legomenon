@@ -24,6 +24,6 @@ export const GenerateImageOptions = {
 
 export const TrainingMode = {
     MODE_HOME: 1,
-    MODE_TRAINING: 2,
-    MODE_RESULT: 3
+    MODE_RESULT: 2,
+    MODE_SELECT_RESULTS: 3
 }

@@ -6,14 +6,14 @@ import Col from 'react-bootstrap/Col';
 import CarouselPreview from "./carousel_preview";
 import { PlayFill } from "react-bootstrap-icons";
 import { TrainingMode } from "../constants/mode";
-import Processing from "./process";
 import Result from "./result";
+import { IImageAnalysisResponse } from "../interfaces/training.interfaces";
 
 function Main() {
     const [imagePaths, setImagePaths] = useState<string[]>([])
     const [previews, setPreviews] = useState<string[]>([])
     const [mode, setMode] = useState<number>(TrainingMode.MODE_HOME)
-    const [responses, setResponses] = useState<string[]>([])
+    const [responses, setResponses] = useState<IImageAnalysisResponse[]>([])
     const [isFinishedProcessing, setIsFinishedProcessing] = useState<boolean>(false)
     const [processCount, setProcessCount] = useState<number>(0)
     const [elapsedTimes, setElapsedTimes] = useState<number[]>([])
@@ -53,13 +53,17 @@ function Main() {
         setMode(TrainingMode.MODE_RESULT)
 
         let countProcessedImages = 0
+        let countIndex = 0
 
         for (const item of imagePaths) {
             const start = performance.now();
 
             await StartImageTraining(item).then((value: string) => {
                 if (value) {
-                    setResponses((prevItems) => [...prevItems, value])
+                    setResponses((prevItems) => [...prevItems, {
+                        index: countIndex++,
+                        text: value
+                    }])
 
                     setProcessCount(++countProcessedImages)
 
@@ -120,10 +124,6 @@ function Main() {
                             </div>
                         </Col>
                     </Row>
-                )
-            case (TrainingMode.MODE_TRAINING):
-                return (
-                    <Processing />
                 )
             case (TrainingMode.MODE_RESULT):
                 return (

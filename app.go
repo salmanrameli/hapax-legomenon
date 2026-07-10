@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -38,12 +39,14 @@ func (a *App) getProjectConfigPaths() (*structs.ProjectConfigPathStructure, erro
 	configTraining := "/" + constants.APP_SETTING_TRAINING
 	configGeneratePrompt := "/" + constants.APP_SETTING_PROMPT
 	configGenerateImage := "/" + constants.APP_SETTING_GENERATE_IMAGE
+	tokenDatabase := "/" + constants.TOKEN_DATABASE
 
 	return &structs.ProjectConfigPathStructure{
 		ProjectPath:          projectsPath,
 		ConfigTraining:       projectsPath + configTraining,
 		ConfigGeneratePrompt: projectsPath + configGeneratePrompt,
 		ConfigGenerateImage:  projectsPath + configGenerateImage,
+		TokenDatabase:        projectsPath + tokenDatabase,
 	}, nil
 }
 
@@ -60,10 +63,11 @@ func (a *App) startup(ctx context.Context) {
 		return
 	}
 
-	fmt.Println("app user project directory: " + projectDetail.ProjectPath)
-	fmt.Println("app user training config file path: " + projectDetail.ConfigTraining)
-	fmt.Println("app user generate prompt config file path: " + projectDetail.ConfigGeneratePrompt)
-	fmt.Println("app user generate image config file path: " + projectDetail.ConfigGenerateImage)
+	// fmt.Println("app user project directory: " + projectDetail.ProjectPath)
+	// fmt.Println("app user training config file path: " + projectDetail.ConfigTraining)
+	// fmt.Println("app user generate prompt config file path: " + projectDetail.ConfigGeneratePrompt)
+	// fmt.Println("app user generate image config file path: " + projectDetail.ConfigGenerateImage)
+	// fmt.Println("app user token database file path: " + projectDetail.TokenDatabase)
 
 	_, err = os.Stat(projectDetail.ProjectPath)
 
@@ -157,7 +161,76 @@ func (a *App) startup(ctx context.Context) {
 
 			return
 		}
+
+		file, err := os.Create(projectDetail.TokenDatabase)
+
+		if err != nil {
+			log.Fatalf("app startup error in creating projects token database file: %s", err)
+		}
+
+		defer file.Close()
+
+		writer := csv.NewWriter(file)
+
+		defer writer.Flush()
+
+		header := []string{"tier", "ok", "module", "sub_module", "token_concept", "surabaya_specific", "poids_structurel", "xeno_index"}
+
+		if err := writer.Write(header); err != nil {
+			log.Fatalf("app startup error in writing token databse header: %s", err)
+
+			return
+		}
 	}
+}
+
+func (a *App) DescriptionsToTokens(texts string) (string, error) {
+	trainingConfig, err := a.GetTrainingConfigValue()
+
+	if err != nil {
+		log.Fatalf("DescriptionsToTokens GetTrainingConfigValue error: %v", err)
+
+		return "", err
+	}
+
+	var modelURL string
+
+	if trainingConfig.Mode == constants.TrainImageMode.LocalValue() {
+		modelURL = trainingConfig.URLLocal
+	} else {
+		modelURL = trainingConfig.URLCloud
+	}
+
+	projectConfigPath, err := a.getProjectConfigPaths()
+
+	if err != nil {
+		log.Fatalf("DescriptionsToTokens getProjectConfigPaths error: %v", err)
+
+		return "", err
+	}
+
+	pythonInterpreter := "python3"
+	scriptPath := "python/descriptions_to_tokens.py"
+	tokenDatabasePath := projectConfigPath.TokenDatabase
+
+	cmd := exec.Command(
+		pythonInterpreter,
+		scriptPath,
+		modelURL,
+		projectConfigPath.ProjectPath,
+		tokenDatabasePath,
+		texts,
+	)
+
+	output, err := cmd.CombinedOutput()
+
+	if err != nil {
+		log.Fatalf("DescriptionsToTokens failed to execute script: %v\nOutput: %s", err, string(output))
+
+		return "", err
+	}
+
+	return string(output), nil
 }
 
 func (a *App) StartImageTraining(imagePath string) (string, error) {

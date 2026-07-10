@@ -6,4 +6,5 @@ const (
 	APP_SETTING_TRAINING       = "settings_training.json"
 	APP_SETTING_PROMPT         = "settings_prompt.json"
 	APP_SETTING_GENERATE_IMAGE = "settings_generate_image.json"
+	TOKEN_DATABASE             = "prompt_database.csv"
 )
