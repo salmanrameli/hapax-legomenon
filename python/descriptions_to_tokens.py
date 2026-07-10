@@ -113,6 +113,18 @@ def normalize_module(m):
 
     return _MODULE_ALIASES.get((m or "").strip().lower(), (m or "").strip())
 
+def sort_key(row):
+    mod = row.get("module", "")
+
+    tier_str = row.get("tier", "")
+
+    try:
+        tier_val = float(tier_str)
+    except ValueError:
+        tier_val = float('inf') # Invalid/missing tier goes to the end
+
+    return (mod, tier_val)
+
 def validate_rows(rows):
     VALID_PS  = ["PS1", "PS2", "PS3"]
     VALID_OK  = ["", "META", "NEGATIVE", "off"]
@@ -143,39 +155,34 @@ def validate_rows(rows):
 
     return valid, errors
 
-def extract_tokens(model_url, project_path, token_database_path, texts):
-    texts_array = texts.split(";")
+def extract_tokens(model_url, project_path, token_database_path, text):
+    payload_dict = {
+        "model": "gemma4:e4b",
+        "messages": [
+            {
+                "role": "system", 
+                "content": EXTRACT_SYSTEM
+            },
+            {
+                "role": "user", 
+                "content": text
+            }
+        ],
+        "stream": False 
+    }
 
-    response_array = []
+    command = [
+        "curl", "-s", "-X", "POST",
+        "-H", "Content-Type: application/json",
+        "-d", "@-",
+        model_url
+    ]
 
-    for text in texts_array:
-        payload_dict = {
-            "model": "gemma4:e4b",
-            "messages": [
-                {
-                    "role": "system", 
-                    "content": EXTRACT_SYSTEM
-                },
-                {
-                    "role": "user", 
-                    "content": text
-                }
-            ],
-            "stream": False 
-        }
+    result = subprocess.run(command, input=json.dumps(payload_dict), capture_output=True, text=True)
 
-        command = [
-            "curl", "-s", "-X", "POST",
-            "-H", "Content-Type: application/json",
-            "-d", "@-",
-            model_url
-        ]
+    response_data = json.loads(result.stdout)
 
-        result = subprocess.run(command, input=json.dumps(payload_dict), capture_output=True, text=True)
-
-        response_data = json.loads(result.stdout)
-
-        response_array.append(response_data["message"]["content"])
+    response = response_data["message"]["content"]
 
     ts  = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     tag = uuid.uuid4().hex[:6]
@@ -189,36 +196,35 @@ def extract_tokens(model_url, project_path, token_database_path, texts):
 
     total_valid = total_errors = total_rows = 0
 
-    for text in response_array:
-        rows = []
+    rows = []
 
-        reader = csv.reader(io.StringIO(text), delimiter=";")
+    reader = csv.reader(io.StringIO(response), delimiter=";")
 
-        for parts in reader:
-            if len(parts) != 5:
-                continue
+    for parts in reader:
+        if len(parts) != 5:
+            continue
 
-            if parts[0].strip().lower() in ("token_concept", "tier"):
-                continue
+        if parts[0].strip().lower() in ("token_concept", "tier"):
+            continue
 
-            row = dict(zip(EXPECTED_COLS, [p.strip() for p in parts]))
+        row = dict(zip(EXPECTED_COLS, [p.strip() for p in parts]))
 
-            if row.get("ok", "").lower() in ("ok", "yes", "visual", "none", "-"):
-                row["ok"] = ""
+        if row.get("ok", "").lower() in ("ok", "yes", "visual", "none", "-"):
+            row["ok"] = ""
 
-            rows.append(row)
+        rows.append(row)
 
-        valid, errors = validate_rows(rows)
+    valid, errors = validate_rows(rows)
 
-        total_rows   += len(rows)
-        total_valid  += len(valid)
-        total_errors += len(errors)
+    total_rows   += len(rows)
+    total_valid  += len(valid)
+    total_errors += len(errors)
 
-        # Write valid tokens immediately
-        if valid:
-            with open(out_path, "a", encoding="utf-8", newline="") as fout:
-                writer = csv.DictWriter(fout, fieldnames=EXPECTED_COLS, extrasaction="ignore")
-                writer.writerows(valid)
+    # Write valid tokens immediately
+    if valid:
+        with open(out_path, "a", encoding="utf-8", newline="") as fout:
+            writer = csv.DictWriter(fout, fieldnames=EXPECTED_COLS, extrasaction="ignore")
+            writer.writerows(valid)
 
     deduplicate_data(out_path, model_url, token_database_path)
 
@@ -343,6 +349,8 @@ def deduplicate_data(csv_path, model_url, token_database_path):
 
     merge_to_csv(csv_path, token_database_path)
 
+    return True
+
 def merge_to_csv(csv_path, token_database_path):
     new_rows = []
 
@@ -424,18 +432,6 @@ def merge_to_csv(csv_path, token_database_path):
 
     merged_rows = base_rows + out_rows
 
-    def sort_key(row):
-        mod = row.get("module", "")
-
-        tier_str = row.get("tier", "")
-
-        try:
-            tier_val = float(tier_str)
-        except ValueError:
-            tier_val = float('inf') # Invalid/missing tier goes to the end
-
-        return (mod, tier_val)
-
     merged_rows.sort(key=sort_key)
 
     all_fieldnames = list(DB_COLS)
@@ -450,13 +446,15 @@ def merge_to_csv(csv_path, token_database_path):
         writer.writeheader()
         writer.writerows(merged_rows)
 
+    return True
+
 def main():
     model_url = sys.argv[1]
     project_path = sys.argv[2]
     token_database_path = sys.argv[3]
-    texts = sys.argv[4]
+    text = sys.argv[4]
 
-    extract_tokens(model_url, project_path, token_database_path, texts)
+    extract_tokens(model_url, project_path, token_database_path, text)
 
     return "success!"
 

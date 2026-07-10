@@ -25,5 +25,7 @@ export const GenerateImageOptions = {
 export const TrainingMode = {
     MODE_HOME: 1,
     MODE_RESULT: 2,
-    MODE_SELECT_RESULTS: 3
+    MODE_SELECT_RESULTS: 3,
+    MODE_PROCESSING_TEXTS_TO_TOKENS: 4,
+    MODE_FINISHED: 5
 }

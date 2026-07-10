@@ -16,3 +16,8 @@ export interface ITrainingSelectResult {
     results: IImageAnalysisResponse[]
     goBack: () => void
 }
+
+export interface ITextToToken {
+    countProcessedTexts: number
+    totalTexts: number
+}
