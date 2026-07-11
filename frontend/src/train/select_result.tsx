@@ -2,7 +2,7 @@ import { Button, Col } from "react-bootstrap";
 import { ITrainingSelectResult } from "../interfaces/training.interfaces";
 import { Table, Form } from "react-bootstrap";
 import { useEffect, useState } from "react";
-import { DescriptionsToTokens } from "../../wailsjs/go/main/App";
+import { DescriptionsToTokens, Dump } from "../../wailsjs/go/main/App";
 import { TrainingMode } from "../constants/mode";
 import TextToToken from "./text_to_token";
 import Completed from "./completed";
@@ -13,26 +13,12 @@ function SelectResult(props: ITrainingSelectResult) {
     const [texts, setTexts] = useState<string[]>([])
     const [countProcessedText, setCountProcessedText] = useState<number>(0)
 
-    const isAllSelected = props.results.length > 0 && selectedIds.length === props.results.length;
-
     const handleRowSelect = (id: number) => {
         setSelectedIds((prevSelected) =>
             prevSelected.includes(id)
                 ? prevSelected.filter((rowId) => rowId !== id) // Uncheck
                 : [...prevSelected, id] // Check
         );
-    };
-
-    const handleSelectAll = (e: any) => {
-        if (e.target.checked) {
-            const allIds = props.results.map((item) => (item.index - 1));
-
-            setSelectedIds(allIds);
-        } else {
-            setSelectedIds([]);
-
-            setTexts([])
-        }
     };
 
     function Proceed() {
@@ -49,7 +35,7 @@ function SelectResult(props: ITrainingSelectResult) {
         }
     }, [texts])
 
-    async function DescriptionToToken() {
+    async function DescriptionToToken() {        
         if (texts.length == selectedIds.length) {
             setMode(TrainingMode.MODE_PROCESSING_TEXTS_TO_TOKENS)
 
@@ -93,13 +79,7 @@ function SelectResult(props: ITrainingSelectResult) {
                         <Table bordered className="w-100 mt-3">
                             <thead>
                                 <tr>
-                                    <th>
-                                        <Form.Check
-                                            type="checkbox"
-                                            onChange={handleSelectAll}
-                                            checked={isAllSelected}
-                                        />
-                                    </th>
+                                    <th></th>
                                     <th>Text Analysis</th>
                                 </tr>
                             </thead>

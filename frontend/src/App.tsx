@@ -9,6 +9,7 @@ import PromptMain from './settings/generate_prompt/prompt_main';
 import ImageMain from './settings/generate_image/image_main';
 import TrainingMain from './settings/training/train_main';
 import Main from './train/main';
+import { Card } from 'react-bootstrap';
 
 function App() {
     const [mode, setMode] = useState<number>(Mode.MODE_HOME)
@@ -17,16 +18,35 @@ function App() {
         switch(mode) {
             case Mode.MODE_HOME:
                 return (
-                    <Row>
-                        <Col className="col-12 col-md-6 text-center" style={{height:"300px"}}>
-                            <div className='d-flex h-100 justify-content-center align-items-center border border-dark border-2'>
-                                <Button variant="dark" size="lg" onClick={() => setMode(Mode.MODE_TRAIN)}>Train with Images</Button>
-                            </div>
+                    <Row className="g-0 mb-4 border-dark border-3">
+                        <Col md={6}>
+                            <Card className="rounded-0 bg-white text-dark h-100 border-0">
+                                <Card.Body className="d-flex align-items-center justify-content-center p-5">
+                                    <Button
+                                        variant="outline-dark" 
+                                        size="lg" 
+                                        className="rounded-0 fw-bold text-uppercase px-5 py-4 fs-3 border-3"
+                                        onClick={() => setMode(Mode.MODE_TRAIN)}
+                                        >
+                                        Train with Images
+                                    </Button>
+                                </Card.Body>
+                            </Card>
                         </Col>
-                        <Col className='col-12 col-md-6 text-center' style={{height:"300px"}}>
-                            <div className='d-flex h-100 justify-content-center align-items-center border border-dark border-2'>
-                                <Button variant="dark" size="lg" onClick={() => setMode(Mode.MODE_GENERATE_PROMPT)}>Generate Prompt</Button>
-                            </div>
+                        <Col md={6}>
+                            <Card className="rounded-0 bg-dark text-white h-100 border-0 border-end border-dark border-3">
+                                <Card.Body className="d-flex align-items-center justify-content-center p-5">
+                                    <Button
+                                        variant="danger" 
+                                        size="lg" 
+                                        className="rounded-0 fw-bold text-uppercase px-5 py-4 fs-3"
+                                        style={{ backgroundColor: '#E32636', borderColor: '#E32636' }}
+                                        onClick={() => setMode(Mode.MODE_GENERATE_PROMPT)}
+                                        >
+                                        Generate Prompt
+                                    </Button>
+                                </Card.Body>
+                            </Card>
                         </Col>
                         <Col className='col-12 mt-3'>
                             <div className='d-flex border border-dark border-2 p-3'>
