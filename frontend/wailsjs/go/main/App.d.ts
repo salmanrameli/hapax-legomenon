@@ -8,6 +8,8 @@ export function Dump(arg1:any):Promise<void>;
 
 export function EncodeImagesFromPath(arg1:Array<string>):Promise<Array<string>>;
 
+export function GeneratePrompt():Promise<string>;
+
 export function GetGenerateImageConfigValue():Promise<structs.ConfigGenerateImage>;
 
 export function GetGeneratePromptConfigValue():Promise<structs.ConfigGeneratePrompt>;

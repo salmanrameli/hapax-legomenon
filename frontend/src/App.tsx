@@ -10,6 +10,7 @@ import ImageMain from './settings/generate_image/image_main';
 import TrainingMain from './settings/training/train_main';
 import Main from './train/main';
 import { Card } from 'react-bootstrap';
+import GeneratePromptMain from './generate/prompt/main';
 
 function App() {
     const [mode, setMode] = useState<number>(Mode.MODE_HOME)
@@ -66,7 +67,7 @@ function App() {
                     </Row>
                 )
             case Mode.MODE_GENERATE_PROMPT:
-                return (<></>)
+                return (<GeneratePromptMain />)
             case Mode.MODE_TRAIN:
                 return (<Main />)
             case Mode.MODE_SETTING_TRAINING:

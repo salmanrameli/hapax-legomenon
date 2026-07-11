@@ -225,6 +225,55 @@ func (a *App) configureGenerateImageConfig(path string) {
 	}
 }
 
+func (a *App) GeneratePrompt() (string, error) {
+	promptConfig, err := a.GetGeneratePromptConfigValue()
+
+	if err != nil {
+		log.Fatalf("GeneratePrompt GetTrainingConfigValue error: %v", err)
+
+		return "", err
+	}
+
+	var modelURL string
+
+	if promptConfig.Mode == constants.TrainImageMode.LocalValue() {
+		modelURL = promptConfig.URLLocal
+	} else {
+		modelURL = promptConfig.URLCloud
+	}
+
+	projectConfigPath, err := a.getProjectConfigPaths()
+
+	if err != nil {
+		log.Fatalf("GeneratePrompt getProjectConfigPaths error: %v", err)
+
+		return "", err
+	}
+
+	pythonInterpreter := "python3"
+	scriptPath := "python/generate_prompt.py"
+	tokenDatabasePath := projectConfigPath.TokenDatabase
+
+	cmd := exec.Command(
+		pythonInterpreter,
+		scriptPath,
+		modelURL,
+		promptConfig.Model,
+		projectConfigPath.ProjectPath,
+		tokenDatabasePath,
+	)
+
+	output, err := cmd.CombinedOutput()
+
+	if err != nil {
+		log.Fatalf("GeneratePrompt failed to execute script: %v\nOutput: %s", err, string(output))
+
+		return "", err
+	}
+
+	return string(output), nil
+}
+
 func (a *App) DescriptionsToTokens(texts string) (string, error) {
 	trainingConfig, err := a.GetTrainingConfigValue()
 

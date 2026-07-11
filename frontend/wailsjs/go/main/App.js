@@ -14,6 +14,10 @@ export function EncodeImagesFromPath(arg1) {
   return window['go']['main']['App']['EncodeImagesFromPath'](arg1);
 }
 
+export function GeneratePrompt() {
+  return window['go']['main']['App']['GeneratePrompt']();
+}
+
 export function GetGenerateImageConfigValue() {
   return window['go']['main']['App']['GetGenerateImageConfigValue']();
 }

@@ -29,3 +29,8 @@ export const TrainingMode = {
     MODE_PROCESSING_TEXTS_TO_TOKENS: 4,
     MODE_FINISHED: 5
 }
+
+export const PromptMode = {
+    MODE_HOME: 11,
+    MODE_GENERATING_PROMPT: 12
+}
