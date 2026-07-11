@@ -10,6 +10,7 @@ type ProjectConfigPathStructure struct {
 
 type ConfigTraining struct {
 	Mode        string `json:"mode"`
+	Model       string `json:"model"`
 	URLLocal    string `json:"url_local"`
 	URLCloud    string `json:"url_cloud"`
 	APIKeyCloud string `json:"api_key_cloud"`
@@ -17,6 +18,7 @@ type ConfigTraining struct {
 
 type ConfigGeneratePrompt struct {
 	Mode        string `json:"mode"`
+	Model       string `json:"model"`
 	URLLocal    string `json:"url_local"`
 	URLCloud    string `json:"url_cloud"`
 	APIKeyCloud string `json:"api_key_cloud"`
@@ -24,6 +26,7 @@ type ConfigGeneratePrompt struct {
 
 type ConfigGenerateImage struct {
 	Mode        string `json:"mode"`
+	Model       string `json:"model"`
 	URLLocal    string `json:"url_local"`
 	URLCloud    string `json:"url_cloud"`
 	APIKeyCloud string `json:"api_key_cloud"`

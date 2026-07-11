@@ -155,9 +155,9 @@ def validate_rows(rows):
 
     return valid, errors
 
-def extract_tokens(model_url, project_path, token_database_path, text):
+def extract_tokens(model_url, model_name, project_path, token_database_path, text):
     payload_dict = {
-        "model": "gemma4:e4b",
+        "model": model_name,
         "messages": [
             {
                 "role": "system", 
@@ -226,11 +226,11 @@ def extract_tokens(model_url, project_path, token_database_path, text):
             writer = csv.DictWriter(fout, fieldnames=EXPECTED_COLS, extrasaction="ignore")
             writer.writerows(valid)
 
-    deduplicate_data(out_path, model_url, token_database_path)
+    deduplicate_data(out_path, model_url, model_name, token_database_path)
 
     return True
 
-def _llm_dedup_call(rows, model_url):
+def _llm_dedup_call(rows, model_url, model_name):
     if not rows:
         return rows
     
@@ -246,7 +246,7 @@ def _llm_dedup_call(rows, model_url):
     ]
 
     payload_dict = {
-        "model": "gemma4:e4b",
+        "model": model_name,
         "messages": [
             {
                 "role": "system", 
@@ -293,23 +293,23 @@ def _llm_dedup_call(rows, model_url):
     
     return surviving
 
-def _dedup_module(mod_rows, model_url, max_per_call):
+def _dedup_module(mod_rows, model_url, model_name, max_per_call):
     if len(mod_rows) <= max_per_call:
-        return _llm_dedup_call(mod_rows, model_url)
+        return _llm_dedup_call(mod_rows, model_url, model_name)
     
     chunks = [mod_rows[i:i+max_per_call] for i in range(0, len(mod_rows), max_per_call)]
 
     first_pass = []
 
     for chunk in chunks:
-        first_pass.extend(_llm_dedup_call(chunk, model_url))
+        first_pass.extend(_llm_dedup_call(chunk, model_url, model_name))
 
     if len(first_pass) > max_per_call:
-        return _llm_dedup_call(first_pass, model_url)
+        return _llm_dedup_call(first_pass, model_url, model_name)
     
     return first_pass
 
-def deduplicate_data(csv_path, model_url, token_database_path):
+def deduplicate_data(csv_path, model_url, model_name, token_database_path):
     rows = 0
 
     with open(csv_path, mode="r", encoding="utf-8-sig", newline="") as f:
@@ -325,7 +325,7 @@ def deduplicate_data(csv_path, model_url, token_database_path):
 
     for mod in sorted(mod_counts):
         mod_rows = [r for r in rows if r["module"] == mod]
-        deduped = _dedup_module(mod_rows, model_url, MAX_PER_CALL)
+        deduped = _dedup_module(mod_rows, model_url, model_name, MAX_PER_CALL)
         deduped_all.extend(deduped)
 
     by_mod = defaultdict(list)
@@ -450,13 +450,14 @@ def merge_to_csv(csv_path, token_database_path):
 
 def main():
     model_url = sys.argv[1]
-    project_path = sys.argv[2]
-    token_database_path = sys.argv[3]
-    text = sys.argv[4]
+    model_name = sys.argv[2]
+    project_path = sys.argv[3]
+    token_database_path = sys.argv[4]
+    text = sys.argv[5]
 
-    extract_tokens(model_url, project_path, token_database_path, text)
+    extract_tokens(model_url, model_name, project_path, token_database_path, text)
 
-    return "success!"
+    return True
 
 if __name__ == "__main__":
     main()

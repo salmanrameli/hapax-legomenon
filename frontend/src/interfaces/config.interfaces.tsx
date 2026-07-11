@@ -39,6 +39,7 @@ export interface IConfigGenerateImageParams {
 
 export interface IConfigTraining {
     Mode: string,
+    Model: string,
     URLLocal: string
     URLCloud: string
     APIKeyCloud: string
@@ -46,6 +47,7 @@ export interface IConfigTraining {
 
 export interface IConfigGeneratePrompt {
     Mode: string,
+    Model: string,
     URLLocal: string
     URLCloud: string
     APIKeyCloud: string
@@ -53,6 +55,7 @@ export interface IConfigGeneratePrompt {
 
 export interface IConfigGenerateImage {
     Mode: string,
+    Model: string,
     URLLocal: string
     URLCloud: string
     APIKeyCloud: string

@@ -5,10 +5,10 @@ import { IConfigTraining, ISettingTraining } from "../../interfaces/config.inter
 import { TrainingOptions } from "../../constants/mode";
 
 function SettingTraining(props: ISettingTraining) {
-    const [settingTraining, setSettingTraining] = useState<IConfigTraining>({Mode:"", URLLocal:"", URLCloud:"", APIKeyCloud:""})
+    const [settingTraining, setSettingTraining] = useState<IConfigTraining>({Mode:"", Model: "", URLLocal:"", URLCloud:"", APIKeyCloud:""})
 
     useEffect(() => {
-        setSettingTraining({Mode:props.data.Mode, URLLocal:props.data.URLLocal, URLCloud:props.data.URLCloud, APIKeyCloud:props.data.APIKeyCloud})
+        setSettingTraining({Mode:props.data.Mode, Model: props.data.Model, URLLocal:props.data.URLLocal, URLCloud:props.data.URLCloud, APIKeyCloud:props.data.APIKeyCloud})
     }, [props])
 
     const handleModeTrainingChange = (e:any) => {

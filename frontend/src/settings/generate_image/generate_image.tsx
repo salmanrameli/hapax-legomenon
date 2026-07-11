@@ -5,10 +5,10 @@ import { GenerateImageOptions } from "../../constants/mode";
 import { IConfigGenerateImage, ISettingGenerateImage } from "../../interfaces/config.interfaces";
 
 function SettingGenerateImage(props: ISettingGenerateImage) {
-    const [settingImage, setSettingImage] = useState<IConfigGenerateImage>({Mode:"", URLLocal:"", URLCloud:"", APIKeyCloud:""})
+    const [settingImage, setSettingImage] = useState<IConfigGenerateImage>({Mode:"", Model: "", URLLocal:"", URLCloud:"", APIKeyCloud:""})
 
     useEffect(() => {
-        setSettingImage({Mode:props.data.Mode, URLLocal:props.data.URLLocal, URLCloud:props.data.URLCloud, APIKeyCloud:props.data.APIKeyCloud})
+        setSettingImage({Mode:props.data.Mode, Model:props.data.Model, URLLocal:props.data.URLLocal, URLCloud:props.data.URLCloud, APIKeyCloud:props.data.APIKeyCloud})
     }, [props])
 
     const handleModeGenerateImageChange = (e:any) => {

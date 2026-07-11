@@ -5,12 +5,13 @@ import { GeneratePromptOptions } from '../../constants/mode';
 import { IConfigGeneratePrompt, IConfigGeneratePromptParams } from '../../interfaces/config.interfaces';
 
 function ConfigPrompt(props: IConfigGeneratePromptParams) {
-    const [promptConfig, setPromptConfig] = useState<IConfigGeneratePrompt>({Mode:props.defaultValue.Mode, URLLocal:props.defaultValue.URLLocal, URLCloud:"", APIKeyCloud:""})
+    const [promptConfig, setPromptConfig] = useState<IConfigGeneratePrompt>({Mode:props.defaultValue.Mode, Model:props.defaultValue.Model, URLLocal:props.defaultValue.URLLocal, URLCloud:props.defaultValue.URLCloud, APIKeyCloud:props.defaultValue.APIKeyCloud})
 
     useEffect(() => {
         if (props.defaultValue.URLLocal != "") {
             setPromptConfig({
                 Mode: props.defaultValue.Mode,
+                Model: props.defaultValue.Model,
                 URLLocal: props.defaultValue.URLLocal,
                 URLCloud: props.defaultValue.URLCloud,
                 APIKeyCloud: props.defaultValue.APIKeyCloud
@@ -23,7 +24,9 @@ function ConfigPrompt(props: IConfigGeneratePromptParams) {
     }, [promptConfig])
 
     function handleChange(key: string, value: string) {
-        if (key == "url_local") {
+        if (key == "model") {
+            setPromptConfig({...promptConfig, Model: value})
+        } else if (key == "url_local") {
             setPromptConfig({...promptConfig, URLLocal: value})
         } else if (key == "url_cloud") {
             setPromptConfig({...promptConfig, URLCloud: value})
@@ -53,6 +56,19 @@ function ConfigPrompt(props: IConfigGeneratePromptParams) {
                             Enter the URL or the IP address of the LLM running on your local machine
                         </Form.Text>
                     </Col>
+                    <Col className="col-12">
+                        <Form.Label htmlFor="prompt_config_local_model_label">Model Name</Form.Label>
+                        <Form.Control
+                            type="text"
+                            id="prompt_config_local_model_form_input"
+                            size={"lg"}
+                            value={promptConfig.Model}
+                            onChange={(e) => {handleChange("model", e.target.value)}}
+                        />
+                        <Form.Text id="prompt_config_local_model_form_input_info" muted>
+                            Enter the name of the model you will be using
+                        </Form.Text>
+                    </Col>
                 </>
                 :
                 <>
@@ -80,6 +96,19 @@ function ConfigPrompt(props: IConfigGeneratePromptParams) {
                         />
                         <Form.Text id="prompt_config_cloud_api_key_form_input_info" muted>
                             Enter your user's LLM API key
+                        </Form.Text>
+                    </Col>
+                    <Col className="col-12">
+                        <Form.Label htmlFor="prompt_config_cloud_model_label">Model Name</Form.Label>
+                        <Form.Control
+                            type="text"
+                            id="prompt_config_cloud_model_form_input"
+                            size={"lg"}
+                            value={promptConfig.Model}
+                            onChange={(e) => {handleChange("model", e.target.value)}}
+                        />
+                        <Form.Text id="prompt_config_cloud_model_form_input_info" muted>
+                            Enter the name of the model you will be using
                         </Form.Text>
                     </Col>
                 </>

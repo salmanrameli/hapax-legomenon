@@ -5,10 +5,10 @@ import { GeneratePromptOptions } from "../../constants/mode";
 import { IConfigGeneratePrompt, ISettingGeneratePrompt } from "../../interfaces/config.interfaces";
 
 function SettingGeneratePrompt(props: ISettingGeneratePrompt) {
-    const [settingPrompt, setSettingPrompt] = useState<IConfigGeneratePrompt>({Mode:"", URLLocal:"", URLCloud:"", APIKeyCloud:""})
+    const [settingPrompt, setSettingPrompt] = useState<IConfigGeneratePrompt>({Mode:"", Model:"", URLLocal:"", URLCloud:"", APIKeyCloud:""})
 
     useEffect(() => {
-        setSettingPrompt({Mode:props.data.Mode, URLLocal:props.data.URLLocal, URLCloud:props.data.URLCloud, APIKeyCloud:props.data.APIKeyCloud})
+        setSettingPrompt({Mode:props.data.Mode, Model:props.data.Model, URLLocal:props.data.URLLocal, URLCloud:props.data.URLCloud, APIKeyCloud:props.data.APIKeyCloud})
     }, [props])
 
     const handleModeGeneratePromptChange = (e:any) => {

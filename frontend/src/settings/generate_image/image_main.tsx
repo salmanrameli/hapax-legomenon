@@ -6,7 +6,7 @@ import ConfigImage from "./config_image";
 import { IConfigGenerateImage } from "../../interfaces/config.interfaces";
 
 function ImageMain() {
-    const [generateImageDetail, setGenerateImageDetail] = useState<IConfigGenerateImage>({Mode:"", URLLocal: "", URLCloud: "", APIKeyCloud:""})
+    const [generateImageDetail, setGenerateImageDetail] = useState<IConfigGenerateImage>({Mode:"", Model:"", URLLocal: "", URLCloud: "", APIKeyCloud:""})
     const [show, setShow] = useState<boolean>(false)
     const [disableSaveButton, setDisableSaveButton] = useState<boolean>(true)
 
@@ -16,6 +16,7 @@ function ImageMain() {
         GetGenerateImageConfigValue().then((value) => {
             setGenerateImageDetail({
                 Mode: value.mode,
+                Model: value.model,
                 URLLocal: value.url_local,
                 URLCloud: value.url_cloud,
                 APIKeyCloud: value.api_key_cloud
@@ -45,6 +46,7 @@ function ImageMain() {
     const handleChangeConfig = (data: IConfigGenerateImage) => {
         setGenerateImageDetail({
             ...generateImageDetail,
+            Model: data.Model,
             URLLocal: data.URLLocal,
             URLCloud: data.URLCloud,
             APIKeyCloud: data.APIKeyCloud
@@ -56,6 +58,7 @@ function ImageMain() {
     const handleSaveChanges = () => {        
         StoreGenerateImageConfigValue({
             mode: generateImageDetail.Mode,
+            model: generateImageDetail.Model,
             url_local: generateImageDetail.URLLocal,
             url_cloud: generateImageDetail.URLCloud,
             api_key_cloud: generateImageDetail.APIKeyCloud

@@ -21,6 +21,7 @@ def main():
     # import requests
 
     model_url = sys.argv[1] # sys.argv[0] is always the script name itself
+    model_name = sys.argv[2]
 
     base64_data = sys.stdin.read().strip()
 
@@ -42,7 +43,7 @@ def main():
     )
 
     payload_dict = {
-        "model": "gemma4:e4b",
+        "model": model_name,
         "messages": [
             {
                 "role": "system", 

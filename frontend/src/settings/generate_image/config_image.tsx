@@ -5,12 +5,13 @@ import { GenerateImageOptions } from '../../constants/mode';
 import { IConfigGenerateImage, IConfigGenerateImageParams } from '../../interfaces/config.interfaces';
 
 function ConfigImage(props: IConfigGenerateImageParams) {
-    const [imageConfig, setImageConfig] = useState<IConfigGenerateImage>({Mode:props.defaultValue.Mode, URLLocal:props.defaultValue.URLLocal, URLCloud:"", APIKeyCloud:""})
+    const [imageConfig, setImageConfig] = useState<IConfigGenerateImage>({Mode:props.defaultValue.Mode, Model:props.defaultValue.Model, URLLocal:props.defaultValue.URLLocal, URLCloud:props.defaultValue.URLCloud, APIKeyCloud:props.defaultValue.APIKeyCloud})
 
     useEffect(() => {
         if (props.defaultValue.URLLocal != "") {
             setImageConfig({
                 Mode: props.defaultValue.Mode,
+                Model: props.defaultValue.Model,
                 URLLocal: props.defaultValue.URLLocal,
                 URLCloud: props.defaultValue.URLCloud,
                 APIKeyCloud: props.defaultValue.APIKeyCloud
@@ -23,7 +24,9 @@ function ConfigImage(props: IConfigGenerateImageParams) {
     }, [imageConfig])
 
     function handleChange(key: string, value: string) {
-        if (key == "url_local") {
+        if (key == "model") {
+            setImageConfig({...imageConfig, Model: value})
+        } else if (key == "url_local") {
             setImageConfig({...imageConfig, URLLocal: value})
         } else if (key == "url_cloud") {
             setImageConfig({...imageConfig, URLCloud: value})
@@ -53,6 +56,19 @@ function ConfigImage(props: IConfigGenerateImageParams) {
                             Enter the URL or the IP address of the LLM running on your local machine
                         </Form.Text>
                     </Col>
+                    <Col className="col-12">
+                        <Form.Label htmlFor="image_config_local_model_label">Model Name</Form.Label>
+                        <Form.Control
+                            type="text"
+                            id="image_config_local_model_form_input"
+                            size={"lg"}
+                            value={imageConfig.Model}
+                            onChange={(e) => {handleChange("model", e.target.value)}}
+                        />
+                        <Form.Text id="image_config_local_model_form_input_info" muted>
+                            Enter the name of the model you will be using
+                        </Form.Text>
+                    </Col>
                 </>
                 :
                 <>
@@ -80,6 +96,19 @@ function ConfigImage(props: IConfigGenerateImageParams) {
                         />
                         <Form.Text id="image_config_cloud_api_key_form_input_info" muted>
                             Enter your user's LLM API key
+                        </Form.Text>
+                    </Col>
+                    <Col className="col-12">
+                        <Form.Label htmlFor="image_config_cloud_model_label">Model Name</Form.Label>
+                        <Form.Control
+                            type="text"
+                            id="image_config_cloud_model_form_input"
+                            size={"lg"}
+                            value={imageConfig.Model}
+                            onChange={(e) => {handleChange("model", e.target.value)}}
+                        />
+                        <Form.Text id="image_config_cloud_model_form_input_info" muted>
+                            Enter the name of the model you will be using
                         </Form.Text>
                     </Col>
                 </>

@@ -6,7 +6,7 @@ import ConfigTraining from "./config_training";
 import SettingTraining from "./train";
 
 function TrainingMain() {
-    const [trainingDetail, setTrainingDetail] = useState<IConfigTraining>({Mode:"", URLLocal: "", URLCloud: "", APIKeyCloud:""})
+    const [trainingDetail, setTrainingDetail] = useState<IConfigTraining>({Mode:"", Model: "", URLLocal: "", URLCloud: "", APIKeyCloud:""})
     const [show, setShow] = useState<boolean>(false)
     const [disableSaveButton, setDisableSaveButton] = useState<boolean>(true)
 
@@ -14,6 +14,7 @@ function TrainingMain() {
         GetTrainingConfigValue().then((value) => {
             setTrainingDetail({
                 Mode: value.mode,
+                Model: value.model,
                 URLLocal: value.url_local,
                 URLCloud: value.url_cloud,
                 APIKeyCloud: value.api_key_cloud
@@ -43,6 +44,7 @@ function TrainingMain() {
     const handleChangeConfig = (data: IConfigTraining) => {
         setTrainingDetail({
             ...trainingDetail,
+            Model: data.Model,
             URLLocal: data.URLLocal,
             URLCloud: data.URLCloud,
             APIKeyCloud: data.APIKeyCloud
@@ -54,6 +56,7 @@ function TrainingMain() {
     const handleSaveChanges = () => {        
         StoreTrainingConfigValue({
             mode: trainingDetail.Mode,
+            model: trainingDetail.Model,
             url_local: trainingDetail.URLLocal,
             url_cloud: trainingDetail.URLCloud,
             api_key_cloud: trainingDetail.APIKeyCloud

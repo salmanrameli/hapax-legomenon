@@ -136,6 +136,7 @@ func (a *App) configureTrainingConfig(path string) {
 
 		defaultConfigTraining := structs.ConfigTraining{
 			Mode:        constants.TrainImageMode.LocalValue(),
+			Model:       "",
 			URLLocal:    "",
 			URLCloud:    "",
 			APIKeyCloud: "",
@@ -170,6 +171,7 @@ func (a *App) configureGeneratePromptConfig(path string) {
 
 		defaultPromptConfig := structs.ConfigGeneratePrompt{
 			Mode:        constants.GeneratePromptMode.LocalValue(),
+			Model:       "",
 			URLLocal:    "",
 			URLCloud:    "",
 			APIKeyCloud: "",
@@ -204,6 +206,7 @@ func (a *App) configureGenerateImageConfig(path string) {
 
 		defaultImageConfig := structs.ConfigGenerateImage{
 			Mode:        constants.GenerateImageMode.LocalValue(),
+			Model:       "",
 			URLLocal:    "",
 			URLCloud:    "",
 			APIKeyCloud: "",
@@ -255,6 +258,7 @@ func (a *App) DescriptionsToTokens(texts string) (string, error) {
 		pythonInterpreter,
 		scriptPath,
 		modelURL,
+		trainingConfig.Model,
 		projectConfigPath.ProjectPath,
 		tokenDatabasePath,
 		texts,
@@ -303,6 +307,7 @@ func (a *App) StartImageTraining(imagePath string) (string, error) {
 		pythonInterpreter,
 		scriptPath,
 		modelURL, // this is the sys.argv[1] in python
+		trainingConfig.Model,
 	)
 
 	var stdinBuf bytes.Buffer
@@ -476,6 +481,7 @@ func (a *App) StoreTrainingConfigValue(value *structs.ConfigTraining) error {
 
 	err = encoder.Encode(&structs.ConfigTraining{
 		Mode:        value.Mode,
+		Model:       value.Model,
 		URLLocal:    value.URLLocal,
 		URLCloud:    value.URLCloud,
 		APIKeyCloud: value.APIKeyCloud,
@@ -515,6 +521,7 @@ func (a *App) StoreGeneratePromptConfigValue(value *structs.ConfigGeneratePrompt
 
 	err = encoder.Encode(&structs.ConfigGeneratePrompt{
 		Mode:        value.Mode,
+		Model:       value.Model,
 		URLLocal:    value.URLLocal,
 		URLCloud:    value.URLCloud,
 		APIKeyCloud: value.APIKeyCloud,
@@ -554,6 +561,7 @@ func (a *App) StoreGenerateImageConfigValue(value *structs.ConfigGenerateImage) 
 
 	err = encoder.Encode(&structs.ConfigGenerateImage{
 		Mode:        value.Mode,
+		Model:       value.Model,
 		URLLocal:    value.URLLocal,
 		URLCloud:    value.URLCloud,
 		APIKeyCloud: value.APIKeyCloud,
