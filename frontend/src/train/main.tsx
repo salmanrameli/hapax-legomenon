@@ -9,7 +9,7 @@ import { TrainingMode } from "../constants/mode";
 import Result from "./result";
 import { IImageAnalysisResponse } from "../interfaces/training.interfaces";
 
-function Main() {
+function TrainingMain() {
     const [imagePaths, setImagePaths] = useState<string[]>([])
     const [previews, setPreviews] = useState<string[]>([])
     const [mode, setMode] = useState<number>(TrainingMode.MODE_HOME)
@@ -99,17 +99,17 @@ function Main() {
                 return (
                     <Row>
                         <Col className="col-12">
-                            <div className="d-flex mt-2 gap-2 flex-wrap justify-content-center p-3 border border-dark border-2">
+                            <div className="d-flex mt-2 gap-2 flex-wrap justify-content-center p-3 border border-dark border-3">
                                 {previews.length == 0 ?
                                     <div className="d-flex justify-content-center align-items-center" style={{height: "400px", width:"100%"}}>
-                                        <Button size="lg" onClick={_ => handleOpenFileDialog()} variant="dark">Import Images</Button>
+                                        <Button size="lg" className="rounded-0" onClick={_ => handleOpenFileDialog()} variant="dark">Import Images</Button>
                                     </div>
                                     : 
                                     <CarouselPreview previews={previews} onRemoveImage={removeImage} />}
                             </div>
                         </Col>
                         <Col className={`${previews.length == 0 ? "d-none" : "col-12"}`}>
-                            <div className="d-flex mt-2 flex-wrap p-3 border border-dark border-2">
+                            <div className="d-flex mt-2 flex-wrap p-3 border border-dark border-3">
                                 <h3>Path:</h3>
                                 <ul className="w-100 mb-0">
                                     {imagePaths.map(item => 
@@ -120,7 +120,7 @@ function Main() {
                         </Col>
                         <Col className={`${previews.length == 0 ? "d-none" : "col-12"}`}>
                             <div className="d-flex flex-wrap p-3 justify-content-center align-items-center">
-                                <Button variant="success" onClick={startTraining}>Start Training <PlayFill /></Button>
+                                <Button variant="outline-dark border border-dark border-3 rounded-0" size="lg" className="rounded-0" onClick={startTraining}>Start Training <PlayFill /></Button>
                             </div>
                         </Col>
                     </Row>
@@ -144,4 +144,4 @@ function Main() {
     )
 }
 
-export default Main
+export default TrainingMain

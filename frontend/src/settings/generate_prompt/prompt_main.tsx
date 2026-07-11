@@ -5,7 +5,7 @@ import { GetGeneratePromptConfigValue, StoreGeneratePromptConfigValue } from "..
 import ConfigPrompt from "./config_prompt";
 import { IConfigGeneratePrompt } from "../../interfaces/config.interfaces";
 
-function PromptMain() {
+function PromptSettingMain() {
     const [generatePromptDetail, setGeneratePromptDetail] = useState<IConfigGeneratePrompt>({Mode:"", Model:"", URLLocal: "", URLCloud: "", APIKeyCloud:""})
     const [show, setShow] = useState<boolean>(false)
     const [disableSaveButton, setDisableSaveButton] = useState<boolean>(true)
@@ -74,10 +74,10 @@ function PromptMain() {
                 <div className="d-inline-flex w-100 mt-2 flex-wrap p-3 border border-dark border-2">
                     {show && <ConfigPrompt source={generatePromptDetail.Mode} defaultValue={generatePromptDetail!} onChangeConfig={handleChangeConfig} onSaveChanges={handleSaveChanges} />}
                 </div>
-                <Button variant="success" onClick={handleSaveChanges} disabled={disableSaveButton} className="mt-2">Save</Button>
+                <Button variant="success" onClick={handleSaveChanges} disabled={disableSaveButton} className="mt-2 rounded-0">Save</Button>
             </Col>
         </Row>
     )
 }
 
-export default PromptMain
+export default PromptSettingMain

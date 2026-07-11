@@ -5,7 +5,7 @@ import { GetGenerateImageConfigValue, StoreGenerateImageConfigValue } from "../.
 import ConfigImage from "./config_image";
 import { IConfigGenerateImage } from "../../interfaces/config.interfaces";
 
-function ImageMain() {
+function ImageSettingMain() {
     const [generateImageDetail, setGenerateImageDetail] = useState<IConfigGenerateImage>({Mode:"", Model:"", URLLocal: "", URLCloud: "", APIKeyCloud:""})
     const [show, setShow] = useState<boolean>(false)
     const [disableSaveButton, setDisableSaveButton] = useState<boolean>(true)
@@ -76,10 +76,10 @@ function ImageMain() {
                 <div className="d-inline-flex w-100 mt-2 flex-wrap p-3 border border-dark border-2">
                     {show && <ConfigImage source={generateImageDetail.Mode} defaultValue={generateImageDetail!} onChangeConfig={handleChangeConfig} onSaveChanges={handleSaveChanges} />}
                 </div>
-                <Button variant="success" onClick={handleSaveChanges} disabled={disableSaveButton} className="mt-2">Save</Button>
+                <Button variant="success" onClick={handleSaveChanges} disabled={disableSaveButton} className="mt-2 rounded-0">Save</Button>
             </Col>
         </Row>
     )
 }
 
-export default ImageMain
+export default ImageSettingMain

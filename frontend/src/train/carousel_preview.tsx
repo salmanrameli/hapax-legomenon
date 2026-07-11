@@ -14,7 +14,7 @@ function CarouselPreview(props: ICarouselPreviewProps) {
                 <Carousel.Item>
                     <img src={url} alt="Preview" className="w-100 justify-content-center d-inline-grid" style={{ maxHeight: "400px", objectFit: "cover" }} />
                     <Carousel.Caption>
-                        <Button variant="danger" onClick={() => props.onRemoveImage(url, index)}><Trash3Fill style={{marginTop:"-4px"}} /> Remove Image</Button>
+                        <Button variant="danger" className='rounded-0 border border-danger border-3' onClick={() => props.onRemoveImage(url, index)}><Trash3Fill style={{marginTop:"-4px"}} /> Remove Image</Button>
                     </Carousel.Caption>
                 </Carousel.Item>
             ))}
