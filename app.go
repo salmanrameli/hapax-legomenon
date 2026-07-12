@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"time"
 	"ubiquitous-funicular/constants"
 	"ubiquitous-funicular/structs"
 
@@ -32,7 +33,7 @@ func (a *App) getProjectConfigPaths() (*structs.ProjectConfigPathStructure, erro
 	userConfigDir, err := os.UserConfigDir()
 
 	if err != nil {
-		log.Fatalf("unable to locate user config directory: %s", err)
+		log.Fatalf("unable to locate user config directory: %s\n", err)
 
 		return &structs.ProjectConfigPathStructure{}, err
 	}
@@ -60,7 +61,7 @@ func (a *App) startup(ctx context.Context) {
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
-		log.Fatalf("startup getProjectConfigPaths error: %s", err)
+		log.Fatalf("startup getProjectConfigPaths error: %s\n", err)
 
 		return
 	}
@@ -87,7 +88,7 @@ func (a *App) checkProjectDir(path string) {
 
 	if os.IsNotExist(err) {
 		if err := os.Mkdir(path, os.ModePerm); err != nil {
-			log.Fatalf("app checkProjectDir error in creating application project directory: %s", err)
+			log.Fatalf("app checkProjectDir error in creating application project directory: %s\n", err)
 
 			return
 		}
@@ -100,7 +101,7 @@ func (a *App) GetAvailableLocalModels() (*structs.LocalModelResponseArray, error
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 
 	if err != nil {
-		log.Fatalf("GetAvailableLocalModels error creating request: %v", err)
+		log.Fatalf("GetAvailableLocalModels error creating request: %v\n", err)
 	}
 
 	req.Header.Add("Accept", "application/json")
@@ -111,7 +112,7 @@ func (a *App) GetAvailableLocalModels() (*structs.LocalModelResponseArray, error
 	resp, err := client.Do(req)
 
 	if err != nil {
-		log.Fatalf("GetAvailableLocalModels error sending request: %v", err)
+		log.Fatalf("GetAvailableLocalModels error sending request: %v\n", err)
 
 		return &structs.LocalModelResponseArray{}, err
 	}
@@ -121,7 +122,7 @@ func (a *App) GetAvailableLocalModels() (*structs.LocalModelResponseArray, error
 	body, err := io.ReadAll(resp.Body)
 
 	if err != nil {
-		log.Fatalf("GetAvailableLocalModels error reading response: %v", err)
+		log.Fatalf("GetAvailableLocalModels error reading response: %v\n", err)
 
 		return &structs.LocalModelResponseArray{}, err
 	}
@@ -131,7 +132,7 @@ func (a *App) GetAvailableLocalModels() (*structs.LocalModelResponseArray, error
 	err = json.Unmarshal(body, &result)
 
 	if err != nil {
-		log.Fatalf("GetAvailableLocalModels Failed to unmarshal JSON: %v", err)
+		log.Fatalf("GetAvailableLocalModels Failed to unmarshal JSON: %v\n", err)
 	}
 
 	return &structs.LocalModelResponseArray{
@@ -146,7 +147,7 @@ func (a *App) configureTokenDatabaseFile(path string) {
 		file, err := os.Create(path)
 
 		if err != nil {
-			log.Fatalf("app configureTokenDatabaseFile error in creating projects token database file: %s", err)
+			log.Fatalf("app configureTokenDatabaseFile error in creating projects token database file: %s\n", err)
 
 			return
 		}
@@ -160,7 +161,7 @@ func (a *App) configureTokenDatabaseFile(path string) {
 		header := []string{"tier", "ok", "module", "sub_module", "token_concept", "surabaya_specific", "poids_structurel", "xeno_index"}
 
 		if err := writer.Write(header); err != nil {
-			log.Fatalf("app configureTokenDatabaseFile error in writing token databse header: %s", err)
+			log.Fatalf("app configureTokenDatabaseFile error in writing token databse header: %s\n", err)
 
 			return
 		}
@@ -174,7 +175,7 @@ func (a *App) configureTrainingConfig(path string) {
 		configTraining, err := os.Create(path)
 
 		if err != nil {
-			log.Fatalf("app configureTrainingConfig error in creating projects training config file: %s", err)
+			log.Fatalf("app configureTrainingConfig error in creating projects training config file: %s\n", err)
 
 			return
 		}
@@ -195,7 +196,7 @@ func (a *App) configureTrainingConfig(path string) {
 		err = encoder.Encode(defaultConfigTraining)
 
 		if err != nil {
-			log.Fatalf("app configureTrainingConfig unable to write default training config: %s", err)
+			log.Fatalf("app configureTrainingConfig unable to write default training config: %s\n", err)
 
 			return
 		}
@@ -209,7 +210,7 @@ func (a *App) configureGeneratePromptConfig(path string) {
 		configPrompt, err := os.Create(path)
 
 		if err != nil {
-			log.Fatalf("app configureGeneratePromptConfig error in creating projects generate prompt config file: %s", err)
+			log.Fatalf("app configureGeneratePromptConfig error in creating projects generate prompt config file: %s\n", err)
 
 			return
 		}
@@ -230,7 +231,7 @@ func (a *App) configureGeneratePromptConfig(path string) {
 		err = encoder.Encode(defaultPromptConfig)
 
 		if err != nil {
-			log.Fatalf("app configureGeneratePromptConfig unable to write default generate prompt config: %s", err)
+			log.Fatalf("app configureGeneratePromptConfig unable to write default generate prompt config: %s\n", err)
 
 			return
 		}
@@ -244,7 +245,7 @@ func (a *App) configureGenerateImageConfig(path string) {
 		configImage, err := os.Create(path)
 
 		if err != nil {
-			log.Fatalf("app configureGenerateImageConfig error in creating projects generate image config file: %s", err)
+			log.Fatalf("app configureGenerateImageConfig error in creating projects generate image config file: %s\n", err)
 
 			return
 		}
@@ -265,7 +266,7 @@ func (a *App) configureGenerateImageConfig(path string) {
 		err = encoder.Encode(defaultImageConfig)
 
 		if err != nil {
-			log.Fatalf("app configureGenerateImageConfig unable to write default application generate image config: %s", err)
+			log.Fatalf("app configureGenerateImageConfig unable to write default application generate image config: %s\n", err)
 
 			return
 		}
@@ -276,7 +277,7 @@ func (a *App) GeneratePrompt() (string, error) {
 	promptConfig, err := a.GetGeneratePromptConfigValue()
 
 	if err != nil {
-		log.Fatalf("GeneratePrompt GetTrainingConfigValue error: %v", err)
+		log.Fatalf("GeneratePrompt GetTrainingConfigValue error: %v\n", err)
 
 		return "", err
 	}
@@ -284,7 +285,7 @@ func (a *App) GeneratePrompt() (string, error) {
 	var modelURL string
 
 	if promptConfig.Mode == constants.TrainImageMode.LocalValue() {
-		modelURL = promptConfig.URLLocal
+		modelURL = promptConfig.URLLocal + constants.SUFFIX_LOCAL_MODEL_TEXT
 	} else {
 		modelURL = promptConfig.URLCloud
 	}
@@ -292,7 +293,7 @@ func (a *App) GeneratePrompt() (string, error) {
 	projectConfigPath, err := a.getProjectConfigPaths()
 
 	if err != nil {
-		log.Fatalf("GeneratePrompt getProjectConfigPaths error: %v", err)
+		log.Fatalf("GeneratePrompt getProjectConfigPaths error: %v\n", err)
 
 		return "", err
 	}
@@ -313,7 +314,7 @@ func (a *App) GeneratePrompt() (string, error) {
 	output, err := cmd.CombinedOutput()
 
 	if err != nil {
-		log.Fatalf("GeneratePrompt failed to execute script: %v\nOutput: %s", err, string(output))
+		log.Fatalf("GeneratePrompt failed to execute script: %v\nOutput: %s\n", err, string(output))
 
 		return "", err
 	}
@@ -321,11 +322,146 @@ func (a *App) GeneratePrompt() (string, error) {
 	return string(output), nil
 }
 
+func (a *App) GenerateImage(prompt string) (string, error) {
+	imageConfig, err := a.GetGenerateImageConfigValue()
+
+	if err != nil {
+		log.Fatalf("GenerateImage GetGenerateImageConfigValue error: %v\n", err)
+
+		return "", err
+	}
+
+	var modelURL string
+
+	if imageConfig.Mode == constants.TrainImageMode.LocalValue() {
+		modelURL = imageConfig.URLLocal + constants.SUFFIX_LOCAL_MODEL_IMAGE
+	} else {
+		modelURL = imageConfig.URLCloud
+	}
+
+	projectConfigPath, err := a.getProjectConfigPaths()
+
+	if err != nil {
+		log.Fatalf("GenerateImage getProjectConfigPaths error: %v\n", err)
+
+		return "", err
+	}
+
+	reqBody := &structs.ImageGenRequest{
+		Model:  imageConfig.Model,
+		Prompt: prompt,
+		Stream: false,
+		Options: map[string]interface{}{
+			"width":  512,
+			"height": 512,
+			"steps":  40,
+		},
+	}
+
+	jsonData, err := json.Marshal(reqBody)
+
+	if err != nil {
+		log.Fatalf("GenerateImage error marshaling request: %v\n", err)
+
+		return "", err
+	}
+
+	resp, err := http.Post(modelURL, "application/json", bytes.NewBuffer(jsonData))
+
+	if err != nil {
+		log.Fatalf("GenerateImage API call failed: %v\n", err)
+
+		return "", err
+	}
+
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+
+	if err != nil {
+		fmt.Printf("GenerateImage error reading response body: %v\n", err)
+
+		return "", err
+	}
+
+	var result *structs.ImageGenResponse
+
+	if err := json.Unmarshal(body, &result); err != nil {
+		log.Fatalf("GenerateImage error unmarshaling response JSON: %v\n", err)
+
+		return "", err
+	}
+
+	if result.Image == "" {
+		log.Fatalf("GenerateImage no image returned")
+
+		return "", nil
+	}
+
+	return result.Image, nil
+
+	imgBytes, err := base64.StdEncoding.DecodeString(result.Image)
+
+	if err != nil {
+		fmt.Println("Decode error:", err)
+
+		return "", err
+	}
+
+	err = os.WriteFile(projectConfigPath.ProjectPath+"/output.png", imgBytes, 0644)
+
+	if err == nil {
+		fmt.Println("Image saved successfully as output.png!")
+	}
+
+	return "", nil
+}
+
+func (a *App) SaveImage(base64Str string) error {
+	timestamp := time.Now().Format("20060102_150405")
+
+	defaultFilename := fmt.Sprintf("generate_image_%s.png", timestamp)
+
+	filePath, err := runtime.SaveFileDialog(a.ctx, runtime.SaveDialogOptions{
+		Title:           "Save Image",
+		DefaultFilename: defaultFilename,
+		Filters: []runtime.FileFilter{
+			{DisplayName: "PNG Image (*.png)", Pattern: "*.png"},
+		},
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if filePath == "" {
+		return nil
+	}
+
+	imgBytes, err := base64.StdEncoding.DecodeString(base64Str)
+
+	if err != nil {
+		log.Fatalf("SaveImage failed to decode base64: %v\n", err)
+
+		return err
+	}
+
+	err = os.WriteFile(filePath, imgBytes, 0644)
+
+	if err != nil {
+		log.Fatalf("SaveImage failed to save file: %v\n", err)
+
+		return err
+	}
+
+	return nil
+}
+
 func (a *App) DescriptionsToTokens(texts string) (string, error) {
 	trainingConfig, err := a.GetTrainingConfigValue()
 
 	if err != nil {
-		log.Fatalf("DescriptionsToTokens GetTrainingConfigValue error: %v", err)
+		log.Fatalf("DescriptionsToTokens GetTrainingConfigValue error: %v\n", err)
 
 		return "", err
 	}
@@ -333,7 +469,7 @@ func (a *App) DescriptionsToTokens(texts string) (string, error) {
 	var modelURL string
 
 	if trainingConfig.Mode == constants.TrainImageMode.LocalValue() {
-		modelURL = trainingConfig.URLLocal
+		modelURL = trainingConfig.URLLocal + constants.SUFFIX_LOCAL_MODEL_TEXT
 	} else {
 		modelURL = trainingConfig.URLCloud
 	}
@@ -341,7 +477,7 @@ func (a *App) DescriptionsToTokens(texts string) (string, error) {
 	projectConfigPath, err := a.getProjectConfigPaths()
 
 	if err != nil {
-		log.Fatalf("DescriptionsToTokens getProjectConfigPaths error: %v", err)
+		log.Fatalf("DescriptionsToTokens getProjectConfigPaths error: %v\n", err)
 
 		return "", err
 	}
@@ -363,7 +499,7 @@ func (a *App) DescriptionsToTokens(texts string) (string, error) {
 	output, err := cmd.CombinedOutput()
 
 	if err != nil {
-		log.Fatalf("DescriptionsToTokens failed to execute script: %v\nOutput: %s", err, string(output))
+		log.Fatalf("DescriptionsToTokens failed to execute script: %v\nOutput: %s\n", err, string(output))
 
 		return "", err
 	}
@@ -375,7 +511,7 @@ func (a *App) StartImageTraining(imagePath string) (string, error) {
 	trainingConfig, err := a.GetTrainingConfigValue()
 
 	if err != nil {
-		log.Fatalf("StartImageTraining GetTrainingConfigValue error: %v", err)
+		log.Fatalf("StartImageTraining GetTrainingConfigValue error: %v\n", err)
 
 		return "", err
 	}
@@ -383,7 +519,7 @@ func (a *App) StartImageTraining(imagePath string) (string, error) {
 	var modelURL string
 
 	if trainingConfig.Mode == constants.TrainImageMode.LocalValue() {
-		modelURL = trainingConfig.URLLocal
+		modelURL = trainingConfig.URLLocal + constants.SUFFIX_LOCAL_MODEL_TEXT
 	} else {
 		modelURL = trainingConfig.URLCloud
 	}
@@ -394,7 +530,7 @@ func (a *App) StartImageTraining(imagePath string) (string, error) {
 	result, err := a.EncodeImagesFromPath([]string{imagePath})
 
 	if err != nil {
-		log.Fatalf("StartImageTraining EncodeImagesFromPath error: %v", err)
+		log.Fatalf("StartImageTraining EncodeImagesFromPath error: %v\n", err)
 
 		return "", err
 	}
@@ -413,7 +549,7 @@ func (a *App) StartImageTraining(imagePath string) (string, error) {
 	output, err := cmd.CombinedOutput()
 
 	if err != nil {
-		log.Fatalf("StartImageTraining failed to execute script: %v\nOutput: %s", err, string(output))
+		log.Fatalf("StartImageTraining failed to execute script: %v\nOutput: %s\n", err, string(output))
 
 		return "", err
 	}
@@ -436,7 +572,7 @@ func (a *App) SelectImages() ([]string, error) {
 	})
 
 	if err != nil {
-		log.Fatalf("unable to read selected images: %s", err)
+		log.Fatalf("unable to read selected images: %s\n", err)
 
 		return nil, err
 	}
@@ -451,7 +587,7 @@ func (a *App) EncodeImagesFromPath(paths []string) ([]string, error) {
 		data, err := os.ReadFile(path)
 
 		if err != nil {
-			log.Fatalf("unable to read selected images from the given paths: %s", err)
+			log.Fatalf("EncodeImagesFromPath unable to read selected images from the given paths: %s\n", err)
 
 			return nil, err
 		}
@@ -466,7 +602,7 @@ func (a *App) GetTrainingConfigValue() (*structs.ConfigTraining, error) {
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
-		log.Fatalf("GetTrainingConfigValue getProjectConfigPaths error getting directory: %v", err)
+		log.Fatalf("GetTrainingConfigValue getProjectConfigPaths error getting directory: %v\n", err)
 
 		return &structs.ConfigTraining{}, err
 	}
@@ -474,7 +610,7 @@ func (a *App) GetTrainingConfigValue() (*structs.ConfigTraining, error) {
 	content, err := os.ReadFile(projectDetail.ConfigTraining)
 
 	if err != nil {
-		log.Fatalf("GetTrainingConfigValue error opening file: %v", err)
+		log.Fatalf("GetTrainingConfigValue error opening file: %v\n", err)
 
 		return &structs.ConfigTraining{}, err
 	}
@@ -484,7 +620,7 @@ func (a *App) GetTrainingConfigValue() (*structs.ConfigTraining, error) {
 	err = json.Unmarshal(content, &config)
 
 	if err != nil {
-		log.Fatalf("GetTrainingConfigValue error parsing JSON: %v", err)
+		log.Fatalf("GetTrainingConfigValue error parsing JSON: %v\n", err)
 
 		return &structs.ConfigTraining{}, err
 	}
@@ -496,7 +632,7 @@ func (a *App) GetGeneratePromptConfigValue() (*structs.ConfigGeneratePrompt, err
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
-		log.Fatalf("GetGeneratePromptConfigValue getProjectConfigPaths error getting directory: %v", err)
+		log.Fatalf("GetGeneratePromptConfigValue getProjectConfigPaths error getting directory: %v\n", err)
 
 		return &structs.ConfigGeneratePrompt{}, err
 	}
@@ -504,7 +640,7 @@ func (a *App) GetGeneratePromptConfigValue() (*structs.ConfigGeneratePrompt, err
 	content, err := os.ReadFile(projectDetail.ConfigGeneratePrompt)
 
 	if err != nil {
-		log.Fatalf("GetGeneratePromptConfigValue error opening file: %v", err)
+		log.Fatalf("GetGeneratePromptConfigValue error opening file: %v\n", err)
 
 		return &structs.ConfigGeneratePrompt{}, err
 	}
@@ -514,7 +650,7 @@ func (a *App) GetGeneratePromptConfigValue() (*structs.ConfigGeneratePrompt, err
 	err = json.Unmarshal(content, &config)
 
 	if err != nil {
-		log.Fatalf(" GetGeneratePromptConfigValue error parsing JSON: %v", err)
+		log.Fatalf(" GetGeneratePromptConfigValue error parsing JSON: %v\n", err)
 
 		return &structs.ConfigGeneratePrompt{}, err
 	}
@@ -526,7 +662,7 @@ func (a *App) GetGenerateImageConfigValue() (*structs.ConfigGenerateImage, error
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
-		log.Fatalf("GetGenerateImageConfigValue getProjectConfigPaths error getting directory: %v", err)
+		log.Fatalf("GetGenerateImageConfigValue getProjectConfigPaths error getting directory: %v\n", err)
 
 		return &structs.ConfigGenerateImage{}, err
 	}
@@ -534,7 +670,7 @@ func (a *App) GetGenerateImageConfigValue() (*structs.ConfigGenerateImage, error
 	content, err := os.ReadFile(projectDetail.ConfigGenerateImage)
 
 	if err != nil {
-		log.Fatalf("GetGenerateImageConfigValue error opening file: %v", err)
+		log.Fatalf("GetGenerateImageConfigValue error opening file: %v\n", err)
 
 		return &structs.ConfigGenerateImage{}, err
 	}
@@ -544,7 +680,7 @@ func (a *App) GetGenerateImageConfigValue() (*structs.ConfigGenerateImage, error
 	err = json.Unmarshal(content, &config)
 
 	if err != nil {
-		log.Fatalf("GetGenerateImageConfigValue rror parsing JSON: %v", err)
+		log.Fatalf("GetGenerateImageConfigValue rror parsing JSON: %v\n", err)
 
 		return &structs.ConfigGenerateImage{}, err
 	}
@@ -556,7 +692,7 @@ func (a *App) StoreTrainingConfigValue(value *structs.ConfigTraining) error {
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
-		log.Fatalf("StoreTrainingConfigValue getProjectConfigPaths error getting directory: %v", err)
+		log.Fatalf("StoreTrainingConfigValue getProjectConfigPaths error getting directory: %v\n", err)
 
 		return err
 	}
@@ -564,7 +700,7 @@ func (a *App) StoreTrainingConfigValue(value *structs.ConfigTraining) error {
 	file, err := os.OpenFile(projectDetail.ConfigTraining, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 
 	if err != nil {
-		log.Fatalf("StoreTrainingConfigValue failed to open file: %v", err)
+		log.Fatalf("StoreTrainingConfigValue failed to open file: %v\n", err)
 
 		return err
 	}
@@ -584,7 +720,7 @@ func (a *App) StoreTrainingConfigValue(value *structs.ConfigTraining) error {
 	})
 
 	if err != nil {
-		log.Fatalf("StoreTrainingConfigValue failed to write JSON: %v", err)
+		log.Fatalf("StoreTrainingConfigValue failed to write JSON: %v\n", err)
 
 		return err
 	}
@@ -596,7 +732,7 @@ func (a *App) StoreGeneratePromptConfigValue(value *structs.ConfigGeneratePrompt
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
-		log.Fatalf("StoreGeneratePromptConfigValue getProjectConfigPaths error getting directory: %v", err)
+		log.Fatalf("StoreGeneratePromptConfigValue getProjectConfigPaths error getting directory: %v\n", err)
 
 		return err
 	}
@@ -604,7 +740,7 @@ func (a *App) StoreGeneratePromptConfigValue(value *structs.ConfigGeneratePrompt
 	file, err := os.OpenFile(projectDetail.ConfigGeneratePrompt, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 
 	if err != nil {
-		log.Fatalf("StoreGeneratePromptConfigValue failed to open file: %v", err)
+		log.Fatalf("StoreGeneratePromptConfigValue failed to open file: %v\n", err)
 
 		return err
 	}
@@ -624,7 +760,7 @@ func (a *App) StoreGeneratePromptConfigValue(value *structs.ConfigGeneratePrompt
 	})
 
 	if err != nil {
-		log.Fatalf("StoreGeneratePromptConfigValue failed to write JSON: %v", err)
+		log.Fatalf("StoreGeneratePromptConfigValue failed to write JSON: %v\n", err)
 
 		return err
 	}
@@ -636,7 +772,7 @@ func (a *App) StoreGenerateImageConfigValue(value *structs.ConfigGenerateImage) 
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
-		log.Fatalf("StoreGenerateImageConfigValue getProjectConfigPaths error getting directory: %v", err)
+		log.Fatalf("StoreGenerateImageConfigValue getProjectConfigPaths error getting directory: %v\n", err)
 
 		return err
 	}
@@ -644,7 +780,7 @@ func (a *App) StoreGenerateImageConfigValue(value *structs.ConfigGenerateImage) 
 	file, err := os.OpenFile(projectDetail.ConfigGenerateImage, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 
 	if err != nil {
-		log.Fatalf("StoreGenerateImageConfigValue failed to open file: %v", err)
+		log.Fatalf("StoreGenerateImageConfigValue failed to open file: %v\n", err)
 
 		return err
 	}
@@ -664,7 +800,7 @@ func (a *App) StoreGenerateImageConfigValue(value *structs.ConfigGenerateImage) 
 	})
 
 	if err != nil {
-		log.Fatalf("StoreGenerateImageConfigValue failed to write JSON: %v", err)
+		log.Fatalf("StoreGenerateImageConfigValue failed to write JSON: %v\n", err)
 
 		return err
 	}

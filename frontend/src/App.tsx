@@ -13,7 +13,6 @@ import ImageSettingMain from './settings/generate_image/image_main';
 import TrainingMain from './train/main';
 import { Dump, GetAvailableLocalModels, GetGenerateImageConfigValue, GetGeneratePromptConfigValue, GetTrainingConfigValue } from '../wailsjs/go/main/App';
 import { IConfigGenerateImage, IConfigGeneratePrompt, IConfigTraining } from './interfaces/config.interfaces';
-import { IAvailableModelList } from './interfaces/models.interfaces';
 
 function App() {
     const [mode, setMode] = useState<number>(Mode.MODE_HOME)

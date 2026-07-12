@@ -8,6 +8,8 @@ export function Dump(arg1:any):Promise<void>;
 
 export function EncodeImagesFromPath(arg1:Array<string>):Promise<Array<string>>;
 
+export function GenerateImage(arg1:string):Promise<string>;
+
 export function GeneratePrompt():Promise<string>;
 
 export function GetAvailableLocalModels():Promise<structs.LocalModelResponseArray>;
@@ -17,6 +19,8 @@ export function GetGenerateImageConfigValue():Promise<structs.ConfigGenerateImag
 export function GetGeneratePromptConfigValue():Promise<structs.ConfigGeneratePrompt>;
 
 export function GetTrainingConfigValue():Promise<structs.ConfigTraining>;
+
+export function SaveImage(arg1:string):Promise<void>;
 
 export function SelectImages():Promise<Array<string>>;
 

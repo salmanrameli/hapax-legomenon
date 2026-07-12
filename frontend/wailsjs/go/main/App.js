@@ -14,6 +14,10 @@ export function EncodeImagesFromPath(arg1) {
   return window['go']['main']['App']['EncodeImagesFromPath'](arg1);
 }
 
+export function GenerateImage(arg1) {
+  return window['go']['main']['App']['GenerateImage'](arg1);
+}
+
 export function GeneratePrompt() {
   return window['go']['main']['App']['GeneratePrompt']();
 }
@@ -32,6 +36,10 @@ export function GetGeneratePromptConfigValue() {
 
 export function GetTrainingConfigValue() {
   return window['go']['main']['App']['GetTrainingConfigValue']();
+}
+
+export function SaveImage(arg1) {
+  return window['go']['main']['App']['SaveImage'](arg1);
 }
 
 export function SelectImages() {

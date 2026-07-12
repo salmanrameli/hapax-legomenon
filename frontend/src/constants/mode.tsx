@@ -30,7 +30,8 @@ export const TrainingMode = {
     MODE_FINISHED: 5
 }
 
-export const PromptMode = {
-    MODE_HOME: 11,
-    MODE_GENERATING_PROMPT: 12
+export const GenerateMode = {
+    MODE_DEFAULT: 11,
+    MODE_GENERATING_PROMPT: 12,
+    MODE_GENERATING_IMAGE: 13
 }
