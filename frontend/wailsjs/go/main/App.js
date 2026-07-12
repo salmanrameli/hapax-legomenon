@@ -18,6 +18,10 @@ export function GeneratePrompt() {
   return window['go']['main']['App']['GeneratePrompt']();
 }
 
+export function GetAvailableLocalModels() {
+  return window['go']['main']['App']['GetAvailableLocalModels']();
+}
+
 export function GetGenerateImageConfigValue() {
   return window['go']['main']['App']['GetGenerateImageConfigValue']();
 }

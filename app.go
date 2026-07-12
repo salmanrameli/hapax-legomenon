@@ -7,7 +7,9 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"ubiquitous-funicular/constants"
@@ -90,6 +92,51 @@ func (a *App) checkProjectDir(path string) {
 			return
 		}
 	}
+}
+
+func (a *App) GetAvailableLocalModels() (*structs.LocalModelResponseArray, error) {
+	url := "http://localhost:11434/api/tags"
+
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+
+	if err != nil {
+		log.Fatalf("GetAvailableLocalModels error creating request: %v", err)
+	}
+
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("User-Agent", "Go-HTTP-Client")
+
+	client := &http.Client{}
+
+	resp, err := client.Do(req)
+
+	if err != nil {
+		log.Fatalf("GetAvailableLocalModels error sending request: %v", err)
+
+		return &structs.LocalModelResponseArray{}, err
+	}
+
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+
+	if err != nil {
+		log.Fatalf("GetAvailableLocalModels error reading response: %v", err)
+
+		return &structs.LocalModelResponseArray{}, err
+	}
+
+	var result *structs.LocalModelResponseArray
+
+	err = json.Unmarshal(body, &result)
+
+	if err != nil {
+		log.Fatalf("GetAvailableLocalModels Failed to unmarshal JSON: %v", err)
+	}
+
+	return &structs.LocalModelResponseArray{
+		Models: result.Models,
+	}, nil
 }
 
 func (a *App) configureTokenDatabaseFile(path string) {

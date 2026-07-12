@@ -42,3 +42,12 @@ type TokenDatabase struct {
 	PoidsStructurel  string `json:"poids_structurel"`
 	XenoIndex        string `json:"xeno_index"`
 }
+
+type LocalModelResponseItem struct {
+	Model string `json:"model"`
+	Name  string `json:"name"`
+}
+
+type LocalModelResponseArray struct {
+	Models []LocalModelResponseItem `json:"models"`
+}

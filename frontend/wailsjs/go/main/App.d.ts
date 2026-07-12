@@ -10,6 +10,8 @@ export function EncodeImagesFromPath(arg1:Array<string>):Promise<Array<string>>;
 
 export function GeneratePrompt():Promise<string>;
 
+export function GetAvailableLocalModels():Promise<structs.LocalModelResponseArray>;
+
 export function GetGenerateImageConfigValue():Promise<structs.ConfigGenerateImage>;
 
 export function GetGeneratePromptConfigValue():Promise<structs.ConfigGeneratePrompt>;

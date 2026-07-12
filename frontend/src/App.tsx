@@ -11,8 +11,9 @@ import TrainingSettingMain from './settings/training/train_main';
 import PromptSettingMain from './settings/generate_prompt/prompt_main';
 import ImageSettingMain from './settings/generate_image/image_main';
 import TrainingMain from './train/main';
-import { GetGenerateImageConfigValue, GetGeneratePromptConfigValue, GetTrainingConfigValue } from '../wailsjs/go/main/App';
+import { Dump, GetAvailableLocalModels, GetGenerateImageConfigValue, GetGeneratePromptConfigValue, GetTrainingConfigValue } from '../wailsjs/go/main/App';
 import { IConfigGenerateImage, IConfigGeneratePrompt, IConfigTraining } from './interfaces/config.interfaces';
+import { IAvailableModelList } from './interfaces/models.interfaces';
 
 function App() {
     const [mode, setMode] = useState<number>(Mode.MODE_HOME)
@@ -21,12 +22,17 @@ function App() {
     const [imageModeConfigData, setImageConfigData] = useState<IConfigGenerateImage>()
     const [disableTrainingButton, setDisableTrainingButton] = useState<boolean>(true)
     const [disableGenerateButton, setDisableGenerateButton] = useState<boolean>(true)
+    // const [availableModels, setAvailableModels] = useState<IAvailableModelList>()
 
     useEffect(() => {
         loadData()
     }, [])
 
     function loadData() {
+        // GetAvailableLocalModels().then((value) => {
+        //     setAvailableModels(value)
+        // })
+
         GetTrainingConfigValue().then((value) => {
             if (value) {
                 setTrainingConfigData({
