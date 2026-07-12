@@ -43,7 +43,7 @@ function GeneratePromptMain() {
 
     function saveImage() {
         if (image !== undefined) {
-            SaveImage(image).then((value) => {
+            SaveImage(image, prompt).then((value) => {
                 setMode(GenerateMode.MODE_DEFAULT)
             })
         }
@@ -65,7 +65,7 @@ function GeneratePromptMain() {
                         &nbsp;
                         <Button variant="danger" size="lg" className="border border-danger border-3 rounded-0" disabled={mode == GenerateMode.MODE_GENERATING_PROMPT || mode == GenerateMode.MODE_GENERATING_IMAGE || prompt == "" || prompt == undefined} onClick={generateImage}>{mode == GenerateMode.MODE_GENERATING_IMAGE ? BTN_IMAGE_GENERATING_TEXT : BTN_IMAGE_DEFAULT_TEXT} {mode == GenerateMode.MODE_GENERATING_IMAGE ? <Spinner animation="border" variant="light" style={{ width: '1.5rem', height: '1.5rem', borderWidth: '0.3em' }} /> : <PlayFill />}</Button>
                         &nbsp;
-                        <Button variant="danger" size="lg" className="border border-danger border-3 rounded-0" disabled={image == ""} onClick={saveImage}>Save Image <FileEarmarkArrowDownFill style={{marginTop: "-3px"}} /></Button>
+                        <Button variant="danger" size="lg" className="border border-danger border-3 rounded-0" disabled={image == ""} onClick={saveImage}>Save Result <FileEarmarkArrowDownFill style={{marginTop: "-3px"}} /></Button>
                     </div>
                 </Col>
                 {

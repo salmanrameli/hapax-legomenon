@@ -38,8 +38,8 @@ export function GetTrainingConfigValue() {
   return window['go']['main']['App']['GetTrainingConfigValue']();
 }
 
-export function SaveImage(arg1) {
-  return window['go']['main']['App']['SaveImage'](arg1);
+export function SaveImage(arg1, arg2) {
+  return window['go']['main']['App']['SaveImage'](arg1, arg2);
 }
 
 export function SelectImages() {

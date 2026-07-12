@@ -20,7 +20,7 @@ export function GetGeneratePromptConfigValue():Promise<structs.ConfigGeneratePro
 
 export function GetTrainingConfigValue():Promise<structs.ConfigTraining>;
 
-export function SaveImage(arg1:string):Promise<void>;
+export function SaveImage(arg1:string,arg2:string):Promise<void>;
 
 export function SelectImages():Promise<Array<string>>;
 

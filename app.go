@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"time"
 	"ubiquitous-funicular/constants"
 	"ubiquitous-funicular/structs"
@@ -417,39 +418,59 @@ func (a *App) GenerateImage(prompt string) (string, error) {
 	return "", nil
 }
 
-func (a *App) SaveImage(base64Str string) error {
+func (a *App) SaveImage(base64Str string, prompt string) error {
 	timestamp := time.Now().Format("20060102_150405")
 
-	defaultFilename := fmt.Sprintf("generate_image_%s.png", timestamp)
+	defaultFilename := fmt.Sprintf("generate_image_%s", timestamp)
+	defaultTxtName := fmt.Sprintf("prompt_image_%s", timestamp)
 
-	filePath, err := runtime.SaveFileDialog(a.ctx, runtime.SaveDialogOptions{
-		Title:           "Save Image",
+	selectedPath, err := runtime.SaveFileDialog(a.ctx, runtime.SaveDialogOptions{
+		Title:           "Save Result",
 		DefaultFilename: defaultFilename,
 		Filters: []runtime.FileFilter{
-			{DisplayName: "PNG Image (*.png)", Pattern: "*.png"},
+			{DisplayName: "Project Folder"},
 		},
 	})
 
 	if err != nil {
+		log.Fatalf("SaveImage failed to open dialog: %v", err)
+
 		return err
 	}
 
-	if filePath == "" {
+	if selectedPath == "" {
 		return nil
 	}
 
-	imgBytes, err := base64.StdEncoding.DecodeString(base64Str)
+	err = os.MkdirAll(selectedPath, 0755)
 
 	if err != nil {
-		log.Fatalf("SaveImage failed to decode base64: %v\n", err)
+		log.Fatalf("SaveImage failed to create directory: %v", err)
 
 		return err
 	}
 
-	err = os.WriteFile(filePath, imgBytes, 0644)
+	imageBytes, err := base64.StdEncoding.DecodeString(base64Str)
 
 	if err != nil {
-		log.Fatalf("SaveImage failed to save file: %v\n", err)
+		log.Fatalf("SaveImage failed to decode image: %v", err)
+
+		return err
+	}
+
+	imagePath := filepath.Join(selectedPath, defaultFilename+".png")
+	textPath := filepath.Join(selectedPath, defaultTxtName+".txt")
+
+	err = os.WriteFile(imagePath, imageBytes, 0644)
+
+	if err != nil {
+		log.Fatalf("SaveImage failed to save image: %v", err)
+	}
+
+	err = os.WriteFile(textPath, []byte(prompt), 0644)
+
+	if err != nil {
+		log.Fatalf("SaveImage failed to save text: %v", err)
 
 		return err
 	}
