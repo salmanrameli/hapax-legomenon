@@ -22,8 +22,6 @@ function SelectResult(props: ITrainingSelectResult) {
     };
 
     function Proceed() {
-        setTexts([])
-
         selectedIds.forEach(element => {
             setTexts((prevItems) => [...prevItems, props.results[element].text])
         })
@@ -36,17 +34,15 @@ function SelectResult(props: ITrainingSelectResult) {
     }, [texts])
 
     async function DescriptionToToken() {        
-        if (texts.length == selectedIds.length) {
-            setMode(TrainingMode.MODE_PROCESSING_TEXTS_TO_TOKENS)
+        setMode(TrainingMode.MODE_PROCESSING_TEXTS_TO_TOKENS)
 
-            for (const item of texts) {
-                await DescriptionsToTokens(item).then((value) => {
-                    setCountProcessedText(countProcessedText + 1)
-                })
-            }
-            
-            setMode(TrainingMode.MODE_FINISHED)
+        for (const item of texts) {            
+            await DescriptionsToTokens(item).then((value) => {
+                setCountProcessedText(countProcessedText + 1)
+            })
         }
+        
+        setMode(TrainingMode.MODE_FINISHED)
     }
 
     function renderTableContent() {

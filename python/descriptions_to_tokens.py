@@ -155,7 +155,7 @@ def validate_rows(rows):
 
     return valid, errors
 
-def extract_tokens(model_url, model_name, project_path, token_database_path, text):
+def extract_tokens(model_url, model_name, project_path, token_database_path, text, filename):
     payload_dict = {
         "model": model_name,
         "messages": [
@@ -184,10 +184,7 @@ def extract_tokens(model_url, model_name, project_path, token_database_path, tex
 
     response = response_data["message"]["content"]
 
-    ts  = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    tag = uuid.uuid4().hex[:6]
-
-    out_path = f"{project_path}/tokens_{ts}_{tag}.csv"
+    out_path = f"{project_path}/{filename}.csv"
 
     with open(out_path, "w", encoding="utf-8", newline="") as fout:
         writer = csv.DictWriter(fout, fieldnames=EXPECTED_COLS)
@@ -454,8 +451,9 @@ def main():
     project_path = sys.argv[3]
     token_database_path = sys.argv[4]
     text = sys.argv[5]
+    filename = sys.argv[6]
 
-    extract_tokens(model_url, model_name, project_path, token_database_path, text)
+    extract_tokens(model_url, model_name, project_path, token_database_path, text, filename)
 
     return True
 

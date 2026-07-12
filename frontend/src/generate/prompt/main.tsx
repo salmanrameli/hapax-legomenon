@@ -28,7 +28,7 @@ function GeneratePromptMain() {
     }
 
     function generateImage() {
-        if (prompt !== "hello world!" || prompt !== undefined) {
+        if (prompt !== undefined) {
             setMode(GenerateMode.MODE_GENERATING_IMAGE)
 
             GenerateImage(prompt).then((value) => {

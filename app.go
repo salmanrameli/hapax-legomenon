@@ -507,6 +507,10 @@ func (a *App) DescriptionsToTokens(texts string) (string, error) {
 	scriptPath := "python/descriptions_to_tokens.py"
 	tokenDatabasePath := projectConfigPath.TokenDatabase
 
+	timestamp := time.Now().Format("20060102_150405")
+
+	filename := fmt.Sprintf("tokens_%s", timestamp)
+
 	cmd := exec.Command(
 		pythonInterpreter,
 		scriptPath,
@@ -515,6 +519,7 @@ func (a *App) DescriptionsToTokens(texts string) (string, error) {
 		projectConfigPath.ProjectPath,
 		tokenDatabasePath,
 		texts,
+		filename,
 	)
 
 	output, err := cmd.CombinedOutput()
