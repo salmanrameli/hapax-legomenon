@@ -5,6 +5,7 @@ export interface ITrainingResult {
     isFinishedProcessing: boolean
     responses: IImageAnalysisResponse[]
     elapsedSeconds: number[]
+    onStartProcessingText: () => void
 }
 
 export interface IImageAnalysisResponse {

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { SelectImages, EncodeImagesFromPath, StartImageTraining, Dump } from "../../wailsjs/go/main/App"
+import { SelectImages, EncodeImagesFromPath, StartImageTraining, Dump, DescriptionsToTokens } from "../../wailsjs/go/main/App"
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -8,6 +8,8 @@ import { PlayFill } from "react-bootstrap-icons";
 import { TrainingMode } from "../constants/mode";
 import Result from "./result";
 import { IImageAnalysisResponse } from "../interfaces/training.interfaces";
+import TextToToken from "./text_to_token";
+import Completed from "./completed";
 
 function TrainingMain() {
     const [imagePaths, setImagePaths] = useState<string[]>([])
@@ -17,6 +19,7 @@ function TrainingMain() {
     const [isFinishedProcessing, setIsFinishedProcessing] = useState<boolean>(false)
     const [processCount, setProcessCount] = useState<number>(0)
     const [elapsedTimes, setElapsedTimes] = useState<number[]>([])
+    const [countProcessedText, setCountProcessedText] = useState<number>(0)
 
     function handleOpenFileDialog() {    
         SelectImages().then((paths) => {
@@ -93,6 +96,20 @@ function TrainingMain() {
         URL.revokeObjectURL(urlToRemove)
     };
 
+    async function handleProcessTexts() {
+        setMode(TrainingMode.MODE_PROCESSING_TEXTS_TO_TOKENS)
+        
+        for (const item of responses) {            
+            let progress = 0;
+
+            await DescriptionsToTokens(item.text).then((value) => {
+                setCountProcessedText(++progress)
+            })
+        }
+        
+        setMode(TrainingMode.MODE_FINISHED)
+    }
+
     function render() {
         switch(mode) {
             case (TrainingMode.MODE_HOME):
@@ -134,8 +151,13 @@ function TrainingMain() {
                         images={previews}
                         responses={responses}
                         elapsedSeconds={elapsedTimes}
+                        onStartProcessingText={handleProcessTexts}
                     />
                 )
+            case TrainingMode.MODE_PROCESSING_TEXTS_TO_TOKENS:
+                return (<TextToToken countProcessedTexts={countProcessedText} totalTexts={responses.length} />)
+            case TrainingMode.MODE_FINISHED:
+                return (<Completed />)
         }
     }
 

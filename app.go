@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"embed"
 	"encoding/base64"
 	"encoding/csv"
 	"encoding/json"
@@ -19,6 +20,9 @@ import (
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
+
+//go:embed python/*
+var pythonFolder embed.FS
 
 // App struct
 type App struct {
@@ -299,13 +303,37 @@ func (a *App) GeneratePrompt() (string, error) {
 		return "", err
 	}
 
+	tmpDir, err := os.MkdirTemp("", "wails_python_*")
+
+	if err != nil {
+		return "", err
+	}
+
+	defer os.RemoveAll(tmpDir)
+
 	pythonInterpreter := "python3"
-	scriptPath := "python/generate_prompt.py"
+	scriptName := "generate_prompt.py"
 	tokenDatabasePath := projectConfigPath.TokenDatabase
+
+	scriptData, err := pythonFolder.ReadFile("python/" + scriptName)
+
+	if err != nil {
+		log.Fatalf("GeneratePrompt unable to read file: %v", err)
+
+		return "", err
+	}
+
+	tmpScriptPath := filepath.Join(tmpDir, scriptName)
+
+	if err := os.WriteFile(tmpScriptPath, scriptData, 0755); err != nil {
+		log.Fatalf("GeneratePrompt error in writefile: %v", err)
+
+		return "", err
+	}
 
 	cmd := exec.Command(
 		pythonInterpreter,
-		scriptPath,
+		tmpScriptPath,
 		modelURL,
 		promptConfig.Model,
 		projectConfigPath.ProjectPath,
@@ -503,9 +531,35 @@ func (a *App) DescriptionsToTokens(texts string) (string, error) {
 		return "", err
 	}
 
+	tmpDir, err := os.MkdirTemp("", "wails_python_*")
+
+	if err != nil {
+		log.Fatalf("DescriptionsToTokens unable to create temporary folder")
+
+		return "", err
+	}
+
+	defer os.RemoveAll(tmpDir)
+
 	pythonInterpreter := "python3"
-	scriptPath := "python/descriptions_to_tokens.py"
+	scriptName := "descriptions_to_tokens.py"
 	tokenDatabasePath := projectConfigPath.TokenDatabase
+
+	scriptData, err := pythonFolder.ReadFile("python/" + scriptName)
+
+	if err != nil {
+		log.Fatalf("DescriptionsToTokens unable to read file: %v", err)
+
+		return "", err
+	}
+
+	tmpScriptPath := filepath.Join(tmpDir, scriptName)
+
+	if err := os.WriteFile(tmpScriptPath, scriptData, 0755); err != nil {
+		log.Fatalf("DescriptionsToTokens error in writefile: %v", err)
+
+		return "", err
+	}
 
 	timestamp := time.Now().Format("20060102_150405")
 
@@ -513,7 +567,7 @@ func (a *App) DescriptionsToTokens(texts string) (string, error) {
 
 	cmd := exec.Command(
 		pythonInterpreter,
-		scriptPath,
+		tmpScriptPath,
 		modelURL,
 		trainingConfig.Model,
 		projectConfigPath.ProjectPath,
@@ -550,8 +604,16 @@ func (a *App) StartImageTraining(imagePath string) (string, error) {
 		modelURL = trainingConfig.URLCloud
 	}
 
+	tmpDir, err := os.MkdirTemp("", "wails_python_*")
+
+	if err != nil {
+		return "", err
+	}
+
+	defer os.RemoveAll(tmpDir)
+
 	pythonInterpreter := "python3"
-	scriptPath := "python/train_image.py"
+	scriptName := "train_image.py"
 
 	result, err := a.EncodeImagesFromPath([]string{imagePath})
 
@@ -561,9 +623,25 @@ func (a *App) StartImageTraining(imagePath string) (string, error) {
 		return "", err
 	}
 
+	scriptData, err := pythonFolder.ReadFile("python/" + scriptName)
+
+	if err != nil {
+		log.Fatalf("StartImageTraining unable to read file: %v", err)
+
+		return "", err
+	}
+
+	tmpScriptPath := filepath.Join(tmpDir, scriptName)
+
+	if err := os.WriteFile(tmpScriptPath, scriptData, 0755); err != nil {
+		log.Fatalf("StartImageTraining error in writefile: %v", err)
+
+		return "", err
+	}
+
 	cmd := exec.Command(
 		pythonInterpreter,
-		scriptPath,
+		tmpScriptPath,
 		modelURL, // this is the sys.argv[1] in python
 		trainingConfig.Model,
 	)
