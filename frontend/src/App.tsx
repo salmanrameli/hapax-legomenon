@@ -5,13 +5,13 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { GenerateImageOptions, GeneratePromptOptions, Mode, TrainingOptions } from './constants/mode';
 import { GearWideConnected, HouseFill } from 'react-bootstrap-icons';
-import { Card } from 'react-bootstrap';
+import { Alert, Card } from 'react-bootstrap';
 import GeneratePromptMain from './generate/prompt/main';
 import TrainingSettingMain from './settings/training/train_main';
 import PromptSettingMain from './settings/generate_prompt/prompt_main';
 import ImageSettingMain from './settings/generate_image/image_main';
 import TrainingMain from './train/main';
-import { Dump, GetAvailableLocalModels, GetGenerateImageConfigValue, GetGeneratePromptConfigValue, GetTrainingConfigValue } from '../wailsjs/go/main/App';
+import { CheckIfPythonIsInstalled, Dump, GetAvailableLocalModels, GetGenerateImageConfigValue, GetGeneratePromptConfigValue, GetTrainingConfigValue } from '../wailsjs/go/main/App';
 import { IConfigGenerateImage, IConfigGeneratePrompt, IConfigTraining } from './interfaces/config.interfaces';
 import logo from './assets/images/appicon.png';
 
@@ -22,6 +22,7 @@ function App() {
     const [imageModeConfigData, setImageConfigData] = useState<IConfigGenerateImage>()
     const [disableTrainingButton, setDisableTrainingButton] = useState<boolean>(true)
     const [disableGenerateButton, setDisableGenerateButton] = useState<boolean>(true)
+    const [errorPythonNotInstalled, setErrorPythonNotInstalled] = useState<boolean>(false)
     // const [availableModels, setAvailableModels] = useState<IAvailableModelList>()
 
     useEffect(() => {
@@ -32,6 +33,12 @@ function App() {
         // GetAvailableLocalModels().then((value) => {
         //     setAvailableModels(value)
         // })
+
+        CheckIfPythonIsInstalled().then((value: boolean) => {
+            if (!value) {
+                setErrorPythonNotInstalled(true)
+            }
+        })
 
         GetTrainingConfigValue().then((value) => {
             if (value) {
@@ -96,8 +103,15 @@ function App() {
                 return (
                     <Row className="gx-2 mb-4">
                         <Col sm={12} md={12} className='d-flex align-items-center justify-content-center'>
-                            <img src={logo} style={{width:"200px", height:"200px"}} id="logo" alt="logo"/>
+                            <img src={logo} style={{width:"200px", height:"200px", cursor:"default"}} id="logo" alt="logo"/>
                         </Col>
+                        {errorPythonNotInstalled && 
+                            <Col sm={12}>
+                                <Alert key="danger" variant="danger">
+                                    Application is unable to detect Python3 — application will not work!
+                                </Alert>
+                            </Col>
+                        }
                         <Col sm={12} md={6} className='border gx-0 border-dark border-3'>
                             <Card className="rounded-0 bg-white text-dark h-100 border-0">
                                 <Card.Body className="d-flex align-items-center justify-content-center p-5">
@@ -106,7 +120,7 @@ function App() {
                                         size="lg" 
                                         className="rounded-0 fw-bold text-uppercase px-5 py-4 fs-3 border-3"
                                         onClick={() => setMode(Mode.MODE_TRAIN)}
-                                        disabled={disableTrainingButton}
+                                        disabled={disableTrainingButton || errorPythonNotInstalled}
                                         >
                                         Train with Images
                                     </Button>
@@ -122,7 +136,7 @@ function App() {
                                         className="rounded-0 fw-bold text-uppercase w-100 py-4 fs-3"
                                         style={{ backgroundColor: '#E32636', borderColor: '#E32636' }}
                                         onClick={() => setMode(Mode.MODE_GENERATE_PROMPT)}
-                                        disabled={disableGenerateButton}
+                                        disabled={disableGenerateButton || errorPythonNotInstalled}
                                         >
                                         Generate Prompt 
                                     </Button>

@@ -90,6 +90,16 @@ func (a *App) startup(ctx context.Context) {
 	a.configureGenerateImageConfig(projectDetail.ConfigGenerateImage)
 }
 
+func (a *App) CheckIfPythonIsInstalled() bool {
+	_, err := exec.LookPath("python3")
+
+	if err != nil {
+		return false
+	}
+
+	return true
+}
+
 func (a *App) checkProjectDir(path string, archivedTokenDir string) {
 	_, err := os.Stat(path)
 
