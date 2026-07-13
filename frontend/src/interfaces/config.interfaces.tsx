@@ -14,6 +14,7 @@ export interface ISettingGenerateImage {
     data: IConfigGenerateImage,
     onChangeSource: (source: string) => void
     onSaveChanges: (data: IConfigGenerateImage) => void
+    onChangeDimension: (dimension: number) => void
 }
 
 export interface IConfigTrainingParams {
@@ -59,4 +60,6 @@ export interface IConfigGenerateImage {
     URLLocal: string
     URLCloud: string
     APIKeyCloud: string
+    Steps: number,
+    Dimension: number
 }

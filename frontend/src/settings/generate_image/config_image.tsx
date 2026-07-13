@@ -5,7 +5,7 @@ import { GenerateImageOptions } from '../../constants/mode';
 import { IConfigGenerateImage, IConfigGenerateImageParams } from '../../interfaces/config.interfaces';
 
 function ConfigImage(props: IConfigGenerateImageParams) {
-    const [imageConfig, setImageConfig] = useState<IConfigGenerateImage>({Mode:props.defaultValue.Mode, Model:props.defaultValue.Model, URLLocal:props.defaultValue.URLLocal, URLCloud:props.defaultValue.URLCloud, APIKeyCloud:props.defaultValue.APIKeyCloud})
+    const [imageConfig, setImageConfig] = useState<IConfigGenerateImage>({Mode:props.defaultValue.Mode, Model:props.defaultValue.Model, URLLocal:props.defaultValue.URLLocal, URLCloud:props.defaultValue.URLCloud, APIKeyCloud:props.defaultValue.APIKeyCloud, Steps:props.defaultValue.Steps, Dimension:props.defaultValue.Dimension})
 
     useEffect(() => {
         if (props.defaultValue.URLLocal != "") {
@@ -14,7 +14,9 @@ function ConfigImage(props: IConfigGenerateImageParams) {
                 Model: props.defaultValue.Model,
                 URLLocal: props.defaultValue.URLLocal,
                 URLCloud: props.defaultValue.URLCloud,
-                APIKeyCloud: props.defaultValue.APIKeyCloud
+                APIKeyCloud: props.defaultValue.APIKeyCloud,
+                Steps: props.defaultValue.Steps,
+                Dimension: props.defaultValue.Dimension
             })
         }
     }, [])
@@ -32,6 +34,16 @@ function ConfigImage(props: IConfigGenerateImageParams) {
             setImageConfig({...imageConfig, URLCloud: value})
         } else if (key == "api_key") {
             setImageConfig({...imageConfig, APIKeyCloud: value})
+        } else if (key == "steps") {
+            let steps = parseInt(value)
+
+            if (steps > 40) {
+                steps = 40
+            } else if (steps < 5) {
+                steps = 5
+            }
+
+            setImageConfig({...imageConfig, Steps: steps})
         }
     }
 
@@ -113,6 +125,21 @@ function ConfigImage(props: IConfigGenerateImageParams) {
                     </Col>
                 </>
             }
+            <Col className="col-12">
+                <Form.Label htmlFor="image_config_steps_label">Steps</Form.Label>
+                <Form.Control
+                    type="number"
+                    id="image_config_steps_form_input"
+                    size={"lg"}
+                    value={imageConfig.Steps}
+                    max={40}
+                    min={5}
+                    onChange={(e) => {handleChange("steps", e.target.value)}}
+                />
+                <Form.Text id="image_config_steps_form_input_info" muted>
+                    How many steps the LLM has to do during generating image (min: 5, max: 40)
+                </Form.Text>
+            </Col>
         </>
     )
 }

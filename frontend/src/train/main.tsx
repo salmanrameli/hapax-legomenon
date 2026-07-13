@@ -116,7 +116,7 @@ function TrainingMain() {
                 return (
                     <Row>
                         <Col className="col-12">
-                            <div className="d-flex mt-2 gap-2 flex-wrap justify-content-center p-3 border border-dark border-3">
+                            <div className="d-flex gap-2 flex-wrap justify-content-center p-3 border border-dark border-3">
                                 {previews.length == 0 ?
                                     <div className="d-flex justify-content-center align-items-center" style={{height: "400px", width:"100%"}}>
                                         <Button size="lg" className="rounded-0" onClick={_ => handleOpenFileDialog()} variant="dark">Import Images</Button>

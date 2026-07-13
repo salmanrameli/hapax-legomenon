@@ -22,6 +22,11 @@ export const GenerateImageOptions = {
     CLOUD: {label: "Cloud", value: "cloud"}
 }
 
+export const ImageDimensionOptions = {
+    md: {label: "512", value: 512},
+    lg: {label: "1024", value: 1024}
+}
+
 export const TrainingMode = {
     MODE_HOME: 1,
     MODE_RESULT: 2,

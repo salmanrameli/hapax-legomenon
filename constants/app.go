@@ -13,3 +13,8 @@ const (
 const (
 	LOCAL_DEFAULT_URL = "http://localhost:11434"
 )
+
+const (
+	GENERATE_IMAGE_DEFAULT_STEPS     = 20
+	GENERATE_IMAGE_DEFAULT_DIMENSION = 512
+)

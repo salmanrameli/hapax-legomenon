@@ -57,7 +57,7 @@ function Result(props: ITrainingResult) {
                         }
                         {
                             props.responses.length > 0 &&
-                                <Col className="col-12 mt-2">
+                                <Col className="col-12">
                                     <Nav variant="pills" defaultActiveKey={selectedImage}>
                                         {props.responses.map((_, index) => {
                                             const index_copy = index
@@ -70,13 +70,13 @@ function Result(props: ITrainingResult) {
                                         {
                                             props.isFinishedProcessing &&
                                             <Nav.Item className="ml-2">
-                                                <Button variant="success" onClick={props.onStartProcessingText} >Convert results to token</Button>
+                                                <Nav.Link role="button" onClick={props.onStartProcessingText} >Convert results to token</Nav.Link>
                                             </Nav.Item>
                                         }
                                     </Nav>
-                                    <div className="d-flex mt-2 gap-2 flex-wrap justify-content-center p-3 border border-dark border-3">
+                                    <div className="d-flex mt-2 mb-2 gap-2 flex-wrap justify-content-center p-3 border border-dark border-3">
                                         <img src={displayedImage} alt="Preview" className="w-100 justify-content-center d-inline-grid mb-2" style={{ maxWidth: "500px", objectFit: "cover" }} />
-                                        <h5 className="w-100">Time taken to analyze: {displayedElapsedTime.toPrecision(2)} seconds</h5>
+                                        <h5 className="w-100">Time taken to analyze: {displayedElapsedTime.toPrecision(4)} seconds</h5>
                                         <div dangerouslySetInnerHTML={{__html: displayedResult}} />
                                     </div>
                                 </Col>
