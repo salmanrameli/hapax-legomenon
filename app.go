@@ -100,6 +100,38 @@ func (a *App) CheckIfPythonIsInstalled() bool {
 	return true
 }
 
+func (a *App) checkOllama() bool {
+	trainingConfig, err := a.GetTrainingConfigValue()
+
+	if err != nil {
+		log.Fatalf("checkOllama GetTrainingConfigValue error: %v\n", err)
+
+		return false
+	}
+
+	client := http.Client{
+		Timeout: 2 * time.Second,
+	}
+
+	resp, err := client.Get(trainingConfig.URLLocal)
+
+	if err != nil {
+		return false
+	}
+
+	defer resp.Body.Close()
+
+	return resp.StatusCode == http.StatusOK
+}
+
+func (a *App) CheckIfOllamaIsRunning() bool {
+	if !a.checkOllama() {
+		return false
+	}
+
+	return true
+}
+
 func (a *App) checkProjectDir(path string, archivedTokenDir string) {
 	_, err := os.Stat(path)
 

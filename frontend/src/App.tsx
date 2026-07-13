@@ -11,7 +11,7 @@ import TrainingSettingMain from './settings/training/train_main';
 import PromptSettingMain from './settings/generate_prompt/prompt_main';
 import ImageSettingMain from './settings/generate_image/image_main';
 import TrainingMain from './train/main';
-import { CheckIfPythonIsInstalled, Dump, GetAvailableLocalModels, GetGenerateImageConfigValue, GetGeneratePromptConfigValue, GetTrainingConfigValue } from '../wailsjs/go/main/App';
+import { CheckIfOllamaIsRunning, CheckIfPythonIsInstalled, Dump, GetAvailableLocalModels, GetGenerateImageConfigValue, GetGeneratePromptConfigValue, GetTrainingConfigValue } from '../wailsjs/go/main/App';
 import { IConfigGenerateImage, IConfigGeneratePrompt, IConfigTraining } from './interfaces/config.interfaces';
 import logo from './assets/images/appicon.png';
 
@@ -23,6 +23,7 @@ function App() {
     const [disableTrainingButton, setDisableTrainingButton] = useState<boolean>(true)
     const [disableGenerateButton, setDisableGenerateButton] = useState<boolean>(true)
     const [errorPythonNotInstalled, setErrorPythonNotInstalled] = useState<boolean>(false)
+    const [warnOllamaNotRunning, setWarnOllamaNotRunning] = useState<boolean>(false)
     // const [availableModels, setAvailableModels] = useState<IAvailableModelList>()
 
     useEffect(() => {
@@ -37,6 +38,12 @@ function App() {
         CheckIfPythonIsInstalled().then((value: boolean) => {
             if (!value) {
                 setErrorPythonNotInstalled(true)
+            }
+        })
+
+        CheckIfOllamaIsRunning().then((value: boolean) => {
+            if (!value) {
+                setWarnOllamaNotRunning(true)
             }
         })
 
@@ -107,8 +114,15 @@ function App() {
                         </Col>
                         {errorPythonNotInstalled && 
                             <Col sm={12}>
-                                <Alert key="danger" variant="danger">
+                                <Alert key="danger" variant="danger" style={{cursor:"default"}}>
                                     Application is unable to detect Python3 — application will not work!
+                                </Alert>
+                            </Col>
+                        }
+                        {warnOllamaNotRunning && 
+                            <Col sm={12}>
+                                <Alert key="warning" variant="warning" style={{cursor:"default"}}>
+                                    Ollama is not running — features might be limited
                                 </Alert>
                             </Col>
                         }
@@ -120,7 +134,7 @@ function App() {
                                         size="lg" 
                                         className="rounded-0 fw-bold text-uppercase px-5 py-4 fs-3 border-3"
                                         onClick={() => setMode(Mode.MODE_TRAIN)}
-                                        disabled={disableTrainingButton || errorPythonNotInstalled}
+                                        disabled={disableTrainingButton || errorPythonNotInstalled || (trainingConfigData?.Mode == TrainingOptions.LOCAL.value && warnOllamaNotRunning)}
                                         >
                                         Train with Images
                                     </Button>
@@ -136,7 +150,7 @@ function App() {
                                         className="rounded-0 fw-bold text-uppercase w-100 py-4 fs-3"
                                         style={{ backgroundColor: '#E32636', borderColor: '#E32636' }}
                                         onClick={() => setMode(Mode.MODE_GENERATE_PROMPT)}
-                                        disabled={disableGenerateButton || errorPythonNotInstalled}
+                                        disabled={disableGenerateButton || errorPythonNotInstalled || (promptModeConfigData?.Mode == GeneratePromptOptions.LOCAL.value && warnOllamaNotRunning)}
                                         >
                                         Generate Prompt 
                                     </Button>
