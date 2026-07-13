@@ -69,7 +69,9 @@ function App() {
                     Model: value.model,
                     URLLocal: value.url_local,
                     URLCloud: value.url_cloud,
-                    APIKeyCloud: value.api_key_cloud
+                    APIKeyCloud: value.api_key_cloud,
+                    Steps: value.steps,
+                    Dimension: value.dimension
                 })
             }
         })
@@ -163,8 +165,8 @@ function App() {
                 <Col className='d-inline-flex' style={{cursor:"default"}}>
                     {mode == Mode.MODE_HOME ? 
                         '' : 
-                        <div className="d-inline-flex mb-2 align-items-center" onClick={handleHomeButtonClicked}>
-                            <img src={logo} className='mt-2' style={{width:"70px", height:"70px"}} id="logo" alt="logo"/>
+                        <div className="d-inline-flex mt-4 mb-2 align-items-center" onClick={handleHomeButtonClicked}>
+                            <img src={logo} className='mt-2' style={{width:"70px", height:"70px", cursor:"pointer"}} id="logo" alt="logo"/>
                         </div>}
                 </Col>
             </Row>

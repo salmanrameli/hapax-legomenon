@@ -275,6 +275,8 @@ func (a *App) configureGenerateImageConfig(path string) {
 			URLLocal:    constants.LOCAL_DEFAULT_URL,
 			URLCloud:    "",
 			APIKeyCloud: "",
+			Steps:       constants.GENERATE_IMAGE_DEFAULT_STEPS,
+			Dimension:   constants.GENERATE_IMAGE_DEFAULT_DIMENSION,
 		}
 
 		encoder := json.NewEncoder(configImage)
@@ -393,9 +395,9 @@ func (a *App) GenerateImage(prompt string) (string, error) {
 		Prompt: prompt,
 		Stream: false,
 		Options: map[string]interface{}{
-			"width":  512,
-			"height": 512,
-			"steps":  40,
+			"width":  imageConfig.Dimension,
+			"height": imageConfig.Dimension,
+			"steps":  imageConfig.Steps,
 		},
 	}
 
@@ -913,6 +915,8 @@ func (a *App) StoreGenerateImageConfigValue(value *structs.ConfigGenerateImage) 
 		URLLocal:    value.URLLocal,
 		URLCloud:    value.URLCloud,
 		APIKeyCloud: value.APIKeyCloud,
+		Steps:       value.Steps,
+		Dimension:   value.Dimension,
 	})
 
 	if err != nil {
