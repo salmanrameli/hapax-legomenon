@@ -2,6 +2,7 @@ package structs
 
 type ProjectConfigPathStructure struct {
 	ProjectPath          string
+	ArchivedTokens       string
 	ConfigTraining       string
 	ConfigGeneratePrompt string
 	ConfigGenerateImage  string

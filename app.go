@@ -44,6 +44,7 @@ func (a *App) getProjectConfigPaths() (*structs.ProjectConfigPathStructure, erro
 	}
 
 	projectsPath := userConfigDir + constants.APP_USER_CONFIG_DIR
+	archivedTokenPath := userConfigDir + constants.APP_CREATED_TOKENS_DIR
 	configTraining := "/" + constants.APP_SETTING_TRAINING
 	configGeneratePrompt := "/" + constants.APP_SETTING_PROMPT
 	configGenerateImage := "/" + constants.APP_SETTING_GENERATE_IMAGE
@@ -51,6 +52,7 @@ func (a *App) getProjectConfigPaths() (*structs.ProjectConfigPathStructure, erro
 
 	return &structs.ProjectConfigPathStructure{
 		ProjectPath:          projectsPath,
+		ArchivedTokens:       archivedTokenPath,
 		ConfigTraining:       projectsPath + configTraining,
 		ConfigGeneratePrompt: projectsPath + configGeneratePrompt,
 		ConfigGenerateImage:  projectsPath + configGenerateImage,
@@ -77,7 +79,7 @@ func (a *App) startup(ctx context.Context) {
 	// fmt.Println("app user generate image config file path: " + projectDetail.ConfigGenerateImage)
 	// fmt.Println("app user token database file path: " + projectDetail.TokenDatabase)
 
-	a.checkProjectDir(projectDetail.ProjectPath)
+	a.checkProjectDir(projectDetail.ProjectPath, projectDetail.ArchivedTokens)
 
 	a.configureTokenDatabaseFile(projectDetail.TokenDatabase)
 
@@ -88,12 +90,22 @@ func (a *App) startup(ctx context.Context) {
 	a.configureGenerateImageConfig(projectDetail.ConfigGenerateImage)
 }
 
-func (a *App) checkProjectDir(path string) {
+func (a *App) checkProjectDir(path string, archivedTokenDir string) {
 	_, err := os.Stat(path)
 
 	if os.IsNotExist(err) {
 		if err := os.Mkdir(path, os.ModePerm); err != nil {
 			log.Fatalf("app checkProjectDir error in creating application project directory: %s\n", err)
+
+			return
+		}
+	}
+
+	_, err = os.Stat(archivedTokenDir)
+
+	if os.IsNotExist(err) {
+		if err := os.Mkdir(archivedTokenDir, os.ModePerm); err != nil {
+			log.Fatalf("app checkProjectDir error in creating application archived tokens directory: %s\n", err)
 
 			return
 		}
@@ -190,7 +202,7 @@ func (a *App) configureTrainingConfig(path string) {
 		defaultConfigTraining := structs.ConfigTraining{
 			Mode:        constants.TrainImageMode.LocalValue(),
 			Model:       "",
-			URLLocal:    "",
+			URLLocal:    constants.LOCAL_DEFAULT_URL,
 			URLCloud:    "",
 			APIKeyCloud: "",
 		}
@@ -225,7 +237,7 @@ func (a *App) configureGeneratePromptConfig(path string) {
 		defaultPromptConfig := structs.ConfigGeneratePrompt{
 			Mode:        constants.GeneratePromptMode.LocalValue(),
 			Model:       "",
-			URLLocal:    "",
+			URLLocal:    constants.LOCAL_DEFAULT_URL,
 			URLCloud:    "",
 			APIKeyCloud: "",
 		}
@@ -260,7 +272,7 @@ func (a *App) configureGenerateImageConfig(path string) {
 		defaultImageConfig := structs.ConfigGenerateImage{
 			Mode:        constants.GenerateImageMode.LocalValue(),
 			Model:       "",
-			URLLocal:    "",
+			URLLocal:    constants.LOCAL_DEFAULT_URL,
 			URLCloud:    "",
 			APIKeyCloud: "",
 		}

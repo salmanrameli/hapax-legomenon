@@ -26,7 +26,7 @@ function SettingTraining(props: ISettingTraining) {
                 <Col className="col-12">
                     <h4 className="mb-2">Training Model Source:</h4>
                 </Col>
-                <Col className="col-3">
+                <Col className="col-6">
                     <Form.Check
                         type="radio"
                         label={TrainingOptions.LOCAL.label}
@@ -37,7 +37,7 @@ function SettingTraining(props: ISettingTraining) {
                         onChange={handleModeTrainingChange}
                     />
                 </Col>
-                <Col className="col-3">
+                <Col className="col-6">
                     <Form.Check
                         type="radio"
                         label={TrainingOptions.CLOUD.label}

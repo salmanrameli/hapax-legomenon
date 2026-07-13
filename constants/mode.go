@@ -17,16 +17,16 @@ func (p immutablePrompt) CloudLabel() string { return p.CLOUD.label }
 func (p immutablePrompt) CloudValue() string { return p.CLOUD.value }
 
 var TrainImageMode = immutablePrompt{
-	LOCAL: value{label: "local", value: "local"},
-	CLOUD: value{label: "cloud", value: "cloud"},
+	LOCAL: value{label: "Local Ollama Instance", value: "local"},
+	CLOUD: value{label: "Cloud", value: "cloud"},
 }
 
 var GeneratePromptMode = immutablePrompt{
-	LOCAL: value{label: "local", value: "local"},
-	CLOUD: value{label: "cloud", value: "cloud"},
+	LOCAL: value{label: "Local Ollama Instance", value: "local"},
+	CLOUD: value{label: "Cloud", value: "cloud"},
 }
 
 var GenerateImageMode = immutablePrompt{
-	LOCAL: value{label: "local", value: "local"},
-	CLOUD: value{label: "cloud", value: "cloud"},
+	LOCAL: value{label: "Local Ollama Instance", value: "local"},
+	CLOUD: value{label: "Cloud", value: "cloud"},
 }

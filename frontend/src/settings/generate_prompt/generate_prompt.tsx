@@ -26,7 +26,7 @@ function SettingGeneratePrompt(props: ISettingGeneratePrompt) {
                 <Col className="col-12">
                     <h4 className="mb-2">Generate Prompt Model Source:</h4>
                 </Col>
-                <Col className="col-3">
+                <Col className="col-6">
                     <Form.Check
                         type="radio"
                         label={GeneratePromptOptions.LOCAL.label}
@@ -37,7 +37,7 @@ function SettingGeneratePrompt(props: ISettingGeneratePrompt) {
                         onChange={handleModeGeneratePromptChange}
                     />
                 </Col>
-                <Col className="col-3">
+                <Col className="col-6">
                     <Form.Check
                         type="radio"
                         label={GeneratePromptOptions.CLOUD.label}

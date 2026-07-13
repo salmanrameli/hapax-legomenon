@@ -113,7 +113,7 @@ function App() {
                                     <Button
                                         variant="danger" 
                                         size="lg" 
-                                        className="rounded-0 fw-bold text-uppercase px-5 py-4 fs-3"
+                                        className="rounded-0 fw-bold text-uppercase w-100 py-4 fs-3"
                                         style={{ backgroundColor: '#E32636', borderColor: '#E32636' }}
                                         onClick={() => setMode(Mode.MODE_GENERATE_PROMPT)}
                                         disabled={disableGenerateButton}
@@ -158,7 +158,7 @@ function App() {
     return (
         <Container fluid id="App" className="pb-4">
             <Row>
-                <Col className='d-inline-flex' style={{cursor:"default"}}>{mode == Mode.MODE_HOME ? '' : <div className="d-inline-flex align-items-center me-2" onClick={handleHomeButtonClicked}><HouseFill size={25} /></div>}<h1 className="my-2">Ubiquitous-Funicular</h1></Col>
+                <Col className='d-inline-flex' style={{cursor:"default"}}>{mode == Mode.MODE_HOME ? '' : <div className="d-inline-flex align-items-center me-2" onClick={handleHomeButtonClicked}><HouseFill size={25} /></div>}<h1 className="my-2">Hapax Legomenon</h1></Col>
             </Row>
             {show()}
         </Container>        

@@ -4,8 +4,6 @@ import csv
 import subprocess
 import json
 import io
-import datetime
-import uuid
 from collections import defaultdict, Counter
 import re
 
@@ -184,7 +182,7 @@ def extract_tokens(model_url, model_name, project_path, token_database_path, tex
 
     response = response_data["message"]["content"]
 
-    out_path = f"{project_path}/{filename}.csv"
+    out_path = f"{project_path}/archived-tokens/{filename}.csv"
 
     with open(out_path, "w", encoding="utf-8", newline="") as fout:
         writer = csv.DictWriter(fout, fieldnames=EXPECTED_COLS)

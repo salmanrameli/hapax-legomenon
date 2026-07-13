@@ -26,7 +26,7 @@ function SettingGenerateImage(props: ISettingGenerateImage) {
                 <Col className="col-12">
                     <h4 className="mb-2">Generate Image Model Source:</h4>
                 </Col>
-                <Col className="col-3">
+                <Col className="col-6">
                     <Form.Check
                         type="radio"
                         label={GenerateImageOptions.LOCAL.label}
@@ -37,7 +37,7 @@ function SettingGenerateImage(props: ISettingGenerateImage) {
                         onChange={handleModeGenerateImageChange}
                     />
                 </Col>
-                <Col className="col-3">
+                <Col className="col-6">
                     <Form.Check
                         type="radio"
                         label={GenerateImageOptions.CLOUD.label}
