@@ -4,7 +4,6 @@ import Nav from 'react-bootstrap/Nav';
 import { useEffect, useState } from "react";
 import Spinner from 'react-bootstrap/Spinner';
 import ProgressBar from 'react-bootstrap/ProgressBar';
-import { Dump } from "../../wailsjs/go/main/App";
 import { TrainingMode } from "../constants/mode";
 import SelectResult from "./select_result";
 
@@ -71,7 +70,7 @@ function Result(props: ITrainingResult) {
                                         {
                                             props.isFinishedProcessing &&
                                             <Nav.Item className="ml-2">
-                                                <Button variant="success" onClick={() => setMode(TrainingMode.MODE_SELECT_RESULTS)} >Proceed to next step</Button>
+                                                <Button variant="success" onClick={props.onStartProcessingText} >Convert results to token</Button>
                                             </Nav.Item>
                                         }
                                     </Nav>
