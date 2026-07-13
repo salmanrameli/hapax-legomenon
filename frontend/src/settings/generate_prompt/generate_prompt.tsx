@@ -44,6 +44,7 @@ function SettingGeneratePrompt(props: ISettingGeneratePrompt) {
                         name="modeGeneratePrompt"
                         id="generate-prompt-cloud"
                         value={GeneratePromptOptions.CLOUD.value}
+                        disabled={true}
                         checked={settingPrompt.Mode === GeneratePromptOptions.CLOUD.value}
                         onChange={handleModeGeneratePromptChange}
                     />

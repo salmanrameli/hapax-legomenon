@@ -44,6 +44,7 @@ function SettingTraining(props: ISettingTraining) {
                         name="modeTraining"
                         id="training-cloud"
                         value={TrainingOptions.CLOUD.value}
+                        disabled={true}
                         checked={settingTraining.Mode === TrainingOptions.CLOUD.value}
                         onChange={handleModeTrainingChange}
                     />

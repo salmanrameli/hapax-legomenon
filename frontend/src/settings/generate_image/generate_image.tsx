@@ -44,6 +44,7 @@ function SettingGenerateImage(props: ISettingGenerateImage) {
                         name="modeGenerateImage"
                         id="generate-image-cloud"
                         value={GenerateImageOptions.CLOUD.value}
+                        disabled={true}
                         checked={settingImage.Mode === GenerateImageOptions.CLOUD.value}
                         onChange={handleModeGenerateImageChange}
                     />
