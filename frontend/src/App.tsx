@@ -13,6 +13,7 @@ import ImageSettingMain from './settings/generate_image/image_main';
 import TrainingMain from './train/main';
 import { Dump, GetAvailableLocalModels, GetGenerateImageConfigValue, GetGeneratePromptConfigValue, GetTrainingConfigValue } from '../wailsjs/go/main/App';
 import { IConfigGenerateImage, IConfigGeneratePrompt, IConfigTraining } from './interfaces/config.interfaces';
+import logo from './assets/images/appicon.png';
 
 function App() {
     const [mode, setMode] = useState<number>(Mode.MODE_HOME)
@@ -91,8 +92,11 @@ function App() {
         switch(mode) {
             case Mode.MODE_HOME:
                 return (
-                    <Row className="g-0 mb-4">
-                        <Col md={6} className='border border-dark border-3'>
+                    <Row className="gx-2 mb-4">
+                        <Col sm={12} md={12} className='d-flex align-items-center justify-content-center'>
+                            <img src={logo} style={{width:"200px", height:"200px"}} id="logo" alt="logo"/>
+                        </Col>
+                        <Col sm={12} md={6} className='border gx-0 border-dark border-3'>
                             <Card className="rounded-0 bg-white text-dark h-100 border-0">
                                 <Card.Body className="d-flex align-items-center justify-content-center p-5">
                                     <Button
@@ -102,12 +106,12 @@ function App() {
                                         onClick={() => setMode(Mode.MODE_TRAIN)}
                                         disabled={disableTrainingButton}
                                         >
-                                        Train with Images <br /><span className={trainingConfigData?.Model == "" ? "d-none" : ""} style={{fontSize:"12px", marginTop:"-10px"}}>Model: {trainingConfigData?.Model}</span>
+                                        Train with Images
                                     </Button>
                                 </Card.Body>
                             </Card>
                         </Col>
-                        <Col md={6}>
+                        <Col sm={12} md={6} className='gx-0'>
                             <Card className="rounded-0 bg-dark text-white h-100">
                                 <Card.Body className="d-flex align-items-center justify-content-center p-5">
                                     <Button
@@ -119,25 +123,23 @@ function App() {
                                         disabled={disableGenerateButton}
                                         >
                                         Generate Prompt 
-                                        <br /><span className={promptModeConfigData?.Model == "" ? "d-none" : ""} style={{fontSize:"12px", marginTop:"-10px"}}>Prompt: {promptModeConfigData?.Model}</span>
-                                        <span className={imageModeConfigData?.Model == "" ? "d-none" : ""} style={{fontSize:"12px", marginTop:"-10px"}}><span className={imageModeConfigData?.Model == "" ? "d-none" : ""}> | </span>Image: {imageModeConfigData?.Model}</span>
                                     </Button>
                                 </Card.Body>
                             </Card>
                         </Col>
-                        <Col className='col-12 mt-3'>
-                            <div className='d-flex border border-dark border-3'>
-                                <Button variant='outline-dark' onClick={() => setMode(Mode.MODE_SETTING_TRAINING)} className='text-start font-weight-bold' style={{width:"100%", border:"none", borderRadius:"0px", fontSize:"20px"}}><GearWideConnected style={{marginTop:"-3px"}} /> Configure Training Settings <span style={{float:"right"}}>running: {trainingConfigData?.Mode}</span></Button>
+                        <Col sm={12} md={4} className='mt-3'>
+                            <div className='d-flex border border-dark border-3' style={{height:"120px"}}>
+                                <Button variant='outline-dark' onClick={() => setMode(Mode.MODE_SETTING_TRAINING)} className='text-start font-weight-bold' style={{width:"100%", border:"none", borderRadius:"0px", fontSize:"20px"}}><GearWideConnected style={{marginTop:"-3px"}} /> Training Settings <br /><br /><span className='fw-light' style={{fontSize:"12px"}}>{trainingConfigData?.Model ? "running: " + trainingConfigData.Model + " / " + trainingConfigData.Mode : "not yet set" }</span></Button>
                             </div>
                         </Col>
-                        <Col className='col-12 mt-3'>
-                            <div className='d-flex border border-dark border-3'>
-                                <Button variant='outline-dark' onClick={() => setMode(Mode.MODE_SETTING_PROMPT)} className='text-start font-weight-bold' style={{width:"100%", border:"none", borderRadius:"0px", fontSize:"20px"}}><GearWideConnected style={{marginTop:"-3px"}} /> Configure Prompt Settings <span style={{float:"right"}}>running: {promptModeConfigData?.Mode}</span></Button>
+                        <Col sm={12} md={4} className='mt-3'>
+                            <div className='d-flex border border-dark border-3' style={{height:"120px"}}>
+                                <Button variant='outline-dark' onClick={() => setMode(Mode.MODE_SETTING_PROMPT)} className='text-start font-weight-bold' style={{width:"100%", border:"none", borderRadius:"0px", fontSize:"20px"}}><GearWideConnected style={{marginTop:"-3px"}} /> Prompt Settings <br /><br /><span className='fw-light' style={{fontSize:"12px"}}>{promptModeConfigData?.Model ? "running: " + promptModeConfigData.Model + " / " + promptModeConfigData.Mode : "not yet set" }</span></Button>
                             </div>
                         </Col>
-                        <Col className='col-12 mt-3'>
-                            <div className='d-flex border border-dark border-3'>
-                                <Button variant='outline-dark' onClick={() => setMode(Mode.MODE_SETTING_IMAGE)} className='text-start font-weight-bold' style={{width:"100%", border:"none", borderRadius:"0px", fontSize:"20px"}}><GearWideConnected style={{marginTop:"-3px"}} /> Configure Generate Image Settings <span style={{float:"right"}}>running: {imageModeConfigData?.Mode}</span></Button>
+                        <Col sm={12} md={4} className='mt-3'>
+                            <div className='d-flex border border-dark border-3' style={{height:"120px"}}>
+                                <Button variant='outline-dark' onClick={() => setMode(Mode.MODE_SETTING_IMAGE)} className='text-start font-weight-bold' style={{width:"100%", border:"none", borderRadius:"0px", fontSize:"20px"}}><GearWideConnected style={{marginTop:"-3px"}} /> Generate Image Settings <br /><br /><span className='fw-light' style={{fontSize:"12px"}}>{imageModeConfigData?.Model ? "running: " + imageModeConfigData.Model + " / " + imageModeConfigData.Mode : "not yet set" }</span></Button>
                             </div>
                         </Col>
                     </Row>
@@ -156,9 +158,15 @@ function App() {
     }
 
     return (
-        <Container fluid id="App" className="pb-4">
+        <Container fluid id="App" className="pb-4 mb-4" style={{height:"100vh"}}>
             <Row>
-                <Col className='d-inline-flex' style={{cursor:"default"}}>{mode == Mode.MODE_HOME ? '' : <div className="d-inline-flex align-items-center me-2" onClick={handleHomeButtonClicked}><HouseFill size={25} /></div>}<h1 className="my-2">Hapax Legomenon</h1></Col>
+                <Col className='d-inline-flex' style={{cursor:"default"}}>
+                    {mode == Mode.MODE_HOME ? 
+                        '' : 
+                        <div className="d-inline-flex mb-2 align-items-center" onClick={handleHomeButtonClicked}>
+                            <img src={logo} className='mt-2' style={{width:"70px", height:"70px"}} id="logo" alt="logo"/>
+                        </div>}
+                </Col>
             </Row>
             {show()}
         </Container>        
