@@ -4,7 +4,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { GenerateImageOptions, GeneratePromptOptions, Mode, TrainingOptions } from './constants/mode';
-import { GearWideConnected, HouseFill } from 'react-bootstrap-icons';
+import { GearWideConnected } from 'react-bootstrap-icons';
 import { Alert, Card } from 'react-bootstrap';
 import GeneratePromptMain from './generate/prompt/main';
 import TrainingSettingMain from './settings/training/train_main';
@@ -14,6 +14,7 @@ import TrainingMain from './train/main';
 import { CheckIfOllamaIsRunning, CheckIfPythonIsInstalled, Dump, GetAvailableLocalModels, GetGenerateImageConfigValue, GetGeneratePromptConfigValue, GetTrainingConfigValue } from '../wailsjs/go/main/App';
 import { IConfigGenerateImage, IConfigGeneratePrompt, IConfigTraining } from './interfaces/config.interfaces';
 import logo from './assets/images/appicon.png';
+import './App.css'
 
 function App() {
     const [mode, setMode] = useState<number>(Mode.MODE_HOME)
@@ -24,11 +25,31 @@ function App() {
     const [disableGenerateButton, setDisableGenerateButton] = useState<boolean>(true)
     const [errorPythonNotInstalled, setErrorPythonNotInstalled] = useState<boolean>(false)
     const [warnOllamaNotRunning, setWarnOllamaNotRunning] = useState<boolean>(false)
+    const [animate, setAnimate] = useState<boolean>(false)
+    const [showPage, setShowPage] = useState<boolean>(false)
+    const [showLoading, setShowLoading] = useState<boolean>(true)
     // const [availableModels, setAvailableModels] = useState<IAvailableModelList>()
 
     useEffect(() => {
-        loadData()
+        setShowLoading(true)
     }, [])
+
+    useEffect(() => {
+        if (showLoading) {
+            setTimeout(() => {
+                setShowLoading(false)
+            }, 2000)
+        } else {
+            setAnimate(true)
+            setShowPage(true)
+        }
+    }, [showLoading])
+
+    useEffect(() => {
+        if (showPage) {
+            loadData()
+        }
+    }, [showPage])
 
     function loadData() {
         // GetAvailableLocalModels().then((value) => {
@@ -110,7 +131,7 @@ function App() {
                 return (
                     <Row className="gx-2 mb-4">
                         <Col sm={12} md={12} className='d-flex align-items-center justify-content-center'>
-                            <img src={logo} style={{width:"200px", height:"200px", cursor:"default"}} id="logo" alt="logo"/>
+                            <img src={logo} className='pt-0' style={{width:"200px", height:"200px", cursor:"default"}} id="logo" alt="logo"/>
                         </Col>
                         {errorPythonNotInstalled && 
                             <Col sm={12}>
@@ -188,18 +209,28 @@ function App() {
     }
 
     return (
-        <Container fluid id="App" className="pb-4 mb-4" style={{height:"100vh"}}>
-            <Row>
-                <Col className='d-inline-flex' style={{cursor:"default"}}>
-                    {mode == Mode.MODE_HOME ? 
-                        '' : 
-                        <div className="d-inline-flex mt-4 mb-2 align-items-center" onClick={handleHomeButtonClicked}>
-                            <img src={logo} className='mt-2' style={{width:"70px", height:"70px", cursor:"pointer"}} id="logo" alt="logo"/>
-                        </div>}
-                </Col>
-            </Row>
-            {show()}
-        </Container>        
+        (showLoading ?
+            <Container fluid id="App" className={`${animate ? "wails-fade-out" : "wails-fade-in"} pb-4 mb-4`} style={{height:"100vh"}}>
+                <Row className={`d-flex align-items-center justify-content-center w-100 h-100 gx-2 mb-4`}>
+                    <Col sm={12} md={12} className='d-flex align-items-center justify-content-center w-100 h-100'>
+                        <img src={logo} className='pt-0' style={{width:"400px", height:"400px", cursor:"default"}} id="logo" alt="logo"/>
+                    </Col>
+                </Row>    
+            </Container>
+            :
+            <Container fluid id="App" className={`${showPage ? 'wails-fade-in' : ''} pb-4 mb-4`} style={{height:"100vh"}}>
+                <Row className="gx-2 mb-4">
+                    <Col className='d-inline-flex' style={{cursor:"default"}}>
+                        {mode == Mode.MODE_HOME ? 
+                            '' : 
+                            <div className="d-inline-flex mt-4 mb-2 align-items-center" onClick={handleHomeButtonClicked}>
+                                <img src={logo} className='mt-2' style={{width:"70px", height:"70px", cursor:"pointer"}} id="logo" alt="logo"/>
+                            </div>}
+                    </Col>
+                </Row>
+                {show()}
+            </Container>
+        )     
     )
 }
 
