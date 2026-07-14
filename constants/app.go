@@ -12,6 +12,7 @@ const (
 
 const (
 	LOCAL_DEFAULT_URL = "http://localhost:11434"
+	MAX_UPLOAD_IMAGES = 5
 )
 
 const (

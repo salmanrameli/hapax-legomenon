@@ -424,14 +424,6 @@ func (a *App) GenerateImage(prompt string) (string, error) {
 		modelURL = imageConfig.URLCloud
 	}
 
-	projectConfigPath, err := a.getProjectConfigPaths()
-
-	if err != nil {
-		log.Fatalf("GenerateImage getProjectConfigPaths error: %v\n", err)
-
-		return "", err
-	}
-
 	reqBody := &structs.ImageGenRequest{
 		Model:  imageConfig.Model,
 		Prompt: prompt,
@@ -484,22 +476,6 @@ func (a *App) GenerateImage(prompt string) (string, error) {
 	}
 
 	return result.Image, nil
-
-	imgBytes, err := base64.StdEncoding.DecodeString(result.Image)
-
-	if err != nil {
-		fmt.Println("Decode error:", err)
-
-		return "", err
-	}
-
-	err = os.WriteFile(projectConfigPath.ProjectPath+"/output.png", imgBytes, 0644)
-
-	if err == nil {
-		fmt.Println("Image saved successfully as output.png!")
-	}
-
-	return "", nil
 }
 
 func (a *App) SaveImage(base64Str string, prompt string) error {
@@ -732,9 +708,19 @@ func (a *App) SelectImages() ([]string, error) {
 	})
 
 	if err != nil {
-		log.Fatalf("unable to read selected images: %s\n", err)
+		log.Fatalf("SelectImages unable to read selected images: %v\n", err)
 
 		return nil, err
+	}
+
+	if len(path) > constants.MAX_UPLOAD_IMAGES {
+		runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
+			Type:    runtime.WarningDialog,
+			Title:   "Too Many Files",
+			Message: "You can only select a maximum of 5 files.",
+		})
+
+		return path[:5], nil
 	}
 
 	return path, nil
