@@ -46,7 +46,7 @@ func main() {
 			ContentProtection:    false,
 			About: &mac.AboutInfo{
 				Title:   "Hapax Legomenon",
-				Message: "Created by Salman Rameli in 2026",
+				Message: "Created by Anugra Pratama Rameli in 2026",
 			},
 		},
 	})

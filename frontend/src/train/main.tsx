@@ -120,7 +120,7 @@ function TrainingMain(props: ITrainingMain) {
                 return (
                     <Row>
                         <Col className="col-12">
-                            <div className="d-flex gap-2 flex-wrap justify-content-center p-3 border border-dark border-3">
+                            <div className="d-flex gap-2 bg-white flex-wrap justify-content-center p-3 border border-dark border-3">
                                 {previews.length == 0 ?
                                     <div className="d-flex justify-content-center align-items-center" style={{height: "400px", width:"100%"}}>
                                         <Button size="lg" className="rounded-0" onClick={_ => handleOpenFileDialog()} variant="dark">Import Images</Button>
@@ -141,7 +141,7 @@ function TrainingMain(props: ITrainingMain) {
                         </Col>
                         <Col className={`${previews.length == 0 ? "d-none" : "col-12"}`}>
                             <div className="d-flex flex-wrap p-3 justify-content-center align-items-center">
-                                <Button variant="outline-dark border border-dark border-3 rounded-0" size="lg" className="rounded-0" onClick={startTraining}>Start Training <PlayFill /></Button>
+                                <Button size="lg" className="btn-hapax-primary border border-dark border-3 rounded-0" onClick={startTraining}>Start Training <PlayFill /></Button>
                             </div>
                         </Col>
                     </Row>

@@ -1,11 +1,11 @@
 import { Button, Col, Row } from "react-bootstrap"
 import { ITrainingResult } from "../interfaces/training.interfaces"
-import Nav from 'react-bootstrap/Nav';
 import { useEffect, useState } from "react";
 import Spinner from 'react-bootstrap/Spinner';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import { TrainingMode } from "../constants/mode";
 import SelectResult from "./select_result";
+import { PlayFill } from "react-bootstrap-icons";
 
 function Result(props: ITrainingResult) {
     const [mode, setMode] = useState<number>(TrainingMode.MODE_HOME)
@@ -13,6 +13,7 @@ function Result(props: ITrainingResult) {
     const [selectedImage, setSelectedImage] = useState<number>(0)
     const [displayedImage, setDisplayedImage] = useState<string>("")
     const [displayedElapsedTime, setDisplayedElapsedTime] = useState<number>(0)
+    const [selectedIndex, setSelectedIndex] = useState<number>(0)
 
     useEffect(() => {
         if (props.responses.length > 0 && displayedResult == "") {
@@ -27,6 +28,7 @@ function Result(props: ITrainingResult) {
         setSelectedImage(index)
         setDisplayedImage(props.images[index])
         setDisplayedElapsedTime(props.elapsedSeconds[index])
+        setSelectedIndex(index)
     }
 
     useEffect(() => {
@@ -48,9 +50,9 @@ function Result(props: ITrainingResult) {
                             !props.isFinishedProcessing && 
                             <Col className="col-12">
                                 <div className="d-flex gap-2 mb-2 flex-wrap justify-content-center p-3 border border-dark border-3">
-                                    <h1><Spinner animation="border" variant="danger" style={{ width: '3rem', height: '3rem', borderWidth: '0.3em' }} /> Analyzing image{props.totalImage > 1 ? "s" : ""} in progress</h1>
+                                    <h1><Spinner animation="border" className="spinner-orange" style={{width: '3rem', height: '3rem', borderWidth: '0.3em' }} /> Analyzing image{props.totalImage > 1 ? "s" : ""} in progress</h1>
                                     <div className="w-100">
-                                        <ProgressBar className="w-100 rounded-0 border border-dark border-2" variant="danger" style={{ height: '20px', backgroundColor: '#000' }}  now={(props.countImage / props.totalImage) * 100} />
+                                        <ProgressBar animated className="w-100 rounded-0 border border-dark border-2" variant="warning" style={{ height: '20px', backgroundColor: '#fff' }} now={(props.countImage / props.totalImage) * 100} />
                                     </div>
                                 </div>
                             </Col>
@@ -58,23 +60,16 @@ function Result(props: ITrainingResult) {
                         {
                             props.responses.length > 0 &&
                                 <Col className="col-12">
-                                    <Nav variant="pills" defaultActiveKey={selectedImage}>
+                                    <div className="w-100">
                                         {props.responses.map((_, index) => {
                                             const index_copy = index
                                             return (
-                                                <Nav.Item>
-                                                    <Nav.Link eventKey={index} onClick={() => displayResult(index)} >{"Image " + (index_copy + 1)}</Nav.Link>
-                                                </Nav.Item>
+                                                <Button variant="outline-dark" className="me-2 border border-dark border-2 rounded-0" active={selectedIndex == index} onClick={() => displayResult(index)} >{"Image " + (index_copy + 1)}</Button>
                                             )
                                         })}
-                                        {
-                                            props.isFinishedProcessing &&
-                                            <Nav.Item className="ml-2">
-                                                <Nav.Link role="button" onClick={props.onStartProcessingText} >Convert results to token</Nav.Link>
-                                            </Nav.Item>
-                                        }
-                                    </Nav>
-                                    <div className="d-flex mt-2 mb-2 gap-2 flex-wrap justify-content-center p-3 border border-dark border-3">
+                                        {props.isFinishedProcessing && <Button className="btn-hapax-danger border border-danger border-2 rounded-0 float-end" onClick={props.onStartProcessingText} >Convert result{props.totalImage > 1 ? "s" : ""} to token <PlayFill style={{marginTop:"-2px"}} size={20} /></Button>}
+                                    </div>
+                                    <div className="d-flex bg-white mt-2 mb-2 gap-2 flex-wrap justify-content-center p-3 border border-dark border-3">
                                         <img src={displayedImage} alt="Preview" className="w-100 justify-content-center d-inline-grid mb-2" style={{ maxWidth: "500px", objectFit: "cover" }} />
                                         <h5 className="w-100">Time taken to analyze: {displayedElapsedTime.toPrecision(4)} seconds</h5>
                                         <div dangerouslySetInnerHTML={{__html: displayedResult}} />
