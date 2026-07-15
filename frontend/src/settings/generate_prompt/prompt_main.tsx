@@ -5,13 +5,17 @@ import { GetGeneratePromptConfigValue, StoreGeneratePromptConfigValue } from "..
 import ConfigPrompt from "./config_prompt";
 import { IConfigGeneratePrompt } from "../../interfaces/config.interfaces";
 
-function PromptSettingMain() {
+interface IPromptSettingMain {
+    projectId: string
+}
+
+function PromptSettingMain(props: IPromptSettingMain) {
     const [generatePromptDetail, setGeneratePromptDetail] = useState<IConfigGeneratePrompt>({Mode:"", Model:"", URLLocal: "", URLCloud: "", APIKeyCloud:""})
     const [show, setShow] = useState<boolean>(false)
     const [disableSaveButton, setDisableSaveButton] = useState<boolean>(true)
 
     useEffect(() => {        
-        GetGeneratePromptConfigValue().then((value) => {
+        GetGeneratePromptConfigValue(props.projectId).then((value) => {
             setGeneratePromptDetail({
                 Mode: value.mode,
                 Model: value.model,
@@ -54,7 +58,7 @@ function PromptSettingMain() {
     }
 
     const handleSaveChanges = () => {        
-        StoreGeneratePromptConfigValue({
+        StoreGeneratePromptConfigValue(props.projectId, {
             mode: generatePromptDetail.Mode,
             model: generatePromptDetail.Model,
             url_local: generatePromptDetail.URLLocal,

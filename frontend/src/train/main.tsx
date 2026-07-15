@@ -11,7 +11,11 @@ import { IImageAnalysisResponse } from "../interfaces/training.interfaces";
 import TextToToken from "./text_to_token";
 import Completed from "./completed";
 
-function TrainingMain() {
+interface ITrainingMain {
+    projectId: string
+}
+
+function TrainingMain(props: ITrainingMain) {
     const [imagePaths, setImagePaths] = useState<string[]>([])
     const [previews, setPreviews] = useState<string[]>([])
     const [mode, setMode] = useState<number>(TrainingMode.MODE_HOME)
@@ -61,7 +65,7 @@ function TrainingMain() {
         for (const item of imagePaths) {
             const start = performance.now();
 
-            await StartImageTraining(item).then((value: string) => {
+            await StartImageTraining(props.projectId, item).then((value: string) => {
                 if (value) {
                     setResponses((prevItems) => [...prevItems, {
                         index: countIndex++,
@@ -102,7 +106,7 @@ function TrainingMain() {
         for (const item of responses) {            
             let progress = 0;
 
-            await DescriptionsToTokens(item.text).then((value) => {
+            await DescriptionsToTokens(props.projectId, item.text).then((value) => {
                 setCountProcessedText(++progress)
             })
         }

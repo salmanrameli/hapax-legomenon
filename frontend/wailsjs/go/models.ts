@@ -108,6 +108,21 @@ export namespace structs {
 		    return a;
 		}
 	}
+	
+	export class UserProjectItem {
+	    id: string;
+	    name: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new UserProjectItem(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
+	        this.name = source["name"];
+	    }
+	}
 
 }
 

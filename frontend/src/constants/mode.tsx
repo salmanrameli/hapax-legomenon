@@ -1,10 +1,13 @@
 export const Mode = {
+    MODE_LOADING: 0,
     MODE_HOME: 1,
     MODE_TRAIN: 2,
     MODE_GENERATE_PROMPT: 3,
     MODE_SETTING_PROMPT: 4,
     MODE_SETTING_IMAGE: 5,
-    MODE_SETTING_TRAINING: 6
+    MODE_SETTING_TRAINING: 6,
+    MODE_SET_PROJECT_NAME: 7,
+    MODE_SHOW_PROJECTS_LIST: 8
 }
 
 export const TrainingOptions = {
@@ -39,4 +42,9 @@ export const GenerateMode = {
     MODE_DEFAULT: 11,
     MODE_GENERATING_PROMPT: 12,
     MODE_GENERATING_IMAGE: 13
+}
+
+export const RenderContentID = {
+    MODE_CREATE_NEW: 21,
+    MODE_SHOW_LIST: 22
 }

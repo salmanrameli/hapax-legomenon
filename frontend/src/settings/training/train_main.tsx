@@ -5,13 +5,17 @@ import { IConfigTraining } from "../../interfaces/config.interfaces";
 import ConfigTraining from "./config_training";
 import SettingTraining from "./train";
 
-function TrainingSettingMain() {
+interface ITrainingSettingMain {
+    projectId: string
+}
+
+function TrainingSettingMain(props: ITrainingSettingMain) {
     const [trainingDetail, setTrainingDetail] = useState<IConfigTraining>({Mode:"", Model: "", URLLocal: "", URLCloud: "", APIKeyCloud:""})
     const [show, setShow] = useState<boolean>(false)
     const [disableSaveButton, setDisableSaveButton] = useState<boolean>(true)
 
     useEffect(() => {        
-        GetTrainingConfigValue().then((value) => {
+        GetTrainingConfigValue(props.projectId).then((value) => {
             setTrainingDetail({
                 Mode: value.mode,
                 Model: value.model,
@@ -54,7 +58,7 @@ function TrainingSettingMain() {
     }
 
     const handleSaveChanges = () => {        
-        StoreTrainingConfigValue({
+        StoreTrainingConfigValue(props.projectId, {
             mode: trainingDetail.Mode,
             model: trainingDetail.Model,
             url_local: trainingDetail.URLLocal,

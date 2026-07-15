@@ -2,7 +2,7 @@ import { useState } from "react"
 import { GenerateMode } from "../../constants/mode"
 import { Button, Col, Row, Spinner } from "react-bootstrap"
 import { GenerateImage, GeneratePrompt, SaveImage } from "../../../wailsjs/go/main/App"
-import { FileEarmarkArrowDown, FileEarmarkArrowDownFill, PlayFill } from "react-bootstrap-icons"
+import { FileEarmarkArrowDownFill, PlayFill } from "react-bootstrap-icons"
 
 const BTN_PROMPT_DEFAULT_TEXT = 'Generate prompt'
 const BTN_PROMPT_GENERATING_TEXT = ' Generating prompt'
@@ -10,7 +10,11 @@ const BTN_PROMPT_GENERATING_TEXT = ' Generating prompt'
 const BTN_IMAGE_DEFAULT_TEXT = 'Generate image'
 const BTN_IMAGE_GENERATING_TEXT = ' Generating image'
 
-function GeneratePromptMain() {
+interface IGeneratePromptMain {
+    projectId: string
+}
+
+function GeneratePromptMain(props: IGeneratePromptMain) {
     const [mode, setMode] = useState<number>(GenerateMode.MODE_DEFAULT)
     const [prompt, setPrompt] = useState<string>("")
     const [image, setImage] = useState<string>("")
@@ -22,7 +26,7 @@ function GeneratePromptMain() {
         setImage("")
         setElapsedSeconds(0)
 
-        GeneratePrompt().then((value) => {
+        GeneratePrompt(props.projectId).then((value) => {
             setPrompt(value)
         }).finally(() => {
             setMode(GenerateMode.MODE_DEFAULT)
@@ -36,7 +40,7 @@ function GeneratePromptMain() {
 
             const start = performance.now();
 
-            GenerateImage(prompt).then((value) => {
+            GenerateImage(props.projectId, prompt).then((value) => {
                 if (value) {
                     setImage(value)
                 }

@@ -3,21 +3,22 @@ import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { GenerateImageOptions, GeneratePromptOptions, Mode, TrainingOptions } from './constants/mode';
-import { GearWideConnected } from 'react-bootstrap-icons';
-import { Alert, Card } from 'react-bootstrap';
+import { GenerateImageOptions, GeneratePromptOptions, Mode, RenderContentID, TrainingOptions } from './constants/mode';
+import { FileEarmarkArrowUp, FileEarmarkPlus, GearWideConnected, ListTask } from 'react-bootstrap-icons';
+import { Alert, Card, Form } from 'react-bootstrap';
 import GeneratePromptMain from './generate/prompt/main';
 import TrainingSettingMain from './settings/training/train_main';
 import PromptSettingMain from './settings/generate_prompt/prompt_main';
 import ImageSettingMain from './settings/generate_image/image_main';
 import TrainingMain from './train/main';
-import { CheckIfOllamaIsRunning, CheckIfPythonIsInstalled, Dump, GetAvailableLocalModels, GetGenerateImageConfigValue, GetGeneratePromptConfigValue, GetTrainingConfigValue } from '../wailsjs/go/main/App';
-import { IConfigGenerateImage, IConfigGeneratePrompt, IConfigTraining } from './interfaces/config.interfaces';
+import { CheckIfOllamaIsRunning, CheckIfPythonIsInstalled, Dump, GetAvailableLocalModels, GetGenerateImageConfigValue, GetGeneratePromptConfigValue, GetTrainingConfigValue, CheckAppConfig, GetCurrentProjectDetail, HandleCreateNewProject, GetUserProjectsList, SetSelectedProject } from '../wailsjs/go/main/App';
+import { IConfigGenerateImage, IConfigGeneratePrompt, IConfigTraining, ICurrentProjectDetail } from './interfaces/config.interfaces';
 import logo from './assets/images/appicon.png';
+import Table from 'react-bootstrap/Table';
 import './App.css'
 
 function App() {
-    const [mode, setMode] = useState<number>(Mode.MODE_HOME)
+    const [mode, setMode] = useState<number>(-1)
     const [trainingConfigData, setTrainingConfigData] = useState<IConfigTraining>()
     const [promptModeConfigData, setPromptModeConfigData] = useState<IConfigGeneratePrompt>()
     const [imageModeConfigData, setImageConfigData] = useState<IConfigGenerateImage>()
@@ -25,31 +26,83 @@ function App() {
     const [disableGenerateButton, setDisableGenerateButton] = useState<boolean>(true)
     const [errorPythonNotInstalled, setErrorPythonNotInstalled] = useState<boolean>(false)
     const [warnOllamaNotRunning, setWarnOllamaNotRunning] = useState<boolean>(false)
-    const [animate, setAnimate] = useState<boolean>(false)
+    const [animateLoading, setAnimateLoading] = useState<boolean>(false)
+    const [animateHomepage, setAnimateHomepage] = useState<boolean>(false)
     const [showPage, setShowPage] = useState<boolean>(false)
-    const [showLoading, setShowLoading] = useState<boolean>(true)
+    const [showLoading, setShowLoading] = useState<boolean | undefined>(undefined)
+    const [projectName, setProjectName] = useState<string>("")
+    const [currentProjectDetail, setCurrentProjectDetail] = useState<ICurrentProjectDetail>({id: "", name: ""})
+    const [selectedProject, setSelectedProject] = useState<ICurrentProjectDetail>({id:"", name:""})
+    const [availableProjects, setAvailableProjects] = useState<ICurrentProjectDetail[]>()
     // const [availableModels, setAvailableModels] = useState<IAvailableModelList>()
 
     useEffect(() => {
         setShowLoading(true)
+        setMode(Mode.MODE_LOADING)
     }, [])
 
-    useEffect(() => {
-        if (showLoading) {
+    // useEffect(() => {
+    //     setAnimateLoading(true)
+
+    //     if (showLoading == true) {
+    //         CheckAppConfig().then(() => {
+    //             CheckCurrentProjectDetail()
+    //         })
+    //     } else {
+    //         setShowPage(true)
+    //     }
+    // }, [showLoading])
+
+    // useEffect(() => {
+    //     if (showPage && mode == Mode.MODE_HOME) {
+    //         loadData()
+    //     }
+    // }, [showPage])
+
+    function CheckCurrentProjectDetail() {
+        GetCurrentProjectDetail().then((value: ICurrentProjectDetail) => {
             setTimeout(() => {
-                setShowLoading(false)
+                if (value.name == "") {
+                    setMode(Mode.MODE_SET_PROJECT_NAME)
+                } else {
+                    // setAnimateHomepage(true)
+                    // setShowLoading(false)
+                    setMode(Mode.MODE_HOME)
+                }
             }, 2000)
-        } else {
-            setAnimate(true)
-            setShowPage(true)
-        }
-    }, [showLoading])
+            
+        })
+    }
 
     useEffect(() => {
-        if (showPage) {
-            loadData()
+        switch(mode) {
+            case Mode.MODE_LOADING:
+                setShowLoading(true)
+                setAnimateLoading(true)
+                CheckAppConfig().then(() => {
+                    CheckCurrentProjectDetail()
+                })
+                break;
+            case Mode.MODE_HOME:
+                // setShowLoading(false)
+                setAnimateHomepage(true)
+                GetCurrentProjectDetail().then((value: ICurrentProjectDetail) => {
+                    setCurrentProjectDetail({
+                        id: value.id,
+                        name: value.name
+                    })
+                })
+                // loadData()
+                break;
+            case Mode.MODE_SET_PROJECT_NAME:
+                break;
         }
-    }, [showPage])
+    }, [mode])
+
+    useEffect(() => {
+        if (currentProjectDetail?.id && currentProjectDetail.name)
+            loadData()
+    }, [currentProjectDetail])
 
     function loadData() {
         // GetAvailableLocalModels().then((value) => {
@@ -62,13 +115,19 @@ function App() {
             }
         })
 
-        CheckIfOllamaIsRunning().then((value: boolean) => {
+        CheckIfOllamaIsRunning(currentProjectDetail.id).then((value: boolean) => {
             if (!value) {
                 setWarnOllamaNotRunning(true)
             }
         })
 
-        GetTrainingConfigValue().then((value) => {
+        // GetCurrentProjectDetail().then((value) => {
+        //     if (value) {
+        //         setCurrentProjectName(value)
+        //     }
+        // })
+
+        GetTrainingConfigValue(currentProjectDetail.id).then((value) => {
             if (value) {
                 setTrainingConfigData({
                     Mode: value.mode,
@@ -85,7 +144,7 @@ function App() {
             }
         })
 
-        GetGeneratePromptConfigValue().then((value) => {
+        GetGeneratePromptConfigValue(currentProjectDetail.id).then((value) => {
             if (value) {
                 setPromptModeConfigData({
                     Mode: value.mode,
@@ -97,7 +156,7 @@ function App() {
             }
         })
 
-        GetGenerateImageConfigValue().then((value) => {
+        GetGenerateImageConfigValue(currentProjectDetail.id).then((value) => {
             if (value) {
                 setImageConfigData({
                     Mode: value.mode,
@@ -110,6 +169,14 @@ function App() {
                 })
             }
         })
+
+        GetUserProjectsList().then((value: any) => {
+            if (value) {
+                setAvailableProjects(value)
+            }
+        })
+
+        setSelectedProject(currentProjectDetail)
     }
 
     useEffect(() => {
@@ -125,7 +192,17 @@ function App() {
         setMode(Mode.MODE_HOME)
     }
 
-    function show() {
+    function handleCreateNewProject() {
+        HandleCreateNewProject(projectName, true).then(() => {
+            setMode(Mode.MODE_HOME)
+        })
+    }
+
+    function handleShowProjectsList() {
+        setMode(Mode.MODE_SHOW_PROJECTS_LIST)
+    }
+
+    function showHomeContent() {
         switch(mode) {
             case Mode.MODE_HOME:
                 return (
@@ -147,6 +224,21 @@ function App() {
                                 </Alert>
                             </Col>
                         }
+                        <Col sm={12} className=''>
+                            <p className='text-uppercase'>
+                                <b>Project: {currentProjectDetail.name}</b>&nbsp;&nbsp;
+                            </p>
+                        </Col>
+                        <Col sm={12} md={6} className='mb-3'>
+                            <div className='d-flex border border-dark border-3'>
+                                <Button variant='outline-dark' onClick={handleShowProjectsList} className='text-start font-weight-bold' style={{width:"100%", border:"none", borderRadius:"0px"}}>Change Project <ListTask style={{marginTop:"-3px"}} /></Button>
+                            </div>
+                        </Col>
+                        <Col sm={12} md={6} className='mb-3'>
+                            <div className='d-flex border border-dark border-3'>
+                                <Button variant='outline-dark' onClick={() => setMode(Mode.MODE_SET_PROJECT_NAME)} className='text-start font-weight-bold' style={{width:"100%", border:"none", borderRadius:"0px"}}>Create New Project <FileEarmarkPlus style={{marginTop:"-3px"}} /></Button>
+                            </div>
+                        </Col>
                         <Col sm={12} md={6} className='border gx-0 border-dark border-3'>
                             <Card className="rounded-0 bg-white text-dark h-100 border-0">
                                 <Card.Body className="d-flex align-items-center justify-content-center p-5">
@@ -196,41 +288,120 @@ function App() {
                     </Row>
                 )
             case Mode.MODE_TRAIN:
-                return (<TrainingMain />)
+                return (<TrainingMain projectId={currentProjectDetail.id} />)
             case Mode.MODE_GENERATE_PROMPT:
-                return (<GeneratePromptMain />)
+                return (<GeneratePromptMain projectId={currentProjectDetail.id} />)
             case Mode.MODE_SETTING_TRAINING:
-                return (<TrainingSettingMain />)
+                return (<TrainingSettingMain projectId={currentProjectDetail.id} />)
             case Mode.MODE_SETTING_PROMPT:
-                return (<PromptSettingMain />)
+                return (<PromptSettingMain projectId={currentProjectDetail.id} />)
             case Mode.MODE_SETTING_IMAGE:
-                return (<ImageSettingMain />)
+                return (<ImageSettingMain projectId={currentProjectDetail.id} />)
         }
     }
 
-    return (
-        (showLoading ?
-            <Container fluid id="App" className={`${animate ? "wails-fade-out" : "wails-fade-in"} pb-4 mb-4`} style={{height:"100vh"}}>
+    function renderLoading() {
+        return (
+            <Container fluid id="App" className={`${animateLoading ? "wails-fade-in" : "wails-fade-out"} pb-4 mb-4`} style={{height:"100vh"}}>
                 <Row className={`d-flex align-items-center justify-content-center w-100 h-100 gx-2 mb-4`}>
                     <Col sm={12} md={12} className='d-flex align-items-center justify-content-center w-100 h-100'>
                         <img src={logo} className='pt-0' style={{width:"400px", height:"400px", cursor:"default"}} id="logo" alt="logo"/>
                     </Col>
                 </Row>    
             </Container>
-            :
-            <Container fluid id="App" className={`${showPage ? 'wails-fade-in' : ''} pb-4 mb-4`} style={{height:"100vh"}}>
-                <Row className="gx-2 mb-4">
-                    <Col className='d-inline-flex' style={{cursor:"default"}}>
-                        {mode == Mode.MODE_HOME ? 
-                            '' : 
-                            <div className="d-inline-flex mt-4 mb-2 align-items-center" onClick={handleHomeButtonClicked}>
-                                <img src={logo} className='mt-2' style={{width:"70px", height:"70px", cursor:"pointer"}} id="logo" alt="logo"/>
-                            </div>}
+        )
+    }
+
+    function handleLoadProject() {
+        SetSelectedProject(selectedProject.id).then(() => {
+                setCurrentProjectDetail({
+                id: selectedProject.id,
+                name: selectedProject.name
+            })
+        }).then(() => setMode(Mode.MODE_LOADING))
+    }
+
+    function renderProjectDetail(contentId: number) {
+        return (
+            <Container fluid id="App" className={`${animateLoading ? "wails-fade-out" : "wails-fade-in"} d-flex align-items-center justify-content-center pb-4 mb-4`} style={{height:"90vh"}}>
+                <Row className={`gx-2 mb-4 w-100`}>
+                    <Col sm={12} md={12} className='d-flex align-items-center justify-content-center'>
+                        <img src={logo} className='pt-0' style={{width:"200px", height:"200px", cursor:"default"}} id="logo" alt="logo" onClick={() => setMode(Mode.MODE_LOADING)}/>
                     </Col>
-                </Row>
-                {show()}
+                    <Col sm={12} md={12} className=''>
+                    {
+                        contentId == RenderContentID.MODE_CREATE_NEW &&
+                            <>
+                                <Form.Label htmlFor="user_project_name">Project Name:</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    id="user_project_name_form_input"
+                                    size={"lg"}
+                                    onChange={(e) => {setProjectName(e.target.value)}}
+                                />
+                                <Button variant="success" size='lg' onClick={handleCreateNewProject} disabled={projectName == ""} className="mt-2 rounded-0">Save</Button>
+                            </>
+                    }
+                    {
+                        contentId == RenderContentID.MODE_SHOW_LIST &&
+                            <>
+                                <div className="overflow-auto" style={{ maxHeight: '400px' }}>
+                                    <Table responsive bordered hover>
+                                        <thead className="table-light sticky-top top-0"> 
+                                            <tr>
+                                                <th style={{cursor:"default"}}>Available Projects</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {
+                                                availableProjects?.map((item) => {
+                                                    return (
+                                                         <tr className={selectedProject.id == item.id ? 'table-success' : ''} style={{cursor:"pointer"}} id={item.id} onClick={_ => setSelectedProject({id: item.id, name: item.name})}>
+                                                            <td>{item.name}{currentProjectDetail.id == item.id && currentProjectDetail.id !== selectedProject.id ? " (current)" : ''}</td>
+                                                        </tr>
+                                                    )
+                                                })
+                                            }
+                                        </tbody>
+                                    </Table>
+                                </div>
+                                <Button variant="success" size='lg' onClick={handleLoadProject} disabled={selectedProject.id == currentProjectDetail.id} className="mt-2 rounded-0">Load <FileEarmarkArrowUp style={{marginTop:"-3px"}} /></Button>
+                            </>
+                    }
+                    </Col>
+                </Row>    
             </Container>
-        )     
+        )
+    }
+
+    function render() {
+        switch(mode) {
+            case Mode.MODE_LOADING:
+                return renderLoading()
+            case Mode.MODE_SET_PROJECT_NAME:
+                return renderProjectDetail(RenderContentID.MODE_CREATE_NEW)
+            case Mode.MODE_SHOW_PROJECTS_LIST:
+                return renderProjectDetail(RenderContentID.MODE_SHOW_LIST)
+            default:
+                return (
+                    <Container fluid id="App" className={`${animateHomepage ? 'wails-fade-in' : ''} pb-4 mb-4`} style={{height:"90vh"}}>
+                        <Row className="gx-2 mb-2">
+                            <Col className='d-inline-flex' style={{cursor:"default"}}>
+                                {mode == Mode.MODE_HOME ? 
+                                    '' : 
+                                    <div className="d-inline-flex mt-4 align-items-center" onClick={handleHomeButtonClicked}>
+                                        <img src={logo} className='mt-2' style={{width:"70px", height:"70px", cursor:"pointer"}} id="logo" alt="logo"/>
+                                    </div>}
+                            </Col>
+                        </Row>
+                        {showHomeContent()}
+                    </Container>
+                )
+        }
+    }
+
+    return (
+        render()
     )
 }
 
