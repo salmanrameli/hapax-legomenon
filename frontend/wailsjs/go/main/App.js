@@ -66,8 +66,8 @@ export function HandleCreateNewProject(arg1, arg2) {
   return window['go']['main']['App']['HandleCreateNewProject'](arg1, arg2);
 }
 
-export function SaveImage(arg1, arg2) {
-  return window['go']['main']['App']['SaveImage'](arg1, arg2);
+export function SaveImage(arg1, arg2, arg3) {
+  return window['go']['main']['App']['SaveImage'](arg1, arg2, arg3);
 }
 
 export function SelectImages() {

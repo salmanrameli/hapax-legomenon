@@ -290,7 +290,7 @@ function App() {
             case Mode.MODE_TRAIN:
                 return (<TrainingMain projectId={currentProjectDetail.id} />)
             case Mode.MODE_GENERATE_PROMPT:
-                return (<GeneratePromptMain projectId={currentProjectDetail.id} />)
+                return (<GeneratePromptMain projectId={currentProjectDetail.id} projectName={currentProjectDetail.name} />)
             case Mode.MODE_SETTING_TRAINING:
                 return (<TrainingSettingMain projectId={currentProjectDetail.id} />)
             case Mode.MODE_SETTING_PROMPT:

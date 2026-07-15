@@ -14,6 +14,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"time"
 	"ubiquitous-funicular/constants"
 	"ubiquitous-funicular/structs"
@@ -726,15 +727,17 @@ func (a *App) GenerateImage(projectId string, prompt string) (string, error) {
 	return result.Image, nil
 }
 
-func (a *App) SaveImage(base64Str string, prompt string) error {
+func (a *App) SaveImage(base64Str string, prompt string, projectName string) error {
 	timestamp := time.Now().Format("20060102_150405")
 
+	projectName = strings.ReplaceAll(projectName, " ", "_")
+	defaultFolderName := fmt.Sprintf("%s_generate_image_%s", projectName, timestamp)
 	defaultFilename := fmt.Sprintf("generate_image_%s", timestamp)
 	defaultTxtName := fmt.Sprintf("prompt_image_%s", timestamp)
 
 	selectedPath, err := runtime.SaveFileDialog(a.ctx, runtime.SaveDialogOptions{
 		Title:           "Save Result",
-		DefaultFilename: defaultFilename,
+		DefaultFilename: defaultFolderName,
 		Filters: []runtime.FileFilter{
 			{DisplayName: "Project Folder"},
 		},

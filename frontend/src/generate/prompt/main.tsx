@@ -12,6 +12,7 @@ const BTN_IMAGE_GENERATING_TEXT = ' Generating image'
 
 interface IGeneratePromptMain {
     projectId: string
+    projectName: string
 }
 
 function GeneratePromptMain(props: IGeneratePromptMain) {
@@ -58,7 +59,7 @@ function GeneratePromptMain(props: IGeneratePromptMain) {
 
     function saveImage() {
         if (image !== undefined) {
-            SaveImage(image, prompt).then((value) => {
+            SaveImage(image, prompt, props.projectName).then((value) => {
                 setMode(GenerateMode.MODE_DEFAULT)
             })
         }
