@@ -1,3 +1,8 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/salmanrameli/hapax-legomenon/main/build/appicon.png" height="256">
+  <h1 align="center">Hapax Legomenon</h1>
+</p>
+
 # About
 This is basically a wrapper for Python scripts that I got during Suradaya Photography Workshop 2026. The Python scripts are used to analyze images feed by the user, then extract the result to be stored in a csv file as tokens. These tokens are picked randomly also by LLM to be used as the basis for generating prompt to generate images. 
 
