@@ -103,9 +103,9 @@ function TrainingMain(props: ITrainingMain) {
     async function handleProcessTexts() {
         setMode(TrainingMode.MODE_PROCESSING_TEXTS_TO_TOKENS)
         
-        for (const item of responses) {            
-            let progress = 0;
+        let progress = 0;
 
+        for (const item of responses) {            
             await DescriptionsToTokens(props.projectId, item.text).then((value) => {
                 setCountProcessedText(++progress)
             })
