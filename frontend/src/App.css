@@ -3,57 +3,127 @@
     text-align: center;
 }
 
-#logo {
-    display: block;
-    width: 50%;
-    height: 50%;
-    margin: auto;
-    padding: 10% 0 0;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-    background-origin: content-box;
+body {
+  background-color: #F2F0ED !important;
 }
 
-.result {
-    height: 20px;
-    line-height: 20px;
-    margin: 1.5rem auto;
+.border-hapax-primary {
+  border: 3px solid #061525
 }
 
-.input-box .btn {
-    width: 60px;
-    height: 30px;
-    line-height: 30px;
-    border-radius: 3px;
-    border: none;
-    margin: 0 0 0 20px;
-    padding: 0 8px;
-    cursor: pointer;
+#generate-prompt {
+  background-color: rgb(227, 38, 54);
+  border-color: rgb(227, 38, 54);
+  border: 3px solid rgb(227, 38, 54)
 }
 
-.input-box .btn:hover {
-    background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
-    color: #333333;
+.btn-hapax-danger {
+  background-color: rgb(227, 38, 54);
+  border-color: rgb(227, 38, 54);
 }
 
-.input-box .input {
-    border: none;
-    border-radius: 3px;
-    outline: none;
-    height: 30px;
-    line-height: 30px;
-    padding: 0 10px;
-    background-color: rgba(240, 240, 240, 1);
-    -webkit-font-smoothing: antialiased;
+.btn-hapax-danger:hover, .btn-hapax-danger:disabled {
+  background-color: white;
+  border-color: rgb(227, 38, 54);
+  color: rgb(227, 38, 54);
 }
 
-.input-box .input:hover {
-    border: none;
-    background-color: rgba(255, 255, 255, 1);
+#generate-prompt:hover, #generate-image:hover {
+  background-color: white;
+  color: rgb(227, 38, 54);
 }
 
-.input-box .input:focus {
-    border: none;
-    background-color: rgba(255, 255, 255, 1);
+#bg-generate-prompt {
+  background-color: #061525
+}
+
+.spinner-orange {
+  color: #ff9d00
+}
+
+.text-hapax-primary {
+  color: #3F444A !important;
+}
+.bg-hapax-primary {
+  background-color: #3F444A !important;
+  color: #fff;
+}
+
+.text-hapax-secondary {
+  color: #C5A173 !important;
+}
+.bg-hapax-secondary {
+  background-color: #C5A173 !important;
+  color: #fff;
+}
+
+.text-hapax-tertiary {
+  color: #B8AEA3 !important;
+}
+.bg-hapax-tertiary {
+  background-color: #B8AEA3 !important;
+  color: #000;
+}
+
+.bg-hapax-light {
+  background-color: #F2F0ED !important;
+}
+.bg-hapax-soft {
+  background-color: #E6E1DB !important;
+}
+
+.btn-hapax-primary {
+  background-color: #0f3159;
+  border-color: #000000;
+  color: #fff;
+}
+.btn-hapax-primary:hover, btn-hapax-primary:active, .btn-hapax-primary:disabled {
+  /* background-color: #061525;
+  border-color: #34383D; */
+  background-color: white;
+  border-color: #0f3159;
+  color: #0f3159
+}
+
+.btn-hapax-secondary {
+  /* background-color: #C5A173; */
+  background-color: #c5a27387;
+  border-color: #C5A173;
+  color: #fff;
+}
+.btn-hapax-secondary:hover {
+  background-color: #B89363;
+  border-color: #B89363;
+}
+
+@keyframes wailsWindowEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.wails-fade-in {
+  opacity: 0;
+  animation: wailsWindowEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes wailsWindowxit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+}
+
+.wails-fade-out {
+  opacity: 1;
+  animation: wailsWindowExit 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

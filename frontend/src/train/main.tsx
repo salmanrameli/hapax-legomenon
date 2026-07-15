@@ -11,7 +11,11 @@ import { IImageAnalysisResponse } from "../interfaces/training.interfaces";
 import TextToToken from "./text_to_token";
 import Completed from "./completed";
 
-function TrainingMain() {
+interface ITrainingMain {
+    projectId: string
+}
+
+function TrainingMain(props: ITrainingMain) {
     const [imagePaths, setImagePaths] = useState<string[]>([])
     const [previews, setPreviews] = useState<string[]>([])
     const [mode, setMode] = useState<number>(TrainingMode.MODE_HOME)
@@ -61,7 +65,7 @@ function TrainingMain() {
         for (const item of imagePaths) {
             const start = performance.now();
 
-            await StartImageTraining(item).then((value: string) => {
+            await StartImageTraining(props.projectId, item).then((value: string) => {
                 if (value) {
                     setResponses((prevItems) => [...prevItems, {
                         index: countIndex++,
@@ -99,10 +103,10 @@ function TrainingMain() {
     async function handleProcessTexts() {
         setMode(TrainingMode.MODE_PROCESSING_TEXTS_TO_TOKENS)
         
-        for (const item of responses) {            
-            let progress = 0;
+        let progress = 0;
 
-            await DescriptionsToTokens(item.text).then((value) => {
+        for (const item of responses) {            
+            await DescriptionsToTokens(props.projectId, item.text).then((value) => {
                 setCountProcessedText(++progress)
             })
         }
@@ -116,7 +120,7 @@ function TrainingMain() {
                 return (
                     <Row>
                         <Col className="col-12">
-                            <div className="d-flex gap-2 flex-wrap justify-content-center p-3 border border-dark border-3">
+                            <div className="d-flex gap-2 bg-white flex-wrap justify-content-center p-3 border border-dark border-3">
                                 {previews.length == 0 ?
                                     <div className="d-flex justify-content-center align-items-center" style={{height: "400px", width:"100%"}}>
                                         <Button size="lg" className="rounded-0" onClick={_ => handleOpenFileDialog()} variant="dark">Import Images</Button>
@@ -137,7 +141,7 @@ function TrainingMain() {
                         </Col>
                         <Col className={`${previews.length == 0 ? "d-none" : "col-12"}`}>
                             <div className="d-flex flex-wrap p-3 justify-content-center align-items-center">
-                                <Button variant="outline-dark border border-dark border-3 rounded-0" size="lg" className="rounded-0" onClick={startTraining}>Start Training <PlayFill /></Button>
+                                <Button size="lg" className="btn-hapax-primary border border-dark border-3 rounded-0" onClick={startTraining}>Start Training <PlayFill /></Button>
                             </div>
                         </Col>
                     </Row>

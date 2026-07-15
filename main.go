@@ -26,7 +26,7 @@ func main() {
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
-		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
+		BackgroundColour: &options.RGBA{R: 255, G: 255, B: 255, A: 255},
 		OnStartup:        app.startup,
 		Bind: []interface{}{
 			app,
@@ -46,7 +46,7 @@ func main() {
 			ContentProtection:    false,
 			About: &mac.AboutInfo{
 				Title:   "Hapax Legomenon",
-				Message: "Created by Salman Rameli in 2026",
+				Message: "Created by Anugra Pratama Rameli in 2026",
 			},
 		},
 	})

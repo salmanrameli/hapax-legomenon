@@ -1,12 +1,20 @@
 package structs
 
 type ProjectConfigPathStructure struct {
-	ProjectPath          string
-	ArchivedTokens       string
-	ConfigTraining       string
-	ConfigGeneratePrompt string
-	ConfigGenerateImage  string
-	TokenDatabase        string
+	ProjectPath        string
+	ArchivedTokensDir  string
+	UserProjectsDir    string
+	ConfigUserProjects string
+}
+
+type UserProjects struct {
+	Selected string            `json:"selected"`
+	Options  []UserProjectItem `json:"options"`
+}
+
+type UserProjectItem struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
 }
 
 type ConfigTraining struct {

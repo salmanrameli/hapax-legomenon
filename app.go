@@ -14,10 +14,12 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"time"
 	"ubiquitous-funicular/constants"
 	"ubiquitous-funicular/structs"
 
+	"github.com/google/uuid"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
@@ -44,19 +46,13 @@ func (a *App) getProjectConfigPaths() (*structs.ProjectConfigPathStructure, erro
 	}
 
 	projectsPath := userConfigDir + constants.APP_USER_CONFIG_DIR
-	archivedTokenPath := userConfigDir + constants.APP_CREATED_TOKENS_DIR
-	configTraining := "/" + constants.APP_SETTING_TRAINING
-	configGeneratePrompt := "/" + constants.APP_SETTING_PROMPT
-	configGenerateImage := "/" + constants.APP_SETTING_GENERATE_IMAGE
-	tokenDatabase := "/" + constants.TOKEN_DATABASE
+	configUserProjects := "/" + constants.APP_SETTING_USER_PROJECTS
 
 	return &structs.ProjectConfigPathStructure{
-		ProjectPath:          projectsPath,
-		ArchivedTokens:       archivedTokenPath,
-		ConfigTraining:       projectsPath + configTraining,
-		ConfigGeneratePrompt: projectsPath + configGeneratePrompt,
-		ConfigGenerateImage:  projectsPath + configGenerateImage,
-		TokenDatabase:        projectsPath + tokenDatabase,
+		ProjectPath:        projectsPath,
+		ArchivedTokensDir:  projectsPath + constants.APP_CREATED_TOKENS_DIR,
+		UserProjectsDir:    projectsPath + constants.APP_USER_PROJECTS_DIR,
+		ConfigUserProjects: projectsPath + configUserProjects,
 	}, nil
 }
 
@@ -64,30 +60,252 @@ func (a *App) getProjectConfigPaths() (*structs.ProjectConfigPathStructure, erro
 // so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
+}
 
+func (a *App) CheckAppConfig() {
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
-		log.Fatalf("startup getProjectConfigPaths error: %s\n", err)
+		log.Fatalf("CheckAppConfig getProjectConfigPaths error: %s\n", err)
 
 		return
 	}
 
-	// fmt.Println("app user project directory: " + projectDetail.ProjectPath)
-	// fmt.Println("app user training config file path: " + projectDetail.ConfigTraining)
-	// fmt.Println("app user generate prompt config file path: " + projectDetail.ConfigGeneratePrompt)
-	// fmt.Println("app user generate image config file path: " + projectDetail.ConfigGenerateImage)
-	// fmt.Println("app user token database file path: " + projectDetail.TokenDatabase)
+	a.checkAppProjectDir(projectDetail.ProjectPath, projectDetail.UserProjectsDir)
 
-	a.checkProjectDir(projectDetail.ProjectPath, projectDetail.ArchivedTokens)
+	a.checkUserProjectsDirContent(projectDetail.UserProjectsDir)
 
-	a.configureTokenDatabaseFile(projectDetail.TokenDatabase)
+	a.ConfigureUserProjectsFile(projectDetail.ConfigUserProjects)
+}
 
-	a.configureTrainingConfig(projectDetail.ConfigTraining)
+func (a *App) checkUserProjectsDirContent(path string) {
+	_, err := os.Stat(path)
 
-	a.configureGeneratePromptConfig(projectDetail.ConfigGeneratePrompt)
+	if os.IsNotExist(err) {
+		if err := os.Mkdir(path, os.ModePerm); err != nil {
+			log.Fatalf("app checkUserProjectsDirContent error in creating application project directory: %s\n", err)
+		}
+	}
+}
 
-	a.configureGenerateImageConfig(projectDetail.ConfigGenerateImage)
+func (a *App) GetCurrentProjectDetail() *structs.UserProjectItem {
+	projectDetail, err := a.getProjectConfigPaths()
+
+	if err != nil {
+		log.Fatalf("GetTrainingConfigValue getProjectConfigPaths error getting directory: %v\n", err)
+
+		return &structs.UserProjectItem{}
+	}
+
+	content, err := os.ReadFile(projectDetail.ConfigUserProjects)
+
+	if err != nil {
+		log.Fatalf("GetTrainingConfigValue error opening file: %v\n", err)
+
+		return &structs.UserProjectItem{}
+	}
+
+	var config structs.UserProjects
+
+	err = json.Unmarshal(content, &config)
+
+	if err != nil {
+		log.Fatalf("GetTrainingConfigValue error parsing JSON: %v\n", err)
+
+		return &structs.UserProjectItem{}
+	}
+
+	selected := config.Selected
+
+	result := &structs.UserProjectItem{}
+
+	for _, item := range config.Options {
+		if item.ID == selected {
+			result.ID = item.ID
+			result.Name = item.Name
+			break
+		}
+	}
+
+	return result
+}
+
+func (a *App) HandleCreateNewProject(name string, useProject bool) error {
+	projectDetail, err := a.getProjectConfigPaths()
+
+	if err != nil {
+		log.Fatalf("HandleCreateNewProject getProjectConfigPaths error getting directory: %v\n", err)
+
+		return err
+	}
+
+	content, err := os.ReadFile(projectDetail.ConfigUserProjects)
+
+	if err != nil {
+		log.Fatalf("HandleCreateNewProject error opening file: %v\n", err)
+
+		return err
+	}
+
+	var config structs.UserProjects
+
+	err = json.Unmarshal(content, &config)
+
+	if err != nil {
+		log.Fatalf("HandleCreateNewProject error parsing JSON: %v\n", err)
+
+		return err
+	}
+
+	id := uuid.New().String()
+
+	id = id[:8]
+
+	newProject := &structs.UserProjectItem{
+		ID:   id,
+		Name: name,
+	}
+
+	config.Options = append(config.Options, *newProject)
+
+	file, err := os.OpenFile(projectDetail.ConfigUserProjects, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+
+	if err != nil {
+		log.Fatalf("HandleCreateNewProject failed to open file: %v\n", err)
+
+		return err
+	}
+
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+
+	encoder.SetIndent("", "  ")
+
+	updatedValue := &structs.UserProjects{
+		Options: config.Options,
+	}
+
+	if useProject {
+		updatedValue.Selected = id
+	}
+
+	err = encoder.Encode(updatedValue)
+
+	if err != nil {
+		log.Fatalf("HandleCreateNewProject failed to write JSON: %v\n", err)
+
+		return err
+	}
+
+	projectDirectory := projectDetail.UserProjectsDir + "/" + id
+
+	if err := os.Mkdir(projectDirectory, os.ModePerm); err != nil {
+		log.Fatalf("app HandleCreateNewProject error in creating project directory: %s\n", err)
+	}
+
+	archivedTokenDirectory := projectDetail.UserProjectsDir + "/" + id + "/" + constants.APP_CREATED_TOKENS_DIR
+
+	if err := os.Mkdir(archivedTokenDirectory, os.ModePerm); err != nil {
+		log.Fatalf("app HandleCreateNewProject error in creating archived tokens directory: %s\n", err)
+	}
+
+	a.configureTokenDatabaseFile(projectDirectory + "/" + constants.TOKEN_DATABASE)
+
+	a.configureTrainingConfig(projectDirectory + "/" + constants.APP_SETTING_TRAINING)
+
+	a.configureGeneratePromptConfig(projectDirectory + "/" + constants.APP_SETTING_PROMPT)
+
+	a.configureGenerateImageConfig(projectDirectory + "/" + constants.APP_SETTING_GENERATE_IMAGE)
+
+	return nil
+}
+
+func (a *App) SetSelectedProject(projectId string) error {
+	projectDetail, err := a.getProjectConfigPaths()
+
+	if err != nil {
+		log.Fatalf("SetSelectedProject getProjectConfigPaths error getting directory: %v\n", err)
+
+		return err
+	}
+
+	content, err := os.ReadFile(projectDetail.ConfigUserProjects)
+
+	if err != nil {
+		log.Fatalf("SetSelectedProject error opening file: %v\n", err)
+
+		return err
+	}
+
+	var config structs.UserProjects
+
+	err = json.Unmarshal(content, &config)
+
+	if err != nil {
+		log.Fatalf("SetSelectedProject error parsing JSON: %v\n", err)
+
+		return err
+	}
+
+	file, err := os.OpenFile(projectDetail.ConfigUserProjects, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+
+	if err != nil {
+		log.Fatalf("SetSelectedProject failed to open file: %v\n", err)
+
+		return err
+	}
+
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+
+	encoder.SetIndent("", "  ")
+
+	updatedValue := &structs.UserProjects{
+		Selected: projectId,
+		Options:  config.Options,
+	}
+
+	err = encoder.Encode(updatedValue)
+
+	if err != nil {
+		log.Fatalf("SetSelectedProject failed to write JSON: %v\n", err)
+
+		return err
+	}
+
+	return nil
+}
+
+func (a *App) GetUserProjectsList() ([]structs.UserProjectItem, error) {
+	projectDetail, err := a.getProjectConfigPaths()
+
+	if err != nil {
+		log.Fatalf("GetUserProjectsList getProjectConfigPaths error getting directory: %v\n", err)
+
+		return []structs.UserProjectItem{}, err
+	}
+
+	content, err := os.ReadFile(projectDetail.ConfigUserProjects)
+
+	if err != nil {
+		log.Fatalf("GetUserProjectsList error opening file: %v\n", err)
+
+		return []structs.UserProjectItem{}, err
+	}
+
+	var config structs.UserProjects
+
+	err = json.Unmarshal(content, &config)
+
+	if err != nil {
+		log.Fatalf("GetUserProjectsList error parsing JSON: %v\n", err)
+
+		return []structs.UserProjectItem{}, err
+	}
+
+	return config.Options, nil
 }
 
 func (a *App) CheckIfPythonIsInstalled() bool {
@@ -100,8 +318,8 @@ func (a *App) CheckIfPythonIsInstalled() bool {
 	return true
 }
 
-func (a *App) checkOllama() bool {
-	trainingConfig, err := a.GetTrainingConfigValue()
+func (a *App) checkOllama(projectId string) bool {
+	trainingConfig, err := a.GetTrainingConfigValue(projectId)
 
 	if err != nil {
 		log.Fatalf("checkOllama GetTrainingConfigValue error: %v\n", err)
@@ -124,30 +342,61 @@ func (a *App) checkOllama() bool {
 	return resp.StatusCode == http.StatusOK
 }
 
-func (a *App) CheckIfOllamaIsRunning() bool {
-	if !a.checkOllama() {
+func (a *App) CheckIfOllamaIsRunning(projectId string) bool {
+	if !a.checkOllama(projectId) {
 		return false
 	}
 
 	return true
 }
 
-func (a *App) checkProjectDir(path string, archivedTokenDir string) {
+func (a *App) checkAppProjectDir(path string, userProjectsDir string) {
 	_, err := os.Stat(path)
 
 	if os.IsNotExist(err) {
 		if err := os.Mkdir(path, os.ModePerm); err != nil {
-			log.Fatalf("app checkProjectDir error in creating application project directory: %s\n", err)
+			log.Fatalf("app checkAppProjectDir error in creating application project directory: %s\n", err)
 
 			return
 		}
 	}
-
-	_, err = os.Stat(archivedTokenDir)
+	_, err = os.Stat(userProjectsDir)
 
 	if os.IsNotExist(err) {
-		if err := os.Mkdir(archivedTokenDir, os.ModePerm); err != nil {
-			log.Fatalf("app checkProjectDir error in creating application archived tokens directory: %s\n", err)
+		if err := os.Mkdir(userProjectsDir, os.ModePerm); err != nil {
+			log.Fatalf("app checkAppProjectDir error in creating application user project directory: %s\n", err)
+
+			return
+		}
+	}
+}
+
+func (a *App) ConfigureUserProjectsFile(path string) {
+	_, err := os.Stat(path)
+
+	if os.IsNotExist(err) {
+		userProjects, err := os.Create(path)
+
+		if err != nil {
+			log.Fatalf("app createUserProjectsFile error in creating user projects config file: %s\n", err)
+
+			return
+		}
+
+		defer userProjects.Close()
+
+		defaultUserProjects := structs.UserProjects{
+			Selected: "",
+			Options:  []structs.UserProjectItem{},
+		}
+
+		encoder := json.NewEncoder(userProjects)
+		encoder.SetIndent("", "    ")
+
+		err = encoder.Encode(defaultUserProjects)
+
+		if err != nil {
+			log.Fatalf("app createUserProjectsFile unable to write default user project config: %s\n", err)
 
 			return
 		}
@@ -206,7 +455,7 @@ func (a *App) configureTokenDatabaseFile(path string) {
 		file, err := os.Create(path)
 
 		if err != nil {
-			log.Fatalf("app configureTokenDatabaseFile error in creating projects token database file: %s\n", err)
+			log.Fatalf("app configureTokenDatabaseFile error in creating projects token database file: %v\n", err)
 
 			return
 		}
@@ -220,7 +469,7 @@ func (a *App) configureTokenDatabaseFile(path string) {
 		header := []string{"tier", "ok", "module", "sub_module", "token_concept", "surabaya_specific", "poids_structurel", "xeno_index"}
 
 		if err := writer.Write(header); err != nil {
-			log.Fatalf("app configureTokenDatabaseFile error in writing token databse header: %s\n", err)
+			log.Fatalf("app configureTokenDatabaseFile error in writing token database header: %v\n", err)
 
 			return
 		}
@@ -234,7 +483,7 @@ func (a *App) configureTrainingConfig(path string) {
 		configTraining, err := os.Create(path)
 
 		if err != nil {
-			log.Fatalf("app configureTrainingConfig error in creating projects training config file: %s\n", err)
+			log.Fatalf("app configureTrainingConfig error in creating projects training config file: %v\n", err)
 
 			return
 		}
@@ -334,8 +583,8 @@ func (a *App) configureGenerateImageConfig(path string) {
 	}
 }
 
-func (a *App) GeneratePrompt() (string, error) {
-	promptConfig, err := a.GetGeneratePromptConfigValue()
+func (a *App) GeneratePrompt(projectId string) (string, error) {
+	promptConfig, err := a.GetGeneratePromptConfigValue(projectId)
 
 	if err != nil {
 		log.Fatalf("GeneratePrompt GetTrainingConfigValue error: %v\n", err)
@@ -369,7 +618,7 @@ func (a *App) GeneratePrompt() (string, error) {
 
 	pythonInterpreter := "python3"
 	scriptName := "generate_prompt.py"
-	tokenDatabasePath := projectConfigPath.TokenDatabase
+	tokenDatabasePath := projectConfigPath.UserProjectsDir + "/" + projectId + "/" + constants.TOKEN_DATABASE
 
 	scriptData, err := pythonFolder.ReadFile("python/" + scriptName)
 
@@ -407,8 +656,8 @@ func (a *App) GeneratePrompt() (string, error) {
 	return string(output), nil
 }
 
-func (a *App) GenerateImage(prompt string) (string, error) {
-	imageConfig, err := a.GetGenerateImageConfigValue()
+func (a *App) GenerateImage(projectId string, prompt string) (string, error) {
+	imageConfig, err := a.GetGenerateImageConfigValue(projectId)
 
 	if err != nil {
 		log.Fatalf("GenerateImage GetGenerateImageConfigValue error: %v\n", err)
@@ -478,15 +727,17 @@ func (a *App) GenerateImage(prompt string) (string, error) {
 	return result.Image, nil
 }
 
-func (a *App) SaveImage(base64Str string, prompt string) error {
+func (a *App) SaveImage(base64Str string, prompt string, projectName string) error {
 	timestamp := time.Now().Format("20060102_150405")
 
+	projectName = strings.ReplaceAll(projectName, " ", "_")
+	defaultFolderName := fmt.Sprintf("%s_generate_image_%s", projectName, timestamp)
 	defaultFilename := fmt.Sprintf("generate_image_%s", timestamp)
 	defaultTxtName := fmt.Sprintf("prompt_image_%s", timestamp)
 
 	selectedPath, err := runtime.SaveFileDialog(a.ctx, runtime.SaveDialogOptions{
 		Title:           "Save Result",
-		DefaultFilename: defaultFilename,
+		DefaultFilename: defaultFolderName,
 		Filters: []runtime.FileFilter{
 			{DisplayName: "Project Folder"},
 		},
@@ -538,8 +789,8 @@ func (a *App) SaveImage(base64Str string, prompt string) error {
 	return nil
 }
 
-func (a *App) DescriptionsToTokens(texts string) (string, error) {
-	trainingConfig, err := a.GetTrainingConfigValue()
+func (a *App) DescriptionsToTokens(projectId string, texts string) (string, error) {
+	trainingConfig, err := a.GetTrainingConfigValue(projectId)
 
 	if err != nil {
 		log.Fatalf("DescriptionsToTokens GetTrainingConfigValue error: %v\n", err)
@@ -575,7 +826,7 @@ func (a *App) DescriptionsToTokens(texts string) (string, error) {
 
 	pythonInterpreter := "python3"
 	scriptName := "descriptions_to_tokens.py"
-	tokenDatabasePath := projectConfigPath.TokenDatabase
+	tokenDatabasePath := projectConfigPath.UserProjectsDir + "/" + projectId + "/" + constants.TOKEN_DATABASE
 
 	scriptData, err := pythonFolder.ReadFile("python/" + scriptName)
 
@@ -600,6 +851,7 @@ func (a *App) DescriptionsToTokens(texts string) (string, error) {
 	cmd := exec.Command(
 		pythonInterpreter,
 		tmpScriptPath,
+		projectId,
 		modelURL,
 		trainingConfig.Model,
 		projectConfigPath.ProjectPath,
@@ -619,8 +871,8 @@ func (a *App) DescriptionsToTokens(texts string) (string, error) {
 	return string(output), nil
 }
 
-func (a *App) StartImageTraining(imagePath string) (string, error) {
-	trainingConfig, err := a.GetTrainingConfigValue()
+func (a *App) StartImageTraining(projectId string, imagePath string) (string, error) {
+	trainingConfig, err := a.GetTrainingConfigValue(projectId)
 
 	if err != nil {
 		log.Fatalf("StartImageTraining GetTrainingConfigValue error: %v\n", err)
@@ -701,8 +953,8 @@ func (a *App) SelectImages() ([]string, error) {
 		Title: "Select Images",
 		Filters: []runtime.FileFilter{
 			{
-				DisplayName: "JPG",
-				Pattern:     "*.jpg;*.jpeg",
+				DisplayName: "*.jpg, *.jpeg, *.png",
+				Pattern:     "*.jpg;*.jpeg;*.png",
 			},
 		},
 	})
@@ -744,7 +996,7 @@ func (a *App) EncodeImagesFromPath(paths []string) ([]string, error) {
 	return imageData, nil
 }
 
-func (a *App) GetTrainingConfigValue() (*structs.ConfigTraining, error) {
+func (a *App) GetTrainingConfigValue(projectId string) (*structs.ConfigTraining, error) {
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
@@ -753,7 +1005,7 @@ func (a *App) GetTrainingConfigValue() (*structs.ConfigTraining, error) {
 		return &structs.ConfigTraining{}, err
 	}
 
-	content, err := os.ReadFile(projectDetail.ConfigTraining)
+	content, err := os.ReadFile(projectDetail.UserProjectsDir + "/" + projectId + "/" + constants.APP_SETTING_TRAINING)
 
 	if err != nil {
 		log.Fatalf("GetTrainingConfigValue error opening file: %v\n", err)
@@ -774,7 +1026,7 @@ func (a *App) GetTrainingConfigValue() (*structs.ConfigTraining, error) {
 	return &config, nil
 }
 
-func (a *App) GetGeneratePromptConfigValue() (*structs.ConfigGeneratePrompt, error) {
+func (a *App) GetGeneratePromptConfigValue(projectId string) (*structs.ConfigGeneratePrompt, error) {
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
@@ -783,7 +1035,7 @@ func (a *App) GetGeneratePromptConfigValue() (*structs.ConfigGeneratePrompt, err
 		return &structs.ConfigGeneratePrompt{}, err
 	}
 
-	content, err := os.ReadFile(projectDetail.ConfigGeneratePrompt)
+	content, err := os.ReadFile(projectDetail.UserProjectsDir + "/" + projectId + "/" + constants.APP_SETTING_PROMPT)
 
 	if err != nil {
 		log.Fatalf("GetGeneratePromptConfigValue error opening file: %v\n", err)
@@ -804,7 +1056,7 @@ func (a *App) GetGeneratePromptConfigValue() (*structs.ConfigGeneratePrompt, err
 	return &config, nil
 }
 
-func (a *App) GetGenerateImageConfigValue() (*structs.ConfigGenerateImage, error) {
+func (a *App) GetGenerateImageConfigValue(projectId string) (*structs.ConfigGenerateImage, error) {
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
@@ -813,7 +1065,7 @@ func (a *App) GetGenerateImageConfigValue() (*structs.ConfigGenerateImage, error
 		return &structs.ConfigGenerateImage{}, err
 	}
 
-	content, err := os.ReadFile(projectDetail.ConfigGenerateImage)
+	content, err := os.ReadFile(projectDetail.UserProjectsDir + "/" + projectId + "/" + constants.APP_SETTING_GENERATE_IMAGE)
 
 	if err != nil {
 		log.Fatalf("GetGenerateImageConfigValue error opening file: %v\n", err)
@@ -834,7 +1086,7 @@ func (a *App) GetGenerateImageConfigValue() (*structs.ConfigGenerateImage, error
 	return &config, nil
 }
 
-func (a *App) StoreTrainingConfigValue(value *structs.ConfigTraining) error {
+func (a *App) StoreTrainingConfigValue(projectId string, value *structs.ConfigTraining) error {
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
@@ -843,7 +1095,7 @@ func (a *App) StoreTrainingConfigValue(value *structs.ConfigTraining) error {
 		return err
 	}
 
-	file, err := os.OpenFile(projectDetail.ConfigTraining, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	file, err := os.OpenFile(projectDetail.UserProjectsDir+"/"+projectId+"/"+constants.APP_SETTING_TRAINING, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 
 	if err != nil {
 		log.Fatalf("StoreTrainingConfigValue failed to open file: %v\n", err)
@@ -874,7 +1126,7 @@ func (a *App) StoreTrainingConfigValue(value *structs.ConfigTraining) error {
 	return nil
 }
 
-func (a *App) StoreGeneratePromptConfigValue(value *structs.ConfigGeneratePrompt) error {
+func (a *App) StoreGeneratePromptConfigValue(projectId string, value *structs.ConfigGeneratePrompt) error {
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
@@ -883,7 +1135,7 @@ func (a *App) StoreGeneratePromptConfigValue(value *structs.ConfigGeneratePrompt
 		return err
 	}
 
-	file, err := os.OpenFile(projectDetail.ConfigGeneratePrompt, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	file, err := os.OpenFile(projectDetail.UserProjectsDir+"/"+projectId+"/"+constants.APP_SETTING_PROMPT, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 
 	if err != nil {
 		log.Fatalf("StoreGeneratePromptConfigValue failed to open file: %v\n", err)
@@ -914,7 +1166,7 @@ func (a *App) StoreGeneratePromptConfigValue(value *structs.ConfigGeneratePrompt
 	return nil
 }
 
-func (a *App) StoreGenerateImageConfigValue(value *structs.ConfigGenerateImage) error {
+func (a *App) StoreGenerateImageConfigValue(projectId string, value *structs.ConfigGenerateImage) error {
 	projectDetail, err := a.getProjectConfigPaths()
 
 	if err != nil {
@@ -923,7 +1175,7 @@ func (a *App) StoreGenerateImageConfigValue(value *structs.ConfigGenerateImage) 
 		return err
 	}
 
-	file, err := os.OpenFile(projectDetail.ConfigGenerateImage, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	file, err := os.OpenFile(projectDetail.UserProjectsDir+"/"+projectId+"/"+constants.APP_SETTING_GENERATE_IMAGE, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 
 	if err != nil {
 		log.Fatalf("StoreGenerateImageConfigValue failed to open file: %v\n", err)

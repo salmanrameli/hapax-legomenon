@@ -5,13 +5,17 @@ import { GetGeneratePromptConfigValue, StoreGeneratePromptConfigValue } from "..
 import ConfigPrompt from "./config_prompt";
 import { IConfigGeneratePrompt } from "../../interfaces/config.interfaces";
 
-function PromptSettingMain() {
+interface IPromptSettingMain {
+    projectId: string
+}
+
+function PromptSettingMain(props: IPromptSettingMain) {
     const [generatePromptDetail, setGeneratePromptDetail] = useState<IConfigGeneratePrompt>({Mode:"", Model:"", URLLocal: "", URLCloud: "", APIKeyCloud:""})
     const [show, setShow] = useState<boolean>(false)
     const [disableSaveButton, setDisableSaveButton] = useState<boolean>(true)
 
     useEffect(() => {        
-        GetGeneratePromptConfigValue().then((value) => {
+        GetGeneratePromptConfigValue(props.projectId).then((value) => {
             setGeneratePromptDetail({
                 Mode: value.mode,
                 Model: value.model,
@@ -54,7 +58,7 @@ function PromptSettingMain() {
     }
 
     const handleSaveChanges = () => {        
-        StoreGeneratePromptConfigValue({
+        StoreGeneratePromptConfigValue(props.projectId, {
             mode: generatePromptDetail.Mode,
             model: generatePromptDetail.Model,
             url_local: generatePromptDetail.URLLocal,
@@ -74,7 +78,7 @@ function PromptSettingMain() {
                 <div className="d-inline-flex w-100 mt-2 flex-wrap p-3 border border-dark border-2">
                     {show && <ConfigPrompt source={generatePromptDetail.Mode} defaultValue={generatePromptDetail!} onChangeConfig={handleChangeConfig} onSaveChanges={handleSaveChanges} />}
                 </div>
-                <Button variant="success" onClick={handleSaveChanges} disabled={disableSaveButton} className="mt-2 rounded-0">Save</Button>
+                <Button size="lg" onClick={handleSaveChanges} disabled={disableSaveButton} className="btn-hapax-primary border border-dark border-2 mt-2 rounded-0">Save</Button>
             </Col>
         </Row>
     )

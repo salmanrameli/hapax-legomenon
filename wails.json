@@ -9,5 +9,12 @@
   "author": {
     "name": "Anugra Pratama Rameli",
     "email": "salmanrameli@gmail.com"
+  },
+  "version": "0.2.0-alpha",
+  "info": {
+    "productName": "Hapax Legomenon",
+    "productVersion": "0.2.0-alpha",
+    "copyright": "Copyright © 2026",
+    "comments": "Built by Anugra Pratama Rameli"
   }
 }

@@ -1,3 +1,8 @@
+export interface ICurrentProjectDetail {
+    id: string,
+    name: string
+}
+
 export interface ISettingTraining {
     data: IConfigTraining,
     onChangeSource: (source: string) => void
