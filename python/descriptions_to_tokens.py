@@ -153,7 +153,7 @@ def validate_rows(rows):
 
     return valid, errors
 
-def extract_tokens(model_url, model_name, project_path, token_database_path, text, filename):
+def extract_tokens(project_id, model_url, model_name, project_path, token_database_path, text, filename):
     payload_dict = {
         "model": model_name,
         "messages": [
@@ -182,7 +182,7 @@ def extract_tokens(model_url, model_name, project_path, token_database_path, tex
 
     response = response_data["message"]["content"]
 
-    out_path = f"{project_path}/archived-tokens/{filename}.csv"
+    out_path = f"{project_path}/projects/{project_id}/archived-tokens/{filename}.csv"
 
     with open(out_path, "w", encoding="utf-8", newline="") as fout:
         writer = csv.DictWriter(fout, fieldnames=EXPECTED_COLS)
@@ -444,14 +444,15 @@ def merge_to_csv(csv_path, token_database_path):
     return True
 
 def main():
-    model_url = sys.argv[1]
-    model_name = sys.argv[2]
-    project_path = sys.argv[3]
-    token_database_path = sys.argv[4]
-    text = sys.argv[5]
-    filename = sys.argv[6]
+    project_id = sys.argv[1]
+    model_url = sys.argv[2]
+    model_name = sys.argv[3]
+    project_path = sys.argv[4]
+    token_database_path = sys.argv[5]
+    text = sys.argv[6]
+    filename = sys.argv[7]
 
-    extract_tokens(model_url, model_name, project_path, token_database_path, text, filename)
+    extract_tokens(project_id, model_url, model_name, project_path, token_database_path, text, filename)
 
     return True
 

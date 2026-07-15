@@ -5,13 +5,17 @@ import { IConfigTraining } from "../../interfaces/config.interfaces";
 import ConfigTraining from "./config_training";
 import SettingTraining from "./train";
 
-function TrainingSettingMain() {
+interface ITrainingSettingMain {
+    projectId: string
+}
+
+function TrainingSettingMain(props: ITrainingSettingMain) {
     const [trainingDetail, setTrainingDetail] = useState<IConfigTraining>({Mode:"", Model: "", URLLocal: "", URLCloud: "", APIKeyCloud:""})
     const [show, setShow] = useState<boolean>(false)
     const [disableSaveButton, setDisableSaveButton] = useState<boolean>(true)
 
     useEffect(() => {        
-        GetTrainingConfigValue().then((value) => {
+        GetTrainingConfigValue(props.projectId).then((value) => {
             setTrainingDetail({
                 Mode: value.mode,
                 Model: value.model,
@@ -54,7 +58,7 @@ function TrainingSettingMain() {
     }
 
     const handleSaveChanges = () => {        
-        StoreTrainingConfigValue({
+        StoreTrainingConfigValue(props.projectId, {
             mode: trainingDetail.Mode,
             model: trainingDetail.Model,
             url_local: trainingDetail.URLLocal,
@@ -74,7 +78,7 @@ function TrainingSettingMain() {
                 <div className="d-inline-flex w-100 mt-2 flex-wrap p-3 border border-dark border-2">
                     {show && <ConfigTraining source={trainingDetail.Mode} defaultValue={trainingDetail!} onChangeConfig={handleChangeConfig} onSaveChanges={handleSaveChanges} />}
                 </div>
-                <Button variant="success" onClick={handleSaveChanges} disabled={disableSaveButton} className="mt-2 rounded-0">Save</Button>
+                <Button size="lg" onClick={handleSaveChanges} disabled={disableSaveButton} className="btn-hapax-primary border border-dark border-2 mt-2 rounded-0">Save</Button>
             </Col>
         </Row>
     )

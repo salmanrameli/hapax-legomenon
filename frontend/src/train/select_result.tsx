@@ -34,15 +34,15 @@ function SelectResult(props: ITrainingSelectResult) {
     }, [texts])
 
     async function DescriptionToToken() {        
-        setMode(TrainingMode.MODE_PROCESSING_TEXTS_TO_TOKENS)
+        // setMode(TrainingMode.MODE_PROCESSING_TEXTS_TO_TOKENS)
 
-        for (const item of texts) {            
-            await DescriptionsToTokens(item).then((value) => {
-                setCountProcessedText(countProcessedText + 1)
-            })
-        }
+        // for (const item of texts) {            
+        //     await DescriptionsToTokens(item).then((value) => {
+        //         setCountProcessedText(countProcessedText + 1)
+        //     })
+        // }
         
-        setMode(TrainingMode.MODE_FINISHED)
+        // setMode(TrainingMode.MODE_FINISHED)
     }
 
     function renderTableContent() {
