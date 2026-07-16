@@ -3,9 +3,10 @@ import { Col } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import { GenerateImageOptions } from '../../constants/mode';
 import { IConfigGenerateImage, IConfigGenerateImageParams } from '../../interfaces/config.interfaces';
+import { Link45deg } from 'react-bootstrap-icons';
 
 function ConfigImage(props: IConfigGenerateImageParams) {
-    const [imageConfig, setImageConfig] = useState<IConfigGenerateImage>({Mode:props.defaultValue.Mode, Model:props.defaultValue.Model, URLLocal:props.defaultValue.URLLocal, URLCloud:props.defaultValue.URLCloud, APIKeyCloud:props.defaultValue.APIKeyCloud, Steps:props.defaultValue.Steps, Dimension:props.defaultValue.Dimension})
+    const [imageConfig, setImageConfig] = useState<IConfigGenerateImage>({Mode:props.defaultValue.Mode, Model:props.defaultValue.Model, URLLocal:props.defaultValue.URLLocal, URLCloud:props.defaultValue.URLCloud, APIKeyCloud:props.defaultValue.APIKeyCloud, Steps:props.defaultValue.Steps, DimensionWidth:props.defaultValue.DimensionWidth, DimensionHeight:props.defaultValue.DimensionHeight})
 
     useEffect(() => {
         if (props.defaultValue.URLLocal != "") {
@@ -16,7 +17,8 @@ function ConfigImage(props: IConfigGenerateImageParams) {
                 URLCloud: props.defaultValue.URLCloud,
                 APIKeyCloud: props.defaultValue.APIKeyCloud,
                 Steps: props.defaultValue.Steps,
-                Dimension: props.defaultValue.Dimension
+                DimensionWidth: props.defaultValue.DimensionWidth,
+                DimensionHeight: props.defaultValue.DimensionHeight
             })
         }
     }, [])
@@ -35,7 +37,13 @@ function ConfigImage(props: IConfigGenerateImageParams) {
         } else if (key == "api_key") {
             setImageConfig({...imageConfig, APIKeyCloud: value})
         } else if (key == "steps") {
-            let steps = parseInt(value)
+            let steps = 0
+
+            if (value == "") {
+                steps = 5
+            } else {
+                steps = parseInt(value)
+            }
 
             if (steps > 40) {
                 steps = 40
@@ -49,14 +57,21 @@ function ConfigImage(props: IConfigGenerateImageParams) {
 
     return(
         <>
-            <Col className="col-12">
-                <h4 className="mb-2">Generate Image Model Address:</h4>
+            <Col className="col-12 d-inline-flex">
+                <Col sm={1} className="d-flex justify-content-start align-items-center">
+                    <Link45deg size={45} />
+                </Col>
+                <Col sm={9} className="">
+                    <h5 className="mt-2 text-hapax-primary">Image Generation Model Address</h5>
+                    <p className="mb-0 text-hapax-tertiary">Enter the address and the name of the model used to generate the image</p>
+                </Col>
             </Col>
+            <hr className='my-3' style={{backgroundColor:"#dbc6a7", border:"none", height:"3px"}}></hr>
             {
                 props.source == GenerateImageOptions.LOCAL.value ? 
                 <>
                     <Col className="col-12">
-                        <Form.Label htmlFor="image_config_local_url_label">LLM URL / IP Address</Form.Label>
+                        <Form.Label className='text-hapax-primary' htmlFor="image_config_local_url_label">LLM URL / IP Address</Form.Label>
                         <Form.Control
                             type="text"
                             id="image_config_local_url_form_input"
@@ -68,8 +83,8 @@ function ConfigImage(props: IConfigGenerateImageParams) {
                             Enter the URL or the IP address of the LLM running on your local machine
                         </Form.Text>
                     </Col>
-                    <Col className="col-12">
-                        <Form.Label htmlFor="image_config_local_model_label">Model Name</Form.Label>
+                    <Col className="col-12 mt-3">
+                        <Form.Label className='text-hapax-primary' htmlFor="image_config_local_model_label">Model Name</Form.Label>
                         <Form.Control
                             type="text"
                             id="image_config_local_model_form_input"
@@ -85,7 +100,7 @@ function ConfigImage(props: IConfigGenerateImageParams) {
                 :
                 <>
                     <Col className="col-12">
-                        <Form.Label htmlFor="image_config_cloud_url_label">LLM URL / IP Address</Form.Label>
+                        <Form.Label className='text-hapax-primary' htmlFor="image_config_cloud_url_label">LLM URL / IP Address</Form.Label>
                         <Form.Control
                             type="text"
                             id="image_config_cloud_url_form_input"
@@ -97,8 +112,8 @@ function ConfigImage(props: IConfigGenerateImageParams) {
                             Enter the URL or the IP address of the LLM running on the cloud
                         </Form.Text>
                     </Col>
-                    <Col className="col-12">
-                        <Form.Label htmlFor="image_config_cloud_api_key_label">LLM API Key</Form.Label>
+                    <Col className="col-12 mt-3">
+                        <Form.Label className='text-hapax-primary' htmlFor="image_config_cloud_api_key_label">LLM API Key</Form.Label>
                         <Form.Control
                             type="text"
                             id="image_config_cloud_api_key_form_input"
@@ -110,8 +125,8 @@ function ConfigImage(props: IConfigGenerateImageParams) {
                             Enter your user's LLM API key
                         </Form.Text>
                     </Col>
-                    <Col className="col-12">
-                        <Form.Label htmlFor="image_config_cloud_model_label">Model Name</Form.Label>
+                    <Col className="col-12 mt-3">
+                        <Form.Label className='text-hapax-primary' htmlFor="image_config_cloud_model_label">Model Name</Form.Label>
                         <Form.Control
                             type="text"
                             id="image_config_cloud_model_form_input"
@@ -125,8 +140,8 @@ function ConfigImage(props: IConfigGenerateImageParams) {
                     </Col>
                 </>
             }
-            <Col className="col-12">
-                <Form.Label htmlFor="image_config_steps_label">Steps</Form.Label>
+            <Col className="col-12 mt-3">
+                <Form.Label className='text-hapax-primary' htmlFor="image_config_steps_label">Steps</Form.Label>
                 <Form.Control
                     type="number"
                     id="image_config_steps_form_input"

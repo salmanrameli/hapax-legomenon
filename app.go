@@ -14,6 +14,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	goRuntime "runtime"
 	"strings"
 	"time"
 	"ubiquitous-funicular/constants"
@@ -561,13 +562,14 @@ func (a *App) configureGenerateImageConfig(path string) {
 		defer configImage.Close()
 
 		defaultImageConfig := structs.ConfigGenerateImage{
-			Mode:        constants.GenerateImageMode.LocalValue(),
-			Model:       "",
-			URLLocal:    constants.LOCAL_DEFAULT_URL,
-			URLCloud:    "",
-			APIKeyCloud: "",
-			Steps:       constants.GENERATE_IMAGE_DEFAULT_STEPS,
-			Dimension:   constants.GENERATE_IMAGE_DEFAULT_DIMENSION,
+			Mode:            constants.GenerateImageMode.LocalValue(),
+			Model:           "",
+			URLLocal:        constants.LOCAL_DEFAULT_URL,
+			URLCloud:        "",
+			APIKeyCloud:     "",
+			Steps:           constants.GENERATE_IMAGE_DEFAULT_STEPS,
+			DimensionWidth:  constants.GENERATE_IMAGE_DEFAULT_DIMENSION,
+			DimensionHeight: constants.GENERATE_IMAGE_DEFAULT_DIMENSION,
 		}
 
 		encoder := json.NewEncoder(configImage)
@@ -678,8 +680,8 @@ func (a *App) GenerateImage(projectId string, prompt string) (string, error) {
 		Prompt: prompt,
 		Stream: false,
 		Options: map[string]interface{}{
-			"width":  imageConfig.Dimension,
-			"height": imageConfig.Dimension,
+			"width":  imageConfig.DimensionWidth,
+			"height": imageConfig.DimensionHeight,
 			"steps":  imageConfig.Steps,
 		},
 	}
@@ -1190,13 +1192,14 @@ func (a *App) StoreGenerateImageConfigValue(projectId string, value *structs.Con
 	encoder.SetIndent("", "  ")
 
 	err = encoder.Encode(&structs.ConfigGenerateImage{
-		Mode:        value.Mode,
-		Model:       value.Model,
-		URLLocal:    value.URLLocal,
-		URLCloud:    value.URLCloud,
-		APIKeyCloud: value.APIKeyCloud,
-		Steps:       value.Steps,
-		Dimension:   value.Dimension,
+		Mode:            value.Mode,
+		Model:           value.Model,
+		URLLocal:        value.URLLocal,
+		URLCloud:        value.URLCloud,
+		APIKeyCloud:     value.APIKeyCloud,
+		Steps:           value.Steps,
+		DimensionWidth:  value.DimensionWidth,
+		DimensionHeight: value.DimensionHeight,
 	})
 
 	if err != nil {
@@ -1206,6 +1209,10 @@ func (a *App) StoreGenerateImageConfigValue(projectId string, value *structs.Con
 	}
 
 	return nil
+}
+
+func (a *App) IsPlatformMac() bool {
+	return goRuntime.GOOS == "darwin"
 }
 
 func (a *App) Dump(item any) {

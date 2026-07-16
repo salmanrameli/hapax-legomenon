@@ -3,6 +3,7 @@ import { Col } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import { GeneratePromptOptions } from '../../constants/mode';
 import { IConfigGeneratePrompt, IConfigGeneratePromptParams } from '../../interfaces/config.interfaces';
+import { Link45deg } from 'react-bootstrap-icons';
 
 function ConfigPrompt(props: IConfigGeneratePromptParams) {
     const [promptConfig, setPromptConfig] = useState<IConfigGeneratePrompt>({Mode:props.defaultValue.Mode, Model:props.defaultValue.Model, URLLocal:props.defaultValue.URLLocal, URLCloud:props.defaultValue.URLCloud, APIKeyCloud:props.defaultValue.APIKeyCloud})
@@ -37,14 +38,21 @@ function ConfigPrompt(props: IConfigGeneratePromptParams) {
 
     return(
         <>
-            <Col className="col-12">
-                <h4 className="mb-2">Generate Prompt Model Address:</h4>
+           <Col className="col-12 d-inline-flex">
+                <Col sm={1} className="d-flex justify-content-start align-items-center">
+                    <Link45deg size={45} />
+                </Col>
+                <Col sm={9} className="">
+                    <h5 className="mt-2 text-hapax-primary">Prompt Model Address</h5>
+                    <p className="mb-0 text-hapax-tertiary">Enter the address and the name of the model used to do image analysis</p>
+                </Col>
             </Col>
+            <hr className='my-3' style={{backgroundColor:"#dbc6a7", border:"none", height:"3px"}}></hr>
             {
                 props.source == GeneratePromptOptions.LOCAL.value ? 
                 <>
                     <Col className="col-12">
-                        <Form.Label htmlFor="prompt_config_local_url_label">LLM URL / IP Address</Form.Label>
+                        <Form.Label className='text-hapax-primary' htmlFor="prompt_config_local_url_label">LLM URL / IP Address</Form.Label>
                         <Form.Control
                             type="text"
                             id="prompt_config_local_url_form_input"
@@ -56,9 +64,10 @@ function ConfigPrompt(props: IConfigGeneratePromptParams) {
                             Enter the URL or the IP address of the LLM running on your local machine
                         </Form.Text>
                     </Col>
-                    <Col className="col-12">
-                        <Form.Label htmlFor="prompt_config_local_model_label">Model Name</Form.Label>
+                    <Col className="col-12 mt-3">
+                        <Form.Label className='text-hapax-primary' htmlFor="prompt_config_local_model_label">Model Name</Form.Label>
                         <Form.Control
+                            className='text-hapax-primary'
                             type="text"
                             id="prompt_config_local_model_form_input"
                             size={"lg"}
@@ -73,7 +82,7 @@ function ConfigPrompt(props: IConfigGeneratePromptParams) {
                 :
                 <>
                     <Col className="col-12">
-                        <Form.Label htmlFor="prompt_config_cloud_url_label">LLM URL / IP Address</Form.Label>
+                        <Form.Label className='text-hapax-primary' htmlFor="prompt_config_cloud_url_label">LLM URL / IP Address</Form.Label>
                         <Form.Control
                             type="text"
                             id="prompt_config_cloud_url_form_input"
@@ -85,8 +94,8 @@ function ConfigPrompt(props: IConfigGeneratePromptParams) {
                             Enter the URL or the IP address of the LLM running on the cloud
                         </Form.Text>
                     </Col>
-                    <Col className="col-12">
-                        <Form.Label htmlFor="prompt_config_cloud_api_key_label">LLM API Key</Form.Label>
+                    <Col className="col-12 mt-3">
+                        <Form.Label className='text-hapax-primary' htmlFor="prompt_config_cloud_api_key_label">LLM API Key</Form.Label>
                         <Form.Control
                             type="text"
                             id="prompt_config_cloud_api_key_form_input"
@@ -98,8 +107,8 @@ function ConfigPrompt(props: IConfigGeneratePromptParams) {
                             Enter your user's LLM API key
                         </Form.Text>
                     </Col>
-                    <Col className="col-12">
-                        <Form.Label htmlFor="prompt_config_cloud_model_label">Model Name</Form.Label>
+                    <Col className="col-12 mt-3">
+                        <Form.Label className='text-hapax-primary' htmlFor="prompt_config_cloud_model_label">Model Name</Form.Label>
                         <Form.Control
                             type="text"
                             id="prompt_config_cloud_model_form_input"

@@ -3,6 +3,7 @@ import { Col } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import { TrainingOptions } from '../../constants/mode';
 import { IConfigTraining, IConfigTrainingParams } from '../../interfaces/config.interfaces';
+import { Link45deg } from 'react-bootstrap-icons';
 
 function ConfigTraining(props: IConfigTrainingParams) {
     const [trainingConfig, setTrainingConfig] = useState<IConfigTraining>({Mode:props.defaultValue.Mode, Model: props.defaultValue.Model, URLLocal:props.defaultValue.URLLocal, URLCloud:props.defaultValue.URLCloud, APIKeyCloud:props.defaultValue.APIKeyCloud})
@@ -37,14 +38,21 @@ function ConfigTraining(props: IConfigTrainingParams) {
 
     return(
         <>
-            <Col className="col-12">
-                <h4 className="mb-2">Training Model Address:</h4>
+            <Col className="col-12 d-inline-flex">
+                <Col sm={1} className="d-flex justify-content-start align-items-center">
+                    <Link45deg size={45} />
+                </Col>
+                <Col sm={9} className="">
+                    <h5 className="mt-2 text-hapax-primary">Training Model Address</h5>
+                    <p className="mb-0 text-hapax-tertiary">Enter the address and the name of the model used to do the image analysis</p>
+                </Col>
             </Col>
+            <hr className='my-3' style={{backgroundColor:"#dbc6a7", border:"none", height:"3px"}}></hr>
             {
                 props.source == TrainingOptions.LOCAL.value ? 
                 <>
                     <Col className="col-12">
-                        <Form.Label htmlFor="training_config_local_url_label">LLM URL / IP Address</Form.Label>
+                        <Form.Label className='text-hapax-primary' htmlFor="training_config_local_url_label">LLM URL / IP Address</Form.Label>
                         <Form.Control
                             type="text"
                             id="training_config_local_url_form_input"
@@ -56,8 +64,8 @@ function ConfigTraining(props: IConfigTrainingParams) {
                             Enter the URL or the IP address of the LLM running on your local machine
                         </Form.Text>
                     </Col>
-                    <Col className="col-12">
-                        <Form.Label htmlFor="training_config_local_model_label">Model Name</Form.Label>
+                    <Col className="col-12 mt-3">
+                        <Form.Label className='text-hapax-primary' htmlFor="training_config_local_model_label">Model Name</Form.Label>
                         <Form.Control
                             type="text"
                             id="training_config_local_model_form_input"
@@ -73,7 +81,7 @@ function ConfigTraining(props: IConfigTrainingParams) {
                 :
                 <>
                     <Col className="col-12">
-                        <Form.Label htmlFor="training_config_cloud_url_label">LLM URL / IP Address</Form.Label>
+                        <Form.Label className='text-hapax-primary' htmlFor="training_config_cloud_url_label">LLM URL / IP Address</Form.Label>
                         <Form.Control
                             type="text"
                             id="training_config_cloud_url_form_input"
@@ -86,7 +94,7 @@ function ConfigTraining(props: IConfigTrainingParams) {
                         </Form.Text>
                     </Col>
                     <Col className="col-12">
-                        <Form.Label htmlFor="training_config_cloud_api_key_label">LLM API Key</Form.Label>
+                        <Form.Label className='text-hapax-primary' htmlFor="training_config_cloud_api_key_label">LLM API Key</Form.Label>
                         <Form.Control
                             type="text"
                             id="training_config_cloud_api_key_form_input"
@@ -99,7 +107,7 @@ function ConfigTraining(props: IConfigTrainingParams) {
                         </Form.Text>
                     </Col>
                     <Col className="col-12">
-                        <Form.Label htmlFor="training_config_cloud_model_label">Model Name</Form.Label>
+                        <Form.Label className='text-hapax-primary' htmlFor="training_config_cloud_model_label">Model Name</Form.Label>
                         <Form.Control
                             type="text"
                             id="training_config_cloud_model_form_input"

@@ -4,13 +4,19 @@
 }
 
 body {
-  background-color: #F2F0ED !important;
+  background-color: #FAF8F6 !important;
 }
 
-.border-hapax-primary {
-  border: 3px solid #061525
+#generate-prompt:hover, #generate-image:hover {
+  background-color: white;
+  color: rgb(227, 38, 54);
 }
-
+#bg-generate-prompt {
+  background-color: #061525
+}
+.btn-hapax-danger #btn-generate-prompt-title {
+  color: #ea2020;
+}
 #generate-prompt {
   background-color: rgb(227, 38, 54);
   border-color: rgb(227, 38, 54);
@@ -19,81 +25,118 @@ body {
 
 .btn-hapax-danger {
   background-color: rgb(227, 38, 54);
-  border-color: rgb(227, 38, 54);
+  border: 3px solid rgb(227, 38, 54);
 }
-
 .btn-hapax-danger:hover, .btn-hapax-danger:disabled {
   background-color: white;
-  border-color: rgb(227, 38, 54);
+  border: 3px solid rgb(227, 38, 54);
   color: rgb(227, 38, 54);
 }
 
-#generate-prompt:hover, #generate-image:hover {
+.hapax-box-shadow {
+  box-shadow: 0 6px 11px rgba(0, 0, 0, 0.17);
+}
+
+.bg-hapax-light {
+  background-color: #FAF8F6 !important;
+}
+.hapax-soft {
+  background-color: #F8F3EF !important;
+}
+.border-hapax-soft {
+  border: 2px solid #EBE5DB;
+}
+
+.bg-hapax-primary {
+  background-color: #3F444A !important;
+  color: #fff;
+}
+.border-hapax-primary {
+  border: 3px solid #D7D3D1;
+}
+.text-hapax-primary {
+  color: #3F444A !important;
+}
+.btn-hapax-primary {
+  background-color: #F1E9DD;
+  border: 3px solid #c3a471;
+  color: #41515B;
+}
+.btn-hapax-primary:hover, btn-hapax-primary:active, .btn-hapax-primary.active {
+  /* background-color: #061525;
+  border-color: #34383D; */
+  background-color: #e5d4b9;
+  border: 3px solid #0f3159;
+  color: #0f3159
+}
+
+.btn-hapax-primary:disabled {
   background-color: white;
-  color: rgb(227, 38, 54);
+  border-color: #c3a471;
+  color: #c3a471;
 }
 
-#bg-generate-prompt {
-  background-color: #061525
+.btn-hapax-primary-dark, .btn-hapax-primary-dark:disabled {
+  background-color: #0A1B2E;
+  border: 2px solid black;
+  color: white
+}
+.btn-hapax-primary-dark:hover {
+  background-color: #ea2020;
+  color: white;
+  border: 2px solid #ea2020;
+}
+.btn-hapax-primary-dark:disabled{
+  background-color: #0A1B2E;
+  color: white;
+}
+.btn-hapax-primary-dark.btn-hapax-danger:hover {
+  color: #ea2020;
+  border: solid 3px #ea2020;
+  background-color: white;
+}
+
+.bg-hapax-secondary {
+  background-color: #F8F3EE !important;
+  color: #3F444A;
+}
+.border-hapax-secondary {
+  border: 3px solid #efe7df;
+}
+.text-hapax-secondary {
+  color: #C5A173 !important;
+}
+.btn-hapax-secondary {
+  /* background-color: #C5A173; */
+  background-color: #c5a27387;
+  border: 3px solid #C5A173;
+  color: #fff;
+}
+.btn-hapax-secondary:hover {
+  background-color: #B89363;
+  border: 3px solid #B89363;
+}
+
+.text-hapax-red {
+  color: #ea2020;
+}
+
+.div-bg-icon {
+  width: 45px;
+  height: 45px;
+  background-color: #EEE4D7;
 }
 
 .spinner-orange {
   color: #ff9d00
 }
 
-.text-hapax-primary {
-  color: #3F444A !important;
-}
-.bg-hapax-primary {
-  background-color: #3F444A !important;
-  color: #fff;
-}
-
-.text-hapax-secondary {
-  color: #C5A173 !important;
-}
-.bg-hapax-secondary {
-  background-color: #C5A173 !important;
-  color: #fff;
-}
-
 .text-hapax-tertiary {
-  color: #B8AEA3 !important;
+  color: #939191 !important;
 }
 .bg-hapax-tertiary {
   background-color: #B8AEA3 !important;
   color: #000;
-}
-
-.bg-hapax-light {
-  background-color: #F2F0ED !important;
-}
-.bg-hapax-soft {
-  background-color: #E6E1DB !important;
-}
-
-.btn-hapax-primary {
-  background-color: #0f3159;
-  border-color: #000000;
-  color: #fff;
-}
-.btn-hapax-primary:hover, btn-hapax-primary:active, .btn-hapax-primary:disabled {
-  /* background-color: #061525;
-  border-color: #34383D; */
-  background-color: white;
-  border-color: #0f3159;
-  color: #0f3159
-}
-
-.btn-hapax-secondary {
-  /* background-color: #C5A173; */
-  background-color: #c5a27387;
-  border-color: #C5A173;
-  color: #fff;
-}
-.btn-hapax-secondary:hover {
-  background-color: #B89363;
-  border-color: #B89363;
 }
 
 @keyframes wailsWindowEntrance {

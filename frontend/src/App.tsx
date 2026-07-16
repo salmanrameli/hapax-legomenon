@@ -4,8 +4,8 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { GenerateImageOptions, GeneratePromptOptions, Mode, RenderContentID, TrainingOptions } from './constants/mode';
-import { FileEarmarkArrowUp, FileEarmarkPlus, GearWideConnected, ListTask } from 'react-bootstrap-icons';
-import { Alert, Card, Form } from 'react-bootstrap';
+import { CardImage, FileEarmarkArrowUp, Folder2, GearWideConnected, Magic, PlusSquare, Terminal } from 'react-bootstrap-icons';
+import { Form } from 'react-bootstrap';
 import GeneratePromptMain from './generate/prompt/main';
 import TrainingSettingMain from './settings/training/train_main';
 import PromptSettingMain from './settings/generate_prompt/prompt_main';
@@ -142,7 +142,8 @@ function App() {
                     URLCloud: value.url_cloud,
                     APIKeyCloud: value.api_key_cloud,
                     Steps: value.steps,
-                    Dimension: value.dimension
+                    DimensionWidth: value.dimension_width,
+                    DimensionHeight: value.dimension_height
                 })
             }
         })
@@ -184,83 +185,122 @@ function App() {
             case Mode.MODE_HOME:
                 return (
                     <Row className="gx-2 mb-4">
-                        <Col sm={12} md={12} className='d-flex align-items-center justify-content-center'>
-                            <img src={logo} className='pt-0' style={{width:"200px", height:"200px", cursor:"default", marginBottom:"-20px"}} id="logo" alt="logo"/>
+                        <Col sm={12} md={12} className='d-flex mt-2'>
+                            <Col sm={3}>
+                                <img src={logo} className='pt-0' style={{width:"220px", height:"220px", cursor:"default", marginBottom:"-20px", marginLeft:"-20px"}} id="logo" alt="logo"/>
+                            </Col>
+                            <Col sm={6} className='d-flex align-items-center mt-3' style={{marginLeft:"-50px", cursor:"default"}}>
+                                <div style={{marginTop:"15px"}}>
+                                    <h1>Hapax Legomenon</h1>
+                                    <p className='text-hapax-tertiary' style={{cursor:"default", marginTop:"-5px"}}>
+                                        project: {currentProjectDetail.name}&nbsp;&nbsp;
+                                    </p>
+                                </div>
+                            </Col>
+                            <Col sm={3} className='d-flex mt-3 align-items-center justify-content-end' style={{cursor:"default"}}>
+                                <div>
+                                    <div className='d-flex rounded-pill bg-hapax-secondary border-hapax-secondary py-2 px-3 w-100'>
+                                        {<div className={`rounded-circle ${errorPythonNotInstalled ? "bg-danger" : "bg-success"}`} style={{height:"10px", width:"10px", marginTop:"7px"}} />}&nbsp;&nbsp;Python:&nbsp;{errorPythonNotInstalled ? "not detected" : "detected"}
+                                    </div>
+                                    <div className='d-flex rounded-pill bg-hapax-secondary border-hapax-secondary py-2 px-3 mt-2 w-100'>
+                                        {<div className={`rounded-circle ${warnOllamaNotRunning ? "bg-danger" : "bg-success"}`} style={{height:"10px", width:"10px", marginTop:"7px"}} />}&nbsp;&nbsp;Ollama:&nbsp;{warnOllamaNotRunning ? "not running" : "running"}
+                                    </div>
+                                </div>
+                            </Col>
                         </Col>
-                        {errorPythonNotInstalled && 
-                            <Col sm={12}>
-                                <Alert key="danger" variant="danger" style={{cursor:"default"}}>
-                                    Application is unable to detect Python3 — application will not work!
-                                </Alert>
-                            </Col>
-                        }
-                        {warnOllamaNotRunning && 
-                            <Col sm={12}>
-                                <Alert key="warning" variant="warning" style={{cursor:"default"}}>
-                                    Ollama is not running — features might be limited
-                                </Alert>
-                            </Col>
-                        }
-                        <Col sm={12} className='' style={{cursor:"default"}}>
-                            <p className='text-uppercase'>
-                                <b>Project: {currentProjectDetail.name}</b>&nbsp;&nbsp;
-                            </p>
+                        <hr className='my-3' style={{backgroundColor:"#dbc6a7", border:"none", height:"3px"}}></hr>
+                        <Col sm={12} md={6} className='mb-3'>
+                            <div className='d-flex'>
+                                <Button size='lg' onClick={handleShowProjectsList} className='btn-hapax-primary border-hapax-secondary text-center font-weight-bold rounded-4' style={{width:"100%", backgroundColor:"white"}}><Folder2 style={{marginTop:"-3px", marginRight:"10px"}} />Change Project</Button>
+                            </div>
                         </Col>
                         <Col sm={12} md={6} className='mb-3'>
-                            <div className='d-flex border-hapax-primary'>
-                                <Button variant='outline-dark' onClick={handleShowProjectsList} className='btn-hapax-secondary text-start font-weight-bold' style={{width:"100%", border:"none", borderRadius:"0px"}}>Change Project <ListTask style={{marginTop:"-3px"}} /></Button>
+                            <div className='d-flex'>
+                                <Button size='lg' onClick={() => setMode(Mode.MODE_SET_PROJECT_NAME)} className='btn-hapax-primary border-hapax-secondary text-center font-weight-bold rounded-4' style={{width:"100%"}}><PlusSquare style={{marginTop:"-3px", marginRight:"10px"}} />Create New Project</Button>
                             </div>
                         </Col>
-                        <Col sm={12} md={6} className='mb-3'>
-                            <div className='d-flex border border-dark border-3'>
-                                <Button variant='outline-dark' onClick={() => setMode(Mode.MODE_SET_PROJECT_NAME)} className='btn-hapax-secondary text-start font-weight-bold' style={{width:"100%", border:"none", borderRadius:"0px"}}>Create New Project <FileEarmarkPlus style={{marginTop:"-3px"}} /></Button>
-                            </div>
+                        <Col sm={12} md={6}>
+                            <Button
+                                size="lg" 
+                                className="w-100 btn-hapax-primary border-hapax-primary px-3 py-4 rounded-4"
+                                onClick={() => setMode(Mode.MODE_TRAIN)}
+                                style={{height:"200px"}}
+                                disabled={disableTrainingButton || errorPythonNotInstalled || (trainingConfigData?.Mode == TrainingOptions.LOCAL.value && warnOllamaNotRunning)}
+                                >
+                                <CardImage size={60} />
+                                <br />
+                                <span className='text-uppercase mb-0 fw-bold' style={{fontSize:"36px"}}>Train with Images</span>
+                                <br />
+                                <span style={{fontSize:"12px"}} className=''>Give images to enrich visual understandings</span>
+                            </Button>
                         </Col>
-                        <Col sm={12} md={6} className='border gx-0 border-dark border-end-0 border-3'>
-                            <Card className="rounded-0 bg-white text-dark h-100 border-0">
-                                <Card.Body className="d-flex align-items-center justify-content-center p-5">
-                                    <Button
-                                        size="lg" 
-                                        className="btn-hapax-primary border border-dark border-4 rounded-0 fw-bold text-uppercase px-5 py-4 fs-3"
-                                        onClick={() => setMode(Mode.MODE_TRAIN)}
-                                        disabled={disableTrainingButton || errorPythonNotInstalled || (trainingConfigData?.Mode == TrainingOptions.LOCAL.value && warnOllamaNotRunning)}
-                                        >
-                                        Train with Images
-                                    </Button>
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                        <Col sm={12} md={6} className='gx-0'>
-                            <Card className="rounded-0 text-white h-100" id='bg-generate-prompt'>
-                                <Card.Body className="d-flex align-items-center justify-content-center p-5">
-                                    <Button
-                                        id='generate-prompt'
-                                        size="lg" 
-                                        className="rounded-0 fw-bold text-uppercase w-100 py-4 fs-3"
-                                        onClick={() => setMode(Mode.MODE_GENERATE_PROMPT)}
-                                        disabled={disableGenerateButton || errorPythonNotInstalled || (promptModeConfigData?.Mode == GeneratePromptOptions.LOCAL.value && warnOllamaNotRunning)}
-                                        >
-                                        Generate Prompt 
-                                    </Button>
-                                </Card.Body>
-                            </Card>
+                        <Col sm={12} md={6}>
+                            <Button
+                                size="lg"
+                                className="w-100 btn-hapax-primary-dark btn-hapax-danger px-3 py-4 rounded-4"
+                                onClick={() => setMode(Mode.MODE_GENERATE_PROMPT)}
+                                style={{height:"200px"}}
+                                disabled={disableGenerateButton || errorPythonNotInstalled || (promptModeConfigData?.Mode == GeneratePromptOptions.LOCAL.value && warnOllamaNotRunning)}
+                                >
+                                <Magic size={60} />
+                                <br />
+                                <span id="btn-generate-prompt-title" className='text-uppercase mb-0 fw-bold' style={{fontSize:"36px"}}>Generate Prompt</span>
+                                <br />
+                                <span style={{fontSize:"12px"}} className=''>Generate prompts and images</span>
+                            </Button>
                         </Col>
                         <Col sm={12} md={4} className='mt-3'>
-                            <div className='d-flex border border-dark border-3' style={{height:"120px"}}>
-                                <Button onClick={() => setMode(Mode.MODE_SETTING_TRAINING)} className='btn-hapax-secondary text-start font-weight-bold' style={{width:"100%", border:"none", borderRadius:"0px", fontSize:"20px"}}><GearWideConnected style={{marginTop:"-3px"}} /> Training Settings <br /><br /><span className='fw-light' style={{fontSize:"12px"}}>{trainingConfigData?.Model ? "running: " + trainingConfigData.Model + " / " + trainingConfigData.Mode : "not yet set" }</span></Button>
-                            </div>
+                            <Button 
+                                onClick={() => setMode(Mode.MODE_SETTING_TRAINING)} 
+                                className='d-flex btn-hapax-primary bg-hapax-soft border-hapax-secondary text-start font-weight-bold rounded-4 p-3' 
+                                style={{width:"100%", fontSize:"20px", height:"120px"}}>
+                                    <Col sm={2} className='d-flex align-items-center vertical-align-middle'>
+                                        <GearWideConnected size={27} style={{marginTop:"0px", marginLeft:"0px"}} className='d-flex justify-content-center' />
+                                    </Col>
+                                    <Col sm={10}>
+                                        <h5 className='mb-1'>Training Settings</h5>
+                                        <p className="mb-4" style={{fontSize:"12px"}}>Configure model training parameters</p>
+                                        <p className='fw-light' style={{fontSize:"12px"}}>
+                                            {trainingConfigData?.Model ? "running: " + trainingConfigData.Model + " / " + trainingConfigData.Mode : "not yet set" }
+                                        </p>
+                                    </Col>
+                            </Button>
                         </Col>
                         <Col sm={12} md={4} className='mt-3'>
-                            <div className='d-flex border border-dark border-3' style={{height:"120px"}}>
-                                <Button  onClick={() => setMode(Mode.MODE_SETTING_PROMPT)} className='btn-hapax-secondary text-start font-weight-bold' style={{width:"100%", border:"none", borderRadius:"0px", fontSize:"20px"}}><GearWideConnected style={{marginTop:"-3px"}} /> Prompt Settings <br /><br /><span className='fw-light' style={{fontSize:"12px"}}>{promptModeConfigData?.Model ? "running: " + promptModeConfigData.Model + " / " + promptModeConfigData.Mode : "not yet set" }</span></Button>
-                            </div>
+                            <Button 
+                                onClick={() => setMode(Mode.MODE_SETTING_PROMPT)} 
+                                className='d-flex btn-hapax-primary bg-hapax-soft border-hapax-secondary text-start font-weight-bold rounded-4 p-3' 
+                                style={{width:"100%", fontSize:"20px", height:"120px"}}>
+                                    <Col sm={2} className='d-flex align-items-center vertical-align-middle'>
+                                        <Terminal size={27} style={{marginTop:"0px", marginLeft:"0px"}} className='d-flex justify-content-center' />
+                                    </Col>
+                                    <Col sm={10}>
+                                        <h5 className='mb-1'>Prompt Settings</h5>
+                                        <p className='mb-4' style={{fontSize:"12px"}}>Configure prompt generation parameters</p>
+                                        <p className='fw-light' style={{fontSize:"12px"}}>
+                                            {promptModeConfigData?.Model ? "running: " + promptModeConfigData.Model + " / " + promptModeConfigData.Mode : "not yet set" }
+                                        </p>
+                                    </Col>
+                            </Button>
                         </Col>
                         <Col sm={12} md={4} className='mt-3'>
-                            <div className='d-flex border border-dark border-3' style={{height:"120px"}}>
-                                <Button onClick={() => setMode(Mode.MODE_SETTING_IMAGE)} className='btn-hapax-secondary text-start font-weight-bold' style={{width:"100%", border:"none", borderRadius:"0px", fontSize:"20px"}}><GearWideConnected style={{marginTop:"-3px"}} /> Generate Image Settings <br /><br /><span className='fw-light' style={{fontSize:"12px"}}>{imageModeConfigData?.Model ? "running: " + imageModeConfigData.Model + " / " + imageModeConfigData.Mode : "not yet set" }</span></Button>
-                            </div>
+                            <Button 
+                                onClick={() => setMode(Mode.MODE_SETTING_IMAGE)} 
+                                className='d-flex btn-hapax-primary bg-hapax-soft border-hapax-secondary text-start font-weight-bold rounded-4 p-3' 
+                                style={{width:"100%", fontSize:"20px", height:"120px"}}>
+                                    <Col sm={2} className='d-flex align-items-center vertical-align-middle'>
+                                        <CardImage size={27} style={{marginTop:"0px", marginLeft:"0px"}} className='d-flex justify-content-center' />
+                                    </Col>
+                                    <Col sm={10}>
+                                        <h5 className='mb-1'>Generate Image Settings</h5>
+                                        <p className='mb-4' style={{fontSize:"12px"}}>Configure image generation parameters</p>
+                                        <p className='fw-light' style={{fontSize:"12px"}}>
+                                            {imageModeConfigData?.Model ? "running: " + imageModeConfigData.Model + " / " + imageModeConfigData.Mode : "not yet set" }
+                                        </p>
+                                    </Col>
+                            </Button>
                         </Col>
-                        <Col sm={12} md={12} className='mt-1'>
+                        <Col sm={12} md={12} className='mt-3' style={{cursor:"default", position:"absolute", left:"10px", bottom: "-70px", width:"200px"}}>
                             <small>version: {APPVERSION}</small>
                         </Col>
                     </Row>
@@ -307,20 +347,20 @@ function App() {
             <Container fluid id="App" className={`${animateLoading ? "wails-fade-out" : "wails-fade-in"} d-flex align-items-center justify-content-center pb-4 mb-4`} style={{height:"90vh"}}>
                 <Row className={`gx-2 mb-4 w-100`}>
                     <Col sm={12} md={12} className='d-flex align-items-center justify-content-center'>
-                        <img src={logo} className='pt-0' style={{width:"200px", height:"200px", cursor:"default"}} id="logo" alt="logo" onClick={() => setMode(Mode.MODE_LOADING)}/>
+                        <img src={logo} className='pt-0' style={{width:"200px", height:"200px", cursor:"pointer"}} id="logo" alt="logo" onClick={() => setMode(Mode.MODE_LOADING)}/>
                     </Col>
                     <Col sm={12} md={12} className=''>
                     {
                         contentId == RenderContentID.MODE_CREATE_NEW &&
                             <>
-                                <Form.Label htmlFor="user_project_name">Project Name:</Form.Label>
+                                <Form.Label className='text-hapax-primary' htmlFor="user_project_name">Project Name:</Form.Label>
                                 <Form.Control
                                     type="text"
                                     id="user_project_name_form_input"
                                     size={"lg"}
                                     onChange={(e) => {setProjectName(e.target.value)}}
                                 />
-                                <Button size='lg' onClick={handleCreateNewProject} disabled={projectName == ""} className="btn-hapax-primary border border-dark border-2 mt-2 rounded-0">Save</Button>
+                                <Button size='lg' onClick={handleCreateNewProject} disabled={projectName.trim() == ""} className="mt-3 btn-hapax-primary border-hapax-primary hapax-box-shadow rounded-4 w-25">Save</Button>
                             </>
                     }
                     {
@@ -328,7 +368,7 @@ function App() {
                             <>
                                 <div className="overflow-auto" style={{ maxHeight: '400px' }}>
                                     <Table responsive bordered hover>
-                                        <thead className="table-light sticky-top top-0"> 
+                                        <thead className="sticky-top top-0 border-hapax-secondary hapax-box-shadow rounded-4"> 
                                             <tr>
                                                 <th style={{cursor:"default"}}>Available Projects</th>
                                             </tr>
@@ -346,7 +386,7 @@ function App() {
                                         </tbody>
                                     </Table>
                                 </div>
-                                <Button size='lg' onClick={handleLoadProject} disabled={selectedProject.id == currentProjectDetail.id} className="mt-2 btn-hapax-primary border border-dark border-2 rounded-0">Load <FileEarmarkArrowUp style={{marginTop:"-3px"}} /></Button>
+                                <Button size='lg' onClick={handleLoadProject} disabled={selectedProject.id == currentProjectDetail.id} className="mt-3 btn-hapax-primary border-hapax-primary hapax-box-shadow rounded-4 w-25">Load <FileEarmarkArrowUp style={{marginTop:"-3px"}} /></Button>
                             </>
                     }
                     </Col>
