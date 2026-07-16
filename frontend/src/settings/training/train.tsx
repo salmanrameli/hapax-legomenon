@@ -3,6 +3,7 @@ import { Col, Row } from "react-bootstrap"
 import Form from 'react-bootstrap/Form';
 import { IConfigTraining, ISettingTraining } from "../../interfaces/config.interfaces";
 import { TrainingOptions } from "../../constants/mode";
+import { HddStack } from "react-bootstrap-icons";
 
 function SettingTraining(props: ISettingTraining) {
     const [settingTraining, setSettingTraining] = useState<IConfigTraining>({Mode:"", Model: "", URLLocal:"", URLCloud:"", APIKeyCloud:""})
@@ -21,36 +22,42 @@ function SettingTraining(props: ISettingTraining) {
     }
 
     return(
-        <Form>
-            <Row className="w-full">
-                <Col className="col-12">
-                    <h4 className="mb-2">Training Model Source:</h4>
+        <Row className="w-100">
+            <Col className="col-12 d-inline-flex">
+                <Col sm={1} className="d-flex justify-content-start align-items-center">
+                    <HddStack size={45} />
                 </Col>
-                <Col className="col-6">
-                    <Form.Check
-                        type="radio"
-                        label={TrainingOptions.LOCAL.label}
-                        name="modeTraining"
-                        id="training-local"
-                        value={TrainingOptions.LOCAL.value}
-                        checked={settingTraining.Mode === TrainingOptions.LOCAL.value}
-                        onChange={handleModeTrainingChange}
-                    />
+                <Col sm={5} className="">
+                    <h5 className="mt-2 text-hapax-primary">Training Model Source</h5>
+                    <p className="mb-0 text-hapax-tertiary">Choose where your training model is hosted.</p>
                 </Col>
-                <Col className="col-6">
-                    <Form.Check
-                        type="radio"
-                        label={TrainingOptions.CLOUD.label}
-                        name="modeTraining"
-                        id="training-cloud"
-                        value={TrainingOptions.CLOUD.value}
-                        disabled={true}
-                        checked={settingTraining.Mode === TrainingOptions.CLOUD.value}
-                        onChange={handleModeTrainingChange}
-                    />
+                <Col sm={5} className="d-flex justify-content-start align-items-center">
+                    <div className="d-inline-flex align-items-center">
+                        <Form.Check
+                            className="ms-3"
+                            type="radio"
+                            label={TrainingOptions.LOCAL.label}
+                            name="modeGenerateImage"
+                            id="generate-image-local"
+                            value={TrainingOptions.LOCAL.value}
+                            checked={settingTraining.Mode === TrainingOptions.LOCAL.value}
+                            onChange={handleModeTrainingChange}
+                        />
+                        <Form.Check
+                            className="ms-5"
+                            type="radio"
+                            label={TrainingOptions.CLOUD.label}
+                            name="modeGenerateImage"
+                            id="generate-image-cloud"
+                            value={TrainingOptions.CLOUD.value}
+                            disabled={true}
+                            checked={settingTraining.Mode === TrainingOptions.CLOUD.value}
+                            onChange={handleModeTrainingChange}
+                        />
+                    </div>
                 </Col>
-            </Row>
-        </Form>
+            </Col>
+        </Row>
     )
 }
 

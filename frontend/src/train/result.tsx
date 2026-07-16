@@ -49,27 +49,27 @@ function Result(props: ITrainingResult) {
                         {
                             !props.isFinishedProcessing && 
                             <Col className="col-12">
-                                <div className="d-flex gap-2 mb-2 flex-wrap justify-content-center p-3 border border-dark border-3">
+                                <div className="d-flex gap-2 mb-2 flex-wrap justify-content-center p-3 border-hapax-secondary hapax-box-shadow rounded-4">
                                     <h1><Spinner animation="border" className="spinner-orange" style={{width: '3rem', height: '3rem', borderWidth: '0.3em' }} /> Analyzing image{props.totalImage > 1 ? "s" : ""} in progress</h1>
                                     <div className="w-100">
-                                        <ProgressBar animated className="w-100 rounded-0 border border-dark border-2" variant="warning" style={{ height: '20px', backgroundColor: '#fff' }} now={(props.countImage / props.totalImage) * 100} />
+                                        <ProgressBar animated className="w-100 rounded-0 border-hapax-secondary rounded-4" variant="warning" style={{ height: '20px', backgroundColor: '#fff' }} now={(props.countImage / props.totalImage) * 100} />
                                     </div>
                                 </div>
                             </Col>
                         }
                         {
                             props.responses.length > 0 &&
-                                <Col className="col-12">
+                                <Col className="col-12 mb-4">
                                     <div className="w-100">
                                         {props.responses.map((_, index) => {
                                             const index_copy = index
                                             return (
-                                                <Button variant="outline-dark" className="me-2 border border-dark border-2 rounded-0" active={selectedIndex == index} onClick={() => displayResult(index)} >{"Image " + (index_copy + 1)}</Button>
+                                                <Button className="me-2 btn-hapax-primary border-hapax-primary hapax-box-shadow rounded-4" active={selectedIndex == index} onClick={() => displayResult(index)} >{"Image " + (index_copy + 1)}</Button>
                                             )
                                         })}
-                                        {props.isFinishedProcessing && <Button className="btn-hapax-danger border border-danger border-2 rounded-0 float-end" onClick={props.onStartProcessingText} >Convert result{props.totalImage > 1 ? "s" : ""} to token <PlayFill style={{marginTop:"-2px"}} size={20} /></Button>}
+                                        {props.isFinishedProcessing && <Button className="btn-hapax-danger hapax-box-shadow rounded-4 float-end" onClick={props.onStartProcessingText} >Convert result{props.totalImage > 1 ? "s" : ""} to token <PlayFill style={{marginTop:"-2px"}} size={20} /></Button>}
                                     </div>
-                                    <div className="d-flex bg-white mt-2 mb-2 gap-2 flex-wrap justify-content-center p-3 border border-dark border-3">
+                                    <div className="d-flex bg-white mt-2 mb-2 gap-2 flex-wrap justify-content-center p-3 border-hapax-secondary hapax-box-shadow rounded-4">
                                         <img src={displayedImage} alt="Preview" className="w-100 justify-content-center d-inline-grid mb-2" style={{ maxWidth: "500px", objectFit: "cover" }} />
                                         <h5 className="w-100">Time taken to analyze: {displayedElapsedTime.toPrecision(4)} seconds</h5>
                                         <div dangerouslySetInnerHTML={{__html: displayedResult}} />

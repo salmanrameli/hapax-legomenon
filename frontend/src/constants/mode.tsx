@@ -26,8 +26,8 @@ export const GenerateImageOptions = {
 }
 
 export const ImageDimensionOptions = {
-    md: {label: "512", value: 512},
-    lg: {label: "1024", value: 1024}
+    md: {label: "512px", value: 512},
+    lg: {label: "1024px", value: 1024}
 }
 
 export const TrainingMode = {

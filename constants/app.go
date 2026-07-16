@@ -1,6 +1,6 @@
 package constants
 
-const version = "0.2.0-alpha"
+const version = "0.2.1-alpha"
 
 const (
 	APP_NAME                   = "Hapax-Legomenon"

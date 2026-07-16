@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { GetGeneratePromptConfigValue, StoreGeneratePromptConfigValue } from "../../../wailsjs/go/main/App"
 import ConfigPrompt from "./config_prompt";
 import { IConfigGeneratePrompt } from "../../interfaces/config.interfaces";
+import { Floppy } from "react-bootstrap-icons";
 
 interface IPromptSettingMain {
     projectId: string
@@ -72,13 +73,13 @@ function PromptSettingMain(props: IPromptSettingMain) {
     return (
         <Row>
             <Col className={"col-12"}>
-                <div className="d-inline-flex w-100 flex-wrap p-3 border border-dark border-2">
+                <div className="d-inline-flex w-100 flex-wrap p-3 rounded-4 border-hapax-primary hapax-box-shadow">
                     <SettingGeneratePrompt data={generatePromptDetail} onChangeSource={handleChangeSourcePrompt} onSaveChanges={handleSaveChanges} />
                 </div>
-                <div className="d-inline-flex w-100 mt-2 flex-wrap p-3 border border-dark border-2">
+                <div className="w-100 mt-3 flex-wrap p-3 rounded-4 border-hapax-primary hapax-box-shadow">
                     {show && <ConfigPrompt source={generatePromptDetail.Mode} defaultValue={generatePromptDetail!} onChangeConfig={handleChangeConfig} onSaveChanges={handleSaveChanges} />}
                 </div>
-                <Button size="lg" onClick={handleSaveChanges} disabled={disableSaveButton} className="btn-hapax-primary border border-dark border-2 mt-2 rounded-0">Save</Button>
+                <Button size="lg" onClick={handleSaveChanges} disabled={disableSaveButton} className="btn-hapax-primary border-hapax-primary hapax-box-shadow rounded-4 mt-3 w-25"><Floppy style={{marginTop:"-3px", marginRight:"5px"}} /> Save</Button>
             </Col>
         </Row>
     )
