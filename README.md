@@ -1,6 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/salmanrameli/hapax-legomenon/main/build/appicon.png" height="256">
-  <h1 align="center">Hapax Legomenon</h1>
+  <img src="https://raw.githubusercontent.com/salmanrameli/hapax-legomenon/main/app.png" height="1024">
 </p>
 
 # About
