@@ -189,14 +189,14 @@ function App() {
                         </Col>
                         {errorPythonNotInstalled && 
                             <Col sm={12}>
-                                <Alert key="danger" variant="danger" style={{cursor:"default"}}>
+                                <Alert key="danger" variant="danger" style={{cursor:"default"}} className='mt-2'>
                                     Application is unable to detect Python3 — application will not work!
                                 </Alert>
                             </Col>
                         }
                         {warnOllamaNotRunning && 
                             <Col sm={12}>
-                                <Alert key="warning" variant="warning" style={{cursor:"default"}}>
+                                <Alert key="warning" variant="warning" style={{cursor:"default"}} className={errorPythonNotInstalled ? '' : "mt-2"}>
                                     Ollama is not running — features might be limited
                                 </Alert>
                             </Col>
