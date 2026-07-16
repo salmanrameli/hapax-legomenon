@@ -46,8 +46,8 @@ function SettingGenerateImage(props: ISettingGenerateImage) {
                     <HddStack size={45} />
                 </Col>
                 <Col sm={5} className="">
-                    <h5 className="mt-2 text-hapax-primary">Training Model Source</h5>
-                    <p className="mb-0 text-hapax-tertiary">Choose where your training model is hosted.</p>
+                    <h5 className="mt-2 text-hapax-primary">Generate Image Model Source</h5>
+                    <p className="mb-0 text-hapax-tertiary">Select where your model to generate image is hosted.</p>
                 </Col>
                 <Col sm={5} className="d-flex justify-content-start align-items-center">
                     <div className="d-inline-flex align-items-center">

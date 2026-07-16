@@ -37,7 +37,13 @@ function ConfigImage(props: IConfigGenerateImageParams) {
         } else if (key == "api_key") {
             setImageConfig({...imageConfig, APIKeyCloud: value})
         } else if (key == "steps") {
-            let steps = parseInt(value)
+            let steps = 0
+
+            if (value == "") {
+                steps = 5
+            } else {
+                steps = parseInt(value)
+            }
 
             if (steps > 40) {
                 steps = 40
@@ -56,7 +62,7 @@ function ConfigImage(props: IConfigGenerateImageParams) {
                     <Link45deg size={45} />
                 </Col>
                 <Col sm={9} className="">
-                    <h5 className="mt-2 text-hapax-primary">Training Model Address</h5>
+                    <h5 className="mt-2 text-hapax-primary">Image Generation Model Address</h5>
                     <p className="mb-0 text-hapax-tertiary">Enter the address and the name of the model used to generate the image</p>
                 </Col>
             </Col>

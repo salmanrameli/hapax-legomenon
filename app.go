@@ -14,6 +14,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	goRuntime "runtime"
 	"strings"
 	"time"
 	"ubiquitous-funicular/constants"
@@ -1208,6 +1209,10 @@ func (a *App) StoreGenerateImageConfigValue(projectId string, value *structs.Con
 	}
 
 	return nil
+}
+
+func (a *App) IsPlatformMac() bool {
+	return goRuntime.GOOS == "darwin"
 }
 
 func (a *App) Dump(item any) {
