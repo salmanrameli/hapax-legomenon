@@ -6,7 +6,7 @@ import { IConfigGenerateImage, IConfigGenerateImageParams } from '../../interfac
 import { Link45deg } from 'react-bootstrap-icons';
 
 function ConfigImage(props: IConfigGenerateImageParams) {
-    const [imageConfig, setImageConfig] = useState<IConfigGenerateImage>({Mode:props.defaultValue.Mode, Model:props.defaultValue.Model, URLLocal:props.defaultValue.URLLocal, URLCloud:props.defaultValue.URLCloud, APIKeyCloud:props.defaultValue.APIKeyCloud, Steps:props.defaultValue.Steps, Dimension:props.defaultValue.Dimension})
+    const [imageConfig, setImageConfig] = useState<IConfigGenerateImage>({Mode:props.defaultValue.Mode, Model:props.defaultValue.Model, URLLocal:props.defaultValue.URLLocal, URLCloud:props.defaultValue.URLCloud, APIKeyCloud:props.defaultValue.APIKeyCloud, Steps:props.defaultValue.Steps, DimensionWidth:props.defaultValue.DimensionWidth, DimensionHeight:props.defaultValue.DimensionHeight})
 
     useEffect(() => {
         if (props.defaultValue.URLLocal != "") {
@@ -17,7 +17,8 @@ function ConfigImage(props: IConfigGenerateImageParams) {
                 URLCloud: props.defaultValue.URLCloud,
                 APIKeyCloud: props.defaultValue.APIKeyCloud,
                 Steps: props.defaultValue.Steps,
-                Dimension: props.defaultValue.Dimension
+                DimensionWidth: props.defaultValue.DimensionWidth,
+                DimensionHeight: props.defaultValue.DimensionHeight
             })
         }
     }, [])

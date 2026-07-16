@@ -34,13 +34,14 @@ type ConfigGeneratePrompt struct {
 }
 
 type ConfigGenerateImage struct {
-	Mode        string `json:"mode"`
-	Model       string `json:"model"`
-	URLLocal    string `json:"url_local"`
-	URLCloud    string `json:"url_cloud"`
-	APIKeyCloud string `json:"api_key_cloud"`
-	Steps       uint8  `json:"steps"`
-	Dimension   uint16 `json:"dimension"`
+	Mode            string `json:"mode"`
+	Model           string `json:"model"`
+	URLLocal        string `json:"url_local"`
+	URLCloud        string `json:"url_cloud"`
+	APIKeyCloud     string `json:"api_key_cloud"`
+	Steps           uint8  `json:"steps"`
+	DimensionWidth  uint16 `json:"dimension_width"`
+	DimensionHeight uint16 `json:"dimension_height"`
 }
 
 type TokenDatabase struct {

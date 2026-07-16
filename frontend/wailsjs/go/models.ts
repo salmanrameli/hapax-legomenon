@@ -7,7 +7,8 @@ export namespace structs {
 	    url_cloud: string;
 	    api_key_cloud: string;
 	    steps: number;
-	    dimension: number;
+	    dimension_width: number;
+	    dimension_height: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new ConfigGenerateImage(source);
@@ -21,7 +22,8 @@ export namespace structs {
 	        this.url_cloud = source["url_cloud"];
 	        this.api_key_cloud = source["api_key_cloud"];
 	        this.steps = source["steps"];
-	        this.dimension = source["dimension"];
+	        this.dimension_width = source["dimension_width"];
+	        this.dimension_height = source["dimension_height"];
 	    }
 	}
 	export class ConfigGeneratePrompt {

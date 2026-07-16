@@ -142,7 +142,8 @@ function App() {
                     URLCloud: value.url_cloud,
                     APIKeyCloud: value.api_key_cloud,
                     Steps: value.steps,
-                    Dimension: value.dimension
+                    DimensionWidth: value.dimension_width,
+                    DimensionHeight: value.dimension_height
                 })
             }
         })

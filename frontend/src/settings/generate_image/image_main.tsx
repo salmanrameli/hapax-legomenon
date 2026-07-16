@@ -11,7 +11,7 @@ interface IImageSettingMain {
 }
 
 function ImageSettingMain(props: IImageSettingMain) {
-    const [generateImageDetail, setGenerateImageDetail] = useState<IConfigGenerateImage>({Mode:"", Model:"", URLLocal: "", URLCloud: "", APIKeyCloud:"", Steps: 0, Dimension: 0})
+    const [generateImageDetail, setGenerateImageDetail] = useState<IConfigGenerateImage>({Mode:"", Model:"", URLLocal: "", URLCloud: "", APIKeyCloud:"", Steps: 0, DimensionWidth: 0, DimensionHeight:0})
     const [show, setShow] = useState<boolean>(false)
     const [disableSaveButton, setDisableSaveButton] = useState<boolean>(true)
 
@@ -26,7 +26,8 @@ function ImageSettingMain(props: IImageSettingMain) {
                 URLCloud: value.url_cloud,
                 APIKeyCloud: value.api_key_cloud,
                 Steps: value.steps,
-                Dimension: value.dimension
+                DimensionWidth: value.dimension_width,
+                DimensionHeight: value.dimension_height
             })
 
             setDisableSaveButton(true)
@@ -63,10 +64,19 @@ function ImageSettingMain(props: IImageSettingMain) {
         setDisableSaveButton(false)
     }
 
-    const handleChangeDimension = (dimension: number) => {
+    const handleChangeDimensionWidth = (dimension: number) => {
         setGenerateImageDetail({
             ...generateImageDetail,
-            Dimension: dimension
+            DimensionWidth: dimension
+        })
+
+        setDisableSaveButton(false)
+    }
+
+    const handleChangeDimensionHeight = (dimension: number) => {
+        setGenerateImageDetail({
+            ...generateImageDetail,
+            DimensionHeight: dimension
         })
 
         setDisableSaveButton(false)
@@ -80,7 +90,8 @@ function ImageSettingMain(props: IImageSettingMain) {
             url_cloud: generateImageDetail.URLCloud,
             api_key_cloud: generateImageDetail.APIKeyCloud,
             steps: generateImageDetail.Steps,
-            dimension: generateImageDetail.Dimension
+            dimension_width: generateImageDetail.DimensionWidth,
+            dimension_height: generateImageDetail.DimensionHeight
         }).then(() => {
             setDisableSaveButton(true)
         })
@@ -90,7 +101,7 @@ function ImageSettingMain(props: IImageSettingMain) {
         <Row>
             <Col className={"col-12"}>
                 <div className="d-inline-flex w-100 flex-wrap p-3 rounded-4 border-hapax-primary hapax-box-shadow">
-                    <SettingGenerateImage data={generateImageDetail} onChangeSource={handleChangeSourceImage} onChangeDimension={handleChangeDimension} onSaveChanges={handleSaveChanges} />
+                    <SettingGenerateImage data={generateImageDetail} onChangeSource={handleChangeSourceImage} onChangeDimensionWidth={handleChangeDimensionWidth} onChangeDimensionHeight={handleChangeDimensionHeight} onSaveChanges={handleSaveChanges} />
                 </div>
                 <div className="w-100 mt-3 flex-wrap p-3 rounded-4 border-hapax-primary hapax-box-shadow">
                     {show && <ConfigImage source={generateImageDetail.Mode} defaultValue={generateImageDetail!} onChangeConfig={handleChangeConfig} onSaveChanges={handleSaveChanges} />}

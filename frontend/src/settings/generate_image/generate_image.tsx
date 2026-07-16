@@ -6,10 +6,10 @@ import { IConfigGenerateImage, ISettingGenerateImage } from "../../interfaces/co
 import { ArrowsAngleExpand, HddStack } from "react-bootstrap-icons";
 
 function SettingGenerateImage(props: ISettingGenerateImage) {
-    const [settingImage, setSettingImage] = useState<IConfigGenerateImage>({Mode:"", Model: "", URLLocal:"", URLCloud:"", APIKeyCloud:"", Steps:0, Dimension:0})
+    const [settingImage, setSettingImage] = useState<IConfigGenerateImage>({Mode:"", Model: "", URLLocal:"", URLCloud:"", APIKeyCloud:"", Steps:0, DimensionWidth:0, DimensionHeight: 0})
 
     useEffect(() => {
-        setSettingImage({Mode:props.data.Mode, Model:props.data.Model, URLLocal:props.data.URLLocal, URLCloud:props.data.URLCloud, APIKeyCloud:props.data.APIKeyCloud, Steps:props.data.Steps, Dimension:props.data.Dimension})
+        setSettingImage({Mode:props.data.Mode, Model:props.data.Model, URLLocal:props.data.URLLocal, URLCloud:props.data.URLCloud, APIKeyCloud:props.data.APIKeyCloud, Steps:props.data.Steps, DimensionWidth:props.data.DimensionWidth, DimensionHeight:props.data.DimensionHeight})
     }, [props])
 
     const handleModeGenerateImageChange = (e:any) => {
@@ -21,13 +21,22 @@ function SettingGenerateImage(props: ISettingGenerateImage) {
         props.onChangeSource(e.target.value)
     }
 
-    const handleSetImageDimension = (e:any) => {
+    const handleSetImageDimensionWidth = (e:any) => {
         setSettingImage({
             ...settingImage,
-            Dimension: parseInt(e.target.value)
+            DimensionWidth: parseInt(e.target.value)
         })
 
-        props.onChangeDimension(parseInt(e.target.value))
+        props.onChangeDimensionWidth(parseInt(e.target.value))
+    }
+
+    const handleSetImageDimensionHeight = (e:any) => {
+        setSettingImage({
+            ...settingImage,
+            DimensionHeight: parseInt(e.target.value)
+        })
+
+        props.onChangeDimensionHeight(parseInt(e.target.value))
     }
 
     return(
@@ -74,28 +83,76 @@ function SettingGenerateImage(props: ISettingGenerateImage) {
                     <h5 className="mt-2 text-hapax-primary">Dimension</h5>
                     <p className="mb-0 text-hapax-tertiary">Set the dimension of the generated image</p>
                 </Col>
-                <Col sm={5} className="d-flex justify-content-center align-items-center">
-                    <div className="d-inline-flex align-items-center w-100">
-                        <Form.Check
-                            className="ms-3"
-                            type="radio"
-                            label={ImageDimensionOptions.md.label}
-                            name="setImageDimension"
-                            id="image-size-lg"
-                            value={ImageDimensionOptions.md.value}
-                            checked={settingImage.Dimension === ImageDimensionOptions.md.value}
-                            onChange={handleSetImageDimension}
-                        />
-                        <Form.Check
-                            className="ms-5"
-                            type="radio"
-                            label={ImageDimensionOptions.lg.label}
-                            name="setImageDimension"
-                            id="image-size-lg"
-                            value={ImageDimensionOptions.lg.value}
-                            checked={settingImage.Dimension === ImageDimensionOptions.lg.value}
-                            onChange={handleSetImageDimension}
-                        />
+                <Col sm={5} className="justify-content-center align-items-center">
+                    <div className="w-100">
+                        <div className="d-inline-flex w-100">
+                            <p>Width:</p>
+                            <Form.Check
+                                className="ms-3"
+                                type="radio"
+                                label={ImageDimensionOptions.sm.label}
+                                name="setImageDimensionWidth"
+                                id="image-width-size-sm"
+                                value={ImageDimensionOptions.sm.value}
+                                checked={settingImage.DimensionWidth === ImageDimensionOptions.sm.value}
+                                onChange={handleSetImageDimensionWidth}
+                            />
+                            <Form.Check
+                                className="ms-5"
+                                type="radio"
+                                label={ImageDimensionOptions.md.label}
+                                name="setImageDimensionWidth"
+                                id="image-width-size-md"
+                                value={ImageDimensionOptions.md.value}
+                                checked={settingImage.DimensionWidth === ImageDimensionOptions.md.value}
+                                onChange={handleSetImageDimensionWidth}
+                            />
+                            <Form.Check
+                                className="ms-5"
+                                type="radio"
+                                label={ImageDimensionOptions.lg.label}
+                                name="setImageDimensionWidth"
+                                id="image-width-size-lg"
+                                value={ImageDimensionOptions.lg.value}
+                                checked={settingImage.DimensionWidth === ImageDimensionOptions.lg.value}
+                                onChange={handleSetImageDimensionWidth}
+                            />
+                        </div>
+                    </div>
+                    <div className="w-100">
+                        <div className="d-inline-flex w-100">
+                            <p>Height:</p>
+                            <Form.Check
+                                className="ms-3"
+                                type="radio"
+                                label={ImageDimensionOptions.sm.label}
+                                name="setImageDimensionHeight"
+                                id="image-height-size-sm"
+                                value={ImageDimensionOptions.sm.value}
+                                checked={settingImage.DimensionHeight === ImageDimensionOptions.sm.value}
+                                onChange={handleSetImageDimensionHeight}
+                            />
+                            <Form.Check
+                                className="ms-5"
+                                type="radio"
+                                label={ImageDimensionOptions.md.label}
+                                name="setImageDimensionHeight"
+                                id="image-height-size-md"
+                                value={ImageDimensionOptions.md.value}
+                                checked={settingImage.DimensionHeight === ImageDimensionOptions.md.value}
+                                onChange={handleSetImageDimensionHeight}
+                            />
+                            <Form.Check
+                                className="ms-5"
+                                type="radio"
+                                label={ImageDimensionOptions.lg.label}
+                                name="setImageDimensionHeight"
+                                id="image-height-size-lg"
+                                value={ImageDimensionOptions.lg.value}
+                                checked={settingImage.DimensionHeight === ImageDimensionOptions.lg.value}
+                                onChange={handleSetImageDimensionHeight}
+                            />
+                        </div>
                     </div>
                 </Col>
             </Col>

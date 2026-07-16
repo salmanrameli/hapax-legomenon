@@ -26,7 +26,8 @@ export const GenerateImageOptions = {
 }
 
 export const ImageDimensionOptions = {
-    md: {label: "512px", value: 512},
+    sm: {label: "512px", value: 512},
+    md: {label: "768px", value: 768},
     lg: {label: "1024px", value: 1024}
 }
 
