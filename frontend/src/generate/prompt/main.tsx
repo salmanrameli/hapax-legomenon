@@ -18,6 +18,7 @@ interface IGeneratePromptMain {
 function GeneratePromptMain(props: IGeneratePromptMain) {
     const [mode, setMode] = useState<number>(GenerateMode.MODE_DEFAULT)
     const [prompt, setPrompt] = useState<string>("")
+    const [voice, setVoice] = useState<string>("")
     const [image, setImage] = useState<string>("")
     const [elapsedSeconds, setElapsedSeconds] = useState<number>(0)
     const [isPlatformMac, setIsPlatformMac] = useState<boolean>(false)
@@ -34,7 +35,7 @@ function GeneratePromptMain(props: IGeneratePromptMain) {
         setImage("")
         setElapsedSeconds(0)
 
-        GeneratePrompt(props.projectId).then((value) => {
+        GeneratePrompt(props.projectId, voice).then((value) => {
             setPrompt(value)
         }).finally(() => {
             setMode(GenerateMode.MODE_DEFAULT)
@@ -77,7 +78,14 @@ function GeneratePromptMain(props: IGeneratePromptMain) {
             <Row>
                 <Col sm={12}>
                     <div className="d-flex bg-white gap-2 flex-wrap justify-content-center p-3 border-hapax-secondary hapax-box-shadow rounded-4">
-                        <div className="d-flex" style={{height: "200px", width:"100%", overflowY:"scroll"}}>
+                        <div className="d-flex" style={{height: "50px", width:"100%", overflowY:"scroll"}}>
+                            <textarea disabled={mode == GenerateMode.MODE_GENERATING_IMAGE || mode == GenerateMode.MODE_GENERATING_PROMPT} placeholder="Optional: Describe a persona, tone, or epistemic stance - not a style label. Example: 'a building inspector noting structural violations, terse and technical'" style={{width:"100%", height:"100%", resize:"none", boxSizing:"border-box", border:"none", outline:"none"}} value={voice} onChange={(e) => mode !== GenerateMode.MODE_GENERATING_IMAGE && setVoice(e.target.value)} />
+                        </div>
+                    </div>
+                </Col>
+                <Col sm={12}>
+                    <div className="d-flex bg-white mt-3 gap-2 flex-wrap justify-content-center p-3 border-hapax-secondary hapax-box-shadow rounded-4">
+                        <div className="d-flex" style={{height: "150px", width:"100%", overflowY:"scroll"}}>
                             <textarea disabled={mode == GenerateMode.MODE_GENERATING_IMAGE || mode == GenerateMode.MODE_GENERATING_PROMPT} placeholder="Type your prompt here or create one using the button below" style={{width:"100%", height:"100%", resize:"none", boxSizing:"border-box", border:"none", outline:"none"}} value={prompt} onChange={(e) => mode !== GenerateMode.MODE_GENERATING_IMAGE && setPrompt(e.target.value)} />
                         </div>
                     </div>

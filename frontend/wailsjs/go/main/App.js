@@ -38,8 +38,8 @@ export function GenerateImage(arg1, arg2) {
   return window['go']['main']['App']['GenerateImage'](arg1, arg2);
 }
 
-export function GeneratePrompt(arg1) {
-  return window['go']['main']['App']['GeneratePrompt'](arg1);
+export function GeneratePrompt(arg1, arg2) {
+  return window['go']['main']['App']['GeneratePrompt'](arg1, arg2);
 }
 
 export function GetAvailableLocalModels() {

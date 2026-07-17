@@ -719,7 +719,7 @@ func (a *App) configureGenerateImageConfig(path string) {
 	}
 }
 
-func (a *App) GeneratePrompt(projectId string) (string, error) {
+func (a *App) GeneratePrompt(projectId string, voice string) (string, error) {
 	promptConfig, err := a.GetGeneratePromptConfigValue(projectId)
 
 	if err != nil {
@@ -779,6 +779,7 @@ func (a *App) GeneratePrompt(projectId string) (string, error) {
 		promptConfig.Model,
 		projectConfigPath.ProjectPath,
 		tokenDatabasePath,
+		voice,
 	)
 
 	output, err := cmd.CombinedOutput()

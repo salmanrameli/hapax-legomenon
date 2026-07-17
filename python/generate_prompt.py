@@ -66,6 +66,35 @@ ADDITIONAL CONSTRAINTS (high XENO score):
 - If two states are irreconcilable, name both as equally true and co-present
 - Favor nouns and textures over adjectives and comparisons"""
 
+def _call_llm(model_name, model_url, system_pass, user_msg):
+    payload_dict = {
+        "model": model_name,
+        "messages": [
+            {
+                "role": "system", 
+                "content": system_pass
+            },
+            {
+                "role": "user", 
+                "content": user_msg,
+            }
+        ],
+        "stream": False 
+    }
+
+    command = [
+        "curl", "-s", "-X", "POST",
+        "-H", "Content-Type: application/json",
+        "-d", "@-",
+        model_url
+    ]
+
+    result = subprocess.run(command, input=json.dumps(payload_dict), capture_output=True, text=True)
+
+    response_data = json.loads(result.stdout)
+
+    return _sanitize_output(response_data["message"]["content"])
+
 def xeno_avg(tokens):
     if not tokens:
         return 0.0
@@ -152,7 +181,7 @@ def _sanitize_output(text: str, pass_name: str = "") -> str:
     
     return text
 
-def build_prompt_llm(mode, visual_tokens, meta_tokens, model_url, model_name):
+def build_prompt_llm(mode, visual_tokens, meta_tokens, model_url, model_name, voice):
     image_part = ", ".join(t["token_concept"] for t in visual_tokens)
 
     user_msg = f"IMAGE: {image_part}"
@@ -172,35 +201,29 @@ def build_prompt_llm(mode, visual_tokens, meta_tokens, model_url, model_name):
         + _SYS_NOCENSOR
     )
 
-    payload_dict = {
-        "model": model_name,
-        "messages": [
-            {
-                "role": "system", 
-                "content": system_pass1
-            },
-            {
-                "role": "user", 
-                "content": user_msg,
-            }
-        ],
-        "stream": False 
-    }
+    response_text = _call_llm(model_name, model_url, system_pass1, user_msg)
 
-    command = [
-        "curl", "-s", "-X", "POST",
-        "-H", "Content-Type: application/json",
-        "-d", "@-",
-        model_url
-    ]
+    if voice != "":
+        system_voice = (
+            "You rewrite image prompts through a specific writing register.\n\n"
+            f"REGISTER — apply absolutely to syntax, tone, vocabulary, rhythm:\n"
+            f"{voice.strip()}\n\n"
+            "RULES:\n"
+            "1. Keep ALL visual subjects, materials, textures from the input.\n"
+            "2. Rewrite entirely through the register. If the register contradicts "
+            "documentary style, the register wins.\n"
+            "3. Length: 60 words.\n"
+            "4. Begin directly with the first content word of the scene. "
+            "Never start with 'I', 'Here', 'Rewritten', 'In the register', "
+            "'Through', 'Applying', 'This', or any label followed by a colon."
+            + _SYS_NOCENSOR
+        )
 
-    result = subprocess.run(command, input=json.dumps(payload_dict), capture_output=True, text=True)
+        response_text = _call_llm(model_name, model_url, system_voice, response_text)
 
-    response_data = json.loads(result.stdout)
+    print(response_text)
 
-    print(response_data["message"]["content"])
-
-    return _sanitize_output(response_data["message"]["content"])
+    return response_text
 
 def load_tokens(path, xeno_max, filter_type=""):
     """
@@ -275,6 +298,7 @@ def main():
     model_name = sys.argv[2]
     project_dir = sys.argv[3]
     database_token_path = sys.argv[4]
+    voice = sys.argv[5]
 
     seed_used = SEED if SEED is not None else random.randint(0, 99999)
 
@@ -288,7 +312,7 @@ def main():
     # mode 2 = long prompt
     mode = 1
     result = build_prompt_llm(
-        mode, visual_tokens, meta_tokens, model_url, model_name
+        mode, visual_tokens, meta_tokens, model_url, model_name, voice
     )
 
     return result
