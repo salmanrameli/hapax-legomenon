@@ -50,7 +50,7 @@ function Result(props: ITrainingResult) {
                             !props.isFinishedProcessing && 
                             <Col className="col-12">
                                 <div className="d-flex gap-2 mb-2 flex-wrap justify-content-center p-3 border-hapax-secondary hapax-box-shadow rounded-4">
-                                    <h1><Spinner animation="border" className="spinner-orange" style={{width: '3rem', height: '3rem', borderWidth: '0.3em', cursor:"default"}} /> Analyzing image{props.totalImage > 1 ? "s" : ""} in progress</h1>
+                                    <h1 className="d-inline-flex text-hapax-primary"><Spinner animation="grow" className="spinner-orange me-3" style={{width: '3rem', height: '3rem', borderWidth: '0.3em', cursor:"default"}} /> Analyzing image{props.totalImage > 1 ? "s" : ""} in progress</h1>
                                     <div className="w-100">
                                         <ProgressBar animated className="w-100 rounded-0 border-hapax-secondary rounded-4" variant="warning" style={{ height: '20px', backgroundColor: '#fff' }} now={(props.countImage / props.totalImage) * 100} />
                                     </div>

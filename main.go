@@ -21,8 +21,8 @@ func main() {
 		Title:     "Hapax Legomenon",
 		Width:     1024,
 		MinWidth:  1024,
-		Height:    768,
-		MinHeight: 768,
+		Height:    800,
+		MinHeight: 800,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},

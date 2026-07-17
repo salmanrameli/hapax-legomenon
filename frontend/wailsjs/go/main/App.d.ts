@@ -10,6 +10,8 @@ export function CheckIfPythonIsInstalled():Promise<boolean>;
 
 export function ConfigureUserProjectsFile(arg1:string):Promise<void>;
 
+export function DeleteProject(arg1:string):Promise<void>;
+
 export function DescriptionsToTokens(arg1:string,arg2:string):Promise<string>;
 
 export function Dump(arg1:any):Promise<void>;
@@ -18,7 +20,7 @@ export function EncodeImagesFromPath(arg1:Array<string>):Promise<Array<string>>;
 
 export function GenerateImage(arg1:string,arg2:string):Promise<string>;
 
-export function GeneratePrompt(arg1:string):Promise<string>;
+export function GeneratePrompt(arg1:string,arg2:string):Promise<string>;
 
 export function GetAvailableLocalModels():Promise<structs.LocalModelResponseArray>;
 
@@ -28,6 +30,8 @@ export function GetGenerateImageConfigValue(arg1:string):Promise<structs.ConfigG
 
 export function GetGeneratePromptConfigValue(arg1:string):Promise<structs.ConfigGeneratePrompt>;
 
+export function GetPOVText(arg1:string):Promise<string>;
+
 export function GetTrainingConfigValue(arg1:string):Promise<structs.ConfigTraining>;
 
 export function GetUserProjectsList():Promise<Array<structs.UserProjectItem>>;
@@ -36,16 +40,22 @@ export function HandleCreateNewProject(arg1:string,arg2:boolean):Promise<void>;
 
 export function IsPlatformMac():Promise<boolean>;
 
+export function ResetPOVText(arg1:string):Promise<void>;
+
 export function SaveImage(arg1:string,arg2:string,arg3:string):Promise<void>;
 
 export function SelectImages():Promise<Array<string>>;
 
+export function SetPOVFile(arg1:string):Promise<void>;
+
 export function SetSelectedProject(arg1:string):Promise<void>;
 
-export function StartImageTraining(arg1:string,arg2:string):Promise<string>;
+export function StartImageTraining(arg1:string,arg2:string,arg3:boolean):Promise<string>;
 
 export function StoreGenerateImageConfigValue(arg1:string,arg2:structs.ConfigGenerateImage):Promise<void>;
 
 export function StoreGeneratePromptConfigValue(arg1:string,arg2:structs.ConfigGeneratePrompt):Promise<void>;
+
+export function StorePOVText(arg1:string,arg2:string):Promise<void>;
 
 export function StoreTrainingConfigValue(arg1:string,arg2:structs.ConfigTraining):Promise<void>;

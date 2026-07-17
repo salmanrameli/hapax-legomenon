@@ -1,19 +1,23 @@
 import { Button, Col, Row } from "react-bootstrap"
 import { useEffect, useState } from "react";
-import { GetTrainingConfigValue, StoreTrainingConfigValue } from "../../../wailsjs/go/main/App"
+import { GetTrainingConfigValue, StoreTrainingConfigValue, ResetPOVText } from "../../../wailsjs/go/main/App"
 import { IConfigTraining } from "../../interfaces/config.interfaces";
 import ConfigTraining from "./config_training";
 import SettingTraining from "./train";
-import { Floppy } from "react-bootstrap-icons";
+import { BodyText, Floppy } from "react-bootstrap-icons";
+import ConfigPOV from "./config_pov";
+import { SettingTrainingMode } from "../../constants/mode";
 
 interface ITrainingSettingMain {
     projectId: string
 }
 
 function TrainingSettingMain(props: ITrainingSettingMain) {
+    const [mode, setMode] = useState<number>(SettingTrainingMode.MODE_HOME)
     const [trainingDetail, setTrainingDetail] = useState<IConfigTraining>({Mode:"", Model: "", URLLocal: "", URLCloud: "", APIKeyCloud:""})
     const [show, setShow] = useState<boolean>(false)
     const [disableSaveButton, setDisableSaveButton] = useState<boolean>(true)
+    const [resetButtonText, setResetButtonText] = useState<string>("Reset")
 
     useEffect(() => {        
         GetTrainingConfigValue(props.projectId).then((value) => {
@@ -70,18 +74,52 @@ function TrainingSettingMain(props: ITrainingSettingMain) {
         })
     }
 
+    function handleResetPOVText() {
+        ResetPOVText(props.projectId).then(() => {
+            setResetButtonText("Done!")
+
+            setTimeout(() => {
+                setResetButtonText("Reset")
+            }, 1000)
+        })
+    }
+
+    function render() {
+        switch(mode) {
+            case SettingTrainingMode.MODE_HOME:
+                return (
+                    <Row>
+                        <Col className={"col-12"}>
+                            <div className="d-inline-flex w-100 flex-wrap p-3 rounded-4 border-hapax-primary hapax-box-shadow">
+                                <SettingTraining data={trainingDetail} onChangeSource={handleChangeSourceTraining} onSaveChanges={handleSaveChanges} />
+                            </div>
+                            <div className="d-inline-flex mt-3 w-100 flex-wrap p-3 rounded-4 border-hapax-primary hapax-box-shadow">
+                                <Col sm={1} className="d-flex justify-content-start align-items-center">
+                                    <BodyText size={45} />
+                                </Col>
+                                <Col sm={5} className="">
+                                    <h5 className="mt-2 text-hapax-primary">POV</h5>
+                                    <p className="mb-0 text-hapax-tertiary">Set the POV instructions for analyzing the images.</p>
+                                </Col>
+                                <Col sm={6} className="d-flex justify-content-start align-items-center">
+                                    <Button className="btn-hapax-primary border-hapax-primary hapax-box-shadow rounded-4 mt-3 w-25" onClick={_ => setMode(SettingTrainingMode.MODE_SET_POV)}>Configure</Button>
+                                    <Button className="btn-hapax-primary-dark btn-hapax-danger rounded-4 mt-3 w-25 ms-4" onClick={_ => handleResetPOVText()}>{resetButtonText}</Button>
+                                </Col>
+                            </div>
+                            <div className="w-100 mt-3 flex-wrap p-3 rounded-4 border-hapax-primary hapax-box-shadow">
+                                {show && <ConfigTraining source={trainingDetail.Mode} defaultValue={trainingDetail!} onChangeConfig={handleChangeConfig} onSaveChanges={handleSaveChanges} />}
+                            </div>
+                            <Button size="lg" onClick={handleSaveChanges} disabled={disableSaveButton} className="btn-hapax-primary border-hapax-primary hapax-box-shadow rounded-4 mt-3 w-25"><Floppy style={{marginTop:"-3px", marginRight:"5px"}} /> Save</Button>
+                        </Col>
+                    </Row>
+                )
+            case SettingTrainingMode.MODE_SET_POV:
+                return <ConfigPOV projectId={props.projectId} handleBack={() => setMode(SettingTrainingMode.MODE_HOME)} />
+        }
+    }
+
     return (
-        <Row>
-            <Col className={"col-12"}>
-                <div className="d-inline-flex w-100 flex-wrap p-3 rounded-4 border-hapax-primary hapax-box-shadow">
-                    <SettingTraining data={trainingDetail} onChangeSource={handleChangeSourceTraining} onSaveChanges={handleSaveChanges} />
-                </div>
-                <div className="w-100 mt-3 flex-wrap p-3 rounded-4 border-hapax-primary hapax-box-shadow">
-                    {show && <ConfigTraining source={trainingDetail.Mode} defaultValue={trainingDetail!} onChangeConfig={handleChangeConfig} onSaveChanges={handleSaveChanges} />}
-                </div>
-                <Button size="lg" onClick={handleSaveChanges} disabled={disableSaveButton} className="btn-hapax-primary border-hapax-primary hapax-box-shadow rounded-4 mt-3 w-25"><Floppy style={{marginTop:"-3px", marginRight:"5px"}} /> Save</Button>
-            </Col>
-        </Row>
+        render()
     )
 }
 

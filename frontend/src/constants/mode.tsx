@@ -49,3 +49,8 @@ export const RenderContentID = {
     MODE_CREATE_NEW: 21,
     MODE_SHOW_LIST: 22
 }
+
+export const SettingTrainingMode = {
+    MODE_HOME: 1,
+    MODE_SET_POV: 2
+}

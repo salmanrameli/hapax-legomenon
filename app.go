@@ -15,6 +15,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	goRuntime "runtime"
+	"slices"
+	"strconv"
 	"strings"
 	"time"
 	"ubiquitous-funicular/constants"
@@ -54,6 +56,7 @@ func (a *App) getProjectConfigPaths() (*structs.ProjectConfigPathStructure, erro
 		ArchivedTokensDir:  projectsPath + constants.APP_CREATED_TOKENS_DIR,
 		UserProjectsDir:    projectsPath + constants.APP_USER_PROJECTS_DIR,
 		ConfigUserProjects: projectsPath + configUserProjects,
+		POVFile:            projectsPath + constants.POV_TXT,
 	}, nil
 }
 
@@ -219,6 +222,68 @@ func (a *App) HandleCreateNewProject(name string, useProject bool) error {
 
 	a.configureGenerateImageConfig(projectDirectory + "/" + constants.APP_SETTING_GENERATE_IMAGE)
 
+	a.SetPOVFile(projectDirectory + "/" + constants.POV_TXT)
+
+	return nil
+}
+
+func (a *App) SetPOVFile(path string) {
+	content := []byte(constants.DEFAULT_POV_INSTRUCTION)
+
+	err := os.WriteFile(path, content, 0644)
+
+	if err != nil {
+		log.Fatalf("SetPOVFile failed to write file: %s", err)
+	}
+}
+
+func (a *App) GetPOVText(projectId string) (string, error) {
+	projectConfig, err := a.getProjectConfigPaths()
+
+	if err != nil {
+		log.Fatalf("GetPOVText getProjectConfigPaths error getting directory: %v\n", err)
+
+		return "", err
+	}
+
+	projectDetail := projectConfig.UserProjectsDir + "/" + projectId
+
+	content, err := os.ReadFile(projectDetail + "/" + constants.POV_TXT)
+
+	if err != nil {
+		log.Fatalf("GetPOVText ReadFile error in reading file: %v\n", err)
+
+		return "", err
+	}
+
+	return string(content), nil
+}
+
+func (a *App) ResetPOVText(projectId string) error {
+	return a.StorePOVText(projectId, constants.DEFAULT_POV_INSTRUCTION)
+}
+
+func (a *App) StorePOVText(projectId string, text string) error {
+	projectConfig, err := a.getProjectConfigPaths()
+
+	if err != nil {
+		log.Fatalf("StorePOVText getProjectConfigPaths error getting directory: %v\n", err)
+
+		return err
+	}
+
+	projectPath := projectConfig.UserProjectsDir + "/" + projectId + "/" + constants.POV_TXT
+
+	content := []byte(text)
+
+	err = os.WriteFile(projectPath, content, 0644)
+
+	if err != nil {
+		log.Fatalf("StorePOVText failed to write file: %s", err)
+
+		return err
+	}
+
 	return nil
 }
 
@@ -370,6 +435,75 @@ func (a *App) checkAppProjectDir(path string, userProjectsDir string) {
 			return
 		}
 	}
+}
+
+func (a *App) DeleteProject(projectId string) error {
+	projectDetail, err := a.getProjectConfigPaths()
+
+	if err != nil {
+		log.Fatalf("DeleteProject getProjectConfigPaths error getting directory: %v\n", err)
+
+		return err
+	}
+
+	content, err := os.ReadFile(projectDetail.ConfigUserProjects)
+
+	if err != nil {
+		log.Fatalf("DeleteProject error opening file: %v\n", err)
+
+		return err
+	}
+
+	var config structs.UserProjects
+
+	err = json.Unmarshal(content, &config)
+
+	if err != nil {
+		log.Fatalf("DeleteProject error parsing JSON: %v\n", err)
+
+		return err
+	}
+
+	file, err := os.OpenFile(projectDetail.ConfigUserProjects, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+
+	if err != nil {
+		log.Fatalf("DeleteProject failed to open file: %v\n", err)
+
+		return err
+	}
+
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+
+	encoder.SetIndent("", "  ")
+
+	projects := slices.DeleteFunc(config.Options, func(p structs.UserProjectItem) bool {
+		return p.ID == projectId
+	})
+
+	updatedValue := &structs.UserProjects{
+		Selected: config.Selected,
+		Options:  projects,
+	}
+
+	err = encoder.Encode(updatedValue)
+
+	if err != nil {
+		log.Fatalf("DeleteProject failed to write JSON: %v\n", err)
+
+		return err
+	}
+
+	err = os.RemoveAll(projectDetail.UserProjectsDir + "/" + projectId)
+
+	if err != nil {
+		log.Fatalf("DeleteProject unable to delete directory: %v\n", err)
+
+		return err
+	}
+
+	return nil
 }
 
 func (a *App) ConfigureUserProjectsFile(path string) {
@@ -585,7 +719,7 @@ func (a *App) configureGenerateImageConfig(path string) {
 	}
 }
 
-func (a *App) GeneratePrompt(projectId string) (string, error) {
+func (a *App) GeneratePrompt(projectId string, voice string) (string, error) {
 	promptConfig, err := a.GetGeneratePromptConfigValue(projectId)
 
 	if err != nil {
@@ -596,7 +730,7 @@ func (a *App) GeneratePrompt(projectId string) (string, error) {
 
 	var modelURL string
 
-	if promptConfig.Mode == constants.TrainImageMode.LocalValue() {
+	if promptConfig.Mode == constants.GeneratePromptMode.LocalValue() {
 		modelURL = promptConfig.URLLocal + constants.SUFFIX_LOCAL_MODEL_TEXT
 	} else {
 		modelURL = promptConfig.URLCloud
@@ -645,6 +779,7 @@ func (a *App) GeneratePrompt(projectId string) (string, error) {
 		promptConfig.Model,
 		projectConfigPath.ProjectPath,
 		tokenDatabasePath,
+		voice,
 	)
 
 	output, err := cmd.CombinedOutput()
@@ -873,7 +1008,7 @@ func (a *App) DescriptionsToTokens(projectId string, texts string) (string, erro
 	return string(output), nil
 }
 
-func (a *App) StartImageTraining(projectId string, imagePath string) (string, error) {
+func (a *App) StartImageTraining(projectId string, imagePath string, createCustomPOV bool) (string, error) {
 	trainingConfig, err := a.GetTrainingConfigValue(projectId)
 
 	if err != nil {
@@ -890,6 +1025,24 @@ func (a *App) StartImageTraining(projectId string, imagePath string) (string, er
 		modelURL = trainingConfig.URLCloud
 	}
 
+	projectConfigPath, err := a.getProjectConfigPaths()
+
+	if err != nil {
+		log.Fatalf("StartImageTraining getProjectConfigPaths error: %v\n", err)
+
+		return "", err
+	}
+
+	tokenDatabasePath := projectConfigPath.UserProjectsDir + "/" + projectId + "/" + constants.TOKEN_DATABASE
+
+	pov, err := a.GetPOVText(projectId)
+
+	if err != nil {
+		log.Fatalf("StartImageTraining GetPOVText error: %v\n", err)
+
+		pov = constants.DEFAULT_POV_INSTRUCTION
+	}
+
 	tmpDir, err := os.MkdirTemp("", "wails_python_*")
 
 	if err != nil {
@@ -899,7 +1052,7 @@ func (a *App) StartImageTraining(projectId string, imagePath string) (string, er
 	defer os.RemoveAll(tmpDir)
 
 	pythonInterpreter := "python3"
-	scriptName := "train_image.py"
+	scriptName := "image_to_description.py"
 
 	result, err := a.EncodeImagesFromPath([]string{imagePath})
 
@@ -928,8 +1081,13 @@ func (a *App) StartImageTraining(projectId string, imagePath string) (string, er
 	cmd := exec.Command(
 		pythonInterpreter,
 		tmpScriptPath,
-		modelURL, // this is the sys.argv[1] in python
+		trainingConfig.Mode, // this is the sys.argv[1] in python
+		modelURL,
 		trainingConfig.Model,
+		trainingConfig.APIKeyCloud,
+		tokenDatabasePath,
+		strconv.FormatBool(createCustomPOV),
+		pov,
 	)
 
 	var stdinBuf bytes.Buffer
