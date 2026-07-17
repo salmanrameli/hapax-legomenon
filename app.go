@@ -899,7 +899,7 @@ func (a *App) StartImageTraining(projectId string, imagePath string) (string, er
 	defer os.RemoveAll(tmpDir)
 
 	pythonInterpreter := "python3"
-	scriptName := "train_image.py"
+	scriptName := "image_to_description.py"
 
 	result, err := a.EncodeImagesFromPath([]string{imagePath})
 
@@ -928,8 +928,10 @@ func (a *App) StartImageTraining(projectId string, imagePath string) (string, er
 	cmd := exec.Command(
 		pythonInterpreter,
 		tmpScriptPath,
-		modelURL, // this is the sys.argv[1] in python
+		trainingConfig.Mode, // this is the sys.argv[1] in python
+		modelURL,
 		trainingConfig.Model,
+		trainingConfig.APIKeyCloud,
 	)
 
 	var stdinBuf bytes.Buffer
