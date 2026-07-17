@@ -4,12 +4,13 @@ import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import CarouselPreview from "./carousel_preview";
-import { PlayFill } from "react-bootstrap-icons";
+import { Folder2Open, PlayFill } from "react-bootstrap-icons";
 import { TrainingMode } from "../constants/mode";
 import Result from "./result";
 import { IImageAnalysisResponse } from "../interfaces/training.interfaces";
 import TextToToken from "./text_to_token";
 import Completed from "./completed";
+import { Form } from "react-bootstrap";
 
 interface ITrainingMain {
     projectId: string
@@ -24,6 +25,7 @@ function TrainingMain(props: ITrainingMain) {
     const [processCount, setProcessCount] = useState<number>(0)
     const [elapsedTimes, setElapsedTimes] = useState<number[]>([])
     const [countProcessedText, setCountProcessedText] = useState<number>(0)
+    const [generateRandomPOV, setGenerateRandomPOV] = useState<boolean>(false)
 
     function handleOpenFileDialog() {    
         SelectImages().then((paths) => {
@@ -65,7 +67,7 @@ function TrainingMain(props: ITrainingMain) {
         for (const item of imagePaths) {
             const start = performance.now();
 
-            await StartImageTraining(props.projectId, item).then((value: string) => {
+            await StartImageTraining(props.projectId, item, generateRandomPOV).then((value: string) => {
                 if (value) {
                     setResponses((prevItems) => [...prevItems, {
                         index: countIndex++,
@@ -123,7 +125,7 @@ function TrainingMain(props: ITrainingMain) {
                             <div className="d-flex gap-2 bg-white flex-wrap justify-content-center p-3 border-hapax-secondary hapax-box-shadow rounded-4">
                                 {previews.length == 0 ?
                                     <div className="d-flex justify-content-center align-items-center" style={{height: "400px", width:"100%"}}>
-                                        <Button size="lg" className="rounded-0 btn-hapax-primary border-hapax-primary hapax-box-shadow rounded-4" onClick={_ => handleOpenFileDialog()} >Import Images</Button>
+                                        <Button size="lg" className="d-flex align-items-center justify-content-center rounded-0 btn-hapax-primary border-hapax-primary hapax-box-shadow rounded-4" onClick={_ => handleOpenFileDialog()} ><Folder2Open size={35} className="me-3" /> Import Images</Button>
                                     </div>
                                     : 
                                     <CarouselPreview previews={previews} onRemoveImage={removeImage} />}
@@ -140,8 +142,20 @@ function TrainingMain(props: ITrainingMain) {
                             </div>
                         </Col>
                         <Col className={`${previews.length == 0 ? "d-none" : "col-12"}`}>
-                            <div className="d-flex flex-wrap p-3 justify-content-center align-items-center">
-                                <Button size="lg" className="btn-hapax-primary border-hapax-primary hapax-box-shadow rounded-4" onClick={startTraining}>Start Training <PlayFill /></Button>
+                            <div className="p-3">
+                                <div className="d-flex flex-wrap justify-content-center align-items-center">
+                                    <Form.Check 
+                                        className="my-2"
+                                        type="checkbox"
+                                        id="generate-random-pov"
+                                        label="Use randomly generated POV from database"
+                                        checked={generateRandomPOV}
+                                        onChange={_ => setGenerateRandomPOV(!generateRandomPOV)}
+                                    />
+                                </div>
+                                <div className="d-flex flex-wrap justify-content-center align-items-center">
+                                    <Button size="lg" className="btn-hapax-primary border-hapax-primary hapax-box-shadow rounded-4" onClick={startTraining}>Analyze Image{imagePaths.length > 1 ? "s" : ""} <PlayFill /></Button>
+                                </div>
                             </div>
                         </Col>
                     </Row>

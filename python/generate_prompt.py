@@ -125,6 +125,7 @@ def _sanitize_output(text: str, pass_name: str = "") -> str:
         "I'm unable", "I do not feel comfortable", "I refuse to",
         "I must decline", "contains explicit", "I hope you understand",
     )
+
     for sentinel in _SENTINELS:
         idx = text.find(sentinel)
 
@@ -199,7 +200,7 @@ def build_prompt_llm(mode, visual_tokens, meta_tokens, model_url, model_name):
 
     print(response_data["message"]["content"])
 
-    return response_data["message"]["content"]
+    return _sanitize_output(response_data["message"]["content"])
 
 def load_tokens(path, xeno_max, filter_type=""):
     """
@@ -291,7 +292,6 @@ def main():
     )
 
     return result
-
 
 if __name__ == "__main__":
     main()

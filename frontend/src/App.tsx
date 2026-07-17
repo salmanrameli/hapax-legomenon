@@ -190,10 +190,10 @@ function App() {
                                 <img src={logo} className='pt-0' style={{width:"220px", height:"220px", cursor:"default", marginBottom:"-20px", marginLeft:"-20px"}} id="logo" alt="logo"/>
                             </Col>
                             <Col sm={6} className='d-flex align-items-center mt-3' style={{marginLeft:"-50px", cursor:"default"}}>
-                                <div style={{marginTop:"15px"}}>
-                                    <h1>Hapax Legomenon</h1>
+                                <div className='text-hapax-primary' style={{marginTop:"15px"}}>
+                                    <h1><b>Hapax Legomenon</b></h1>
                                     <p className='text-hapax-tertiary' style={{cursor:"default", marginTop:"-5px"}}>
-                                        project: {currentProjectDetail.name}&nbsp;&nbsp;
+                                        project: {currentProjectDetail.name}&nbsp;[{currentProjectDetail.id}]
                                     </p>
                                 </div>
                             </Col>

@@ -54,6 +54,10 @@ export function GetGeneratePromptConfigValue(arg1) {
   return window['go']['main']['App']['GetGeneratePromptConfigValue'](arg1);
 }
 
+export function GetPOVText(arg1) {
+  return window['go']['main']['App']['GetPOVText'](arg1);
+}
+
 export function GetTrainingConfigValue(arg1) {
   return window['go']['main']['App']['GetTrainingConfigValue'](arg1);
 }
@@ -70,6 +74,10 @@ export function IsPlatformMac() {
   return window['go']['main']['App']['IsPlatformMac']();
 }
 
+export function ResetPOVText(arg1) {
+  return window['go']['main']['App']['ResetPOVText'](arg1);
+}
+
 export function SaveImage(arg1, arg2, arg3) {
   return window['go']['main']['App']['SaveImage'](arg1, arg2, arg3);
 }
@@ -78,12 +86,16 @@ export function SelectImages() {
   return window['go']['main']['App']['SelectImages']();
 }
 
+export function SetPOVFile(arg1) {
+  return window['go']['main']['App']['SetPOVFile'](arg1);
+}
+
 export function SetSelectedProject(arg1) {
   return window['go']['main']['App']['SetSelectedProject'](arg1);
 }
 
-export function StartImageTraining(arg1, arg2) {
-  return window['go']['main']['App']['StartImageTraining'](arg1, arg2);
+export function StartImageTraining(arg1, arg2, arg3) {
+  return window['go']['main']['App']['StartImageTraining'](arg1, arg2, arg3);
 }
 
 export function StoreGenerateImageConfigValue(arg1, arg2) {
@@ -92,6 +104,10 @@ export function StoreGenerateImageConfigValue(arg1, arg2) {
 
 export function StoreGeneratePromptConfigValue(arg1, arg2) {
   return window['go']['main']['App']['StoreGeneratePromptConfigValue'](arg1, arg2);
+}
+
+export function StorePOVText(arg1, arg2) {
+  return window['go']['main']['App']['StorePOVText'](arg1, arg2);
 }
 
 export function StoreTrainingConfigValue(arg1, arg2) {

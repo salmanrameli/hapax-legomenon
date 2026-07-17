@@ -5,6 +5,7 @@ type ProjectConfigPathStructure struct {
 	ArchivedTokensDir  string
 	UserProjectsDir    string
 	ConfigUserProjects string
+	POVFile            string
 }
 
 type UserProjects struct {

@@ -15,6 +15,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	goRuntime "runtime"
+	"strconv"
 	"strings"
 	"time"
 	"ubiquitous-funicular/constants"
@@ -54,6 +55,7 @@ func (a *App) getProjectConfigPaths() (*structs.ProjectConfigPathStructure, erro
 		ArchivedTokensDir:  projectsPath + constants.APP_CREATED_TOKENS_DIR,
 		UserProjectsDir:    projectsPath + constants.APP_USER_PROJECTS_DIR,
 		ConfigUserProjects: projectsPath + configUserProjects,
+		POVFile:            projectsPath + constants.POV_TXT,
 	}, nil
 }
 
@@ -218,6 +220,68 @@ func (a *App) HandleCreateNewProject(name string, useProject bool) error {
 	a.configureGeneratePromptConfig(projectDirectory + "/" + constants.APP_SETTING_PROMPT)
 
 	a.configureGenerateImageConfig(projectDirectory + "/" + constants.APP_SETTING_GENERATE_IMAGE)
+
+	a.SetPOVFile(projectDirectory + "/" + constants.POV_TXT)
+
+	return nil
+}
+
+func (a *App) SetPOVFile(path string) {
+	content := []byte(constants.DEFAULT_POV_INSTRUCTION)
+
+	err := os.WriteFile(path, content, 0644)
+
+	if err != nil {
+		log.Fatalf("SetPOVFile failed to write file: %s", err)
+	}
+}
+
+func (a *App) GetPOVText(projectId string) (string, error) {
+	projectConfig, err := a.getProjectConfigPaths()
+
+	if err != nil {
+		log.Fatalf("GetPOVText getProjectConfigPaths error getting directory: %v\n", err)
+
+		return "", err
+	}
+
+	projectDetail := projectConfig.UserProjectsDir + "/" + projectId
+
+	content, err := os.ReadFile(projectDetail + "/" + constants.POV_TXT)
+
+	if err != nil {
+		log.Fatalf("GetPOVText ReadFile error in reading file: %v\n", err)
+
+		return "", err
+	}
+
+	return string(content), nil
+}
+
+func (a *App) ResetPOVText(projectId string) error {
+	return a.StorePOVText(projectId, constants.DEFAULT_POV_INSTRUCTION)
+}
+
+func (a *App) StorePOVText(projectId string, text string) error {
+	projectConfig, err := a.getProjectConfigPaths()
+
+	if err != nil {
+		log.Fatalf("StorePOVText getProjectConfigPaths error getting directory: %v\n", err)
+
+		return err
+	}
+
+	projectPath := projectConfig.UserProjectsDir + "/" + projectId + "/" + constants.POV_TXT
+
+	content := []byte(text)
+
+	err = os.WriteFile(projectPath, content, 0644)
+
+	if err != nil {
+		log.Fatalf("StorePOVText failed to write file: %s", err)
+
+		return err
+	}
 
 	return nil
 }
@@ -596,7 +660,7 @@ func (a *App) GeneratePrompt(projectId string) (string, error) {
 
 	var modelURL string
 
-	if promptConfig.Mode == constants.TrainImageMode.LocalValue() {
+	if promptConfig.Mode == constants.GeneratePromptMode.LocalValue() {
 		modelURL = promptConfig.URLLocal + constants.SUFFIX_LOCAL_MODEL_TEXT
 	} else {
 		modelURL = promptConfig.URLCloud
@@ -873,7 +937,7 @@ func (a *App) DescriptionsToTokens(projectId string, texts string) (string, erro
 	return string(output), nil
 }
 
-func (a *App) StartImageTraining(projectId string, imagePath string) (string, error) {
+func (a *App) StartImageTraining(projectId string, imagePath string, createCustomPOV bool) (string, error) {
 	trainingConfig, err := a.GetTrainingConfigValue(projectId)
 
 	if err != nil {
@@ -888,6 +952,24 @@ func (a *App) StartImageTraining(projectId string, imagePath string) (string, er
 		modelURL = trainingConfig.URLLocal + constants.SUFFIX_LOCAL_MODEL_TEXT
 	} else {
 		modelURL = trainingConfig.URLCloud
+	}
+
+	projectConfigPath, err := a.getProjectConfigPaths()
+
+	if err != nil {
+		log.Fatalf("StartImageTraining getProjectConfigPaths error: %v\n", err)
+
+		return "", err
+	}
+
+	tokenDatabasePath := projectConfigPath.UserProjectsDir + "/" + projectId + "/" + constants.TOKEN_DATABASE
+
+	pov, err := a.GetPOVText(projectId)
+
+	if err != nil {
+		log.Fatalf("StartImageTraining GetPOVText error: %v\n", err)
+
+		pov = constants.DEFAULT_POV_INSTRUCTION
 	}
 
 	tmpDir, err := os.MkdirTemp("", "wails_python_*")
@@ -932,6 +1014,9 @@ func (a *App) StartImageTraining(projectId string, imagePath string) (string, er
 		modelURL,
 		trainingConfig.Model,
 		trainingConfig.APIKeyCloud,
+		tokenDatabasePath,
+		strconv.FormatBool(createCustomPOV),
+		pov,
 	)
 
 	var stdinBuf bytes.Buffer
