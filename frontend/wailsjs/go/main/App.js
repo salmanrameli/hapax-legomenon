@@ -18,6 +18,10 @@ export function ConfigureUserProjectsFile(arg1) {
   return window['go']['main']['App']['ConfigureUserProjectsFile'](arg1);
 }
 
+export function DeleteProject(arg1) {
+  return window['go']['main']['App']['DeleteProject'](arg1);
+}
+
 export function DescriptionsToTokens(arg1, arg2) {
   return window['go']['main']['App']['DescriptionsToTokens'](arg1, arg2);
 }

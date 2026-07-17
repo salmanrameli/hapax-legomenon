@@ -4,14 +4,14 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { GenerateImageOptions, GeneratePromptOptions, Mode, RenderContentID, TrainingOptions } from './constants/mode';
-import { CardImage, FileEarmarkArrowUp, Folder2, GearWideConnected, Magic, PlusSquare, Terminal } from 'react-bootstrap-icons';
+import { CardImage, FileEarmarkArrowUp, Floppy2Fill, Folder2, GearWideConnected, Magic, PlusSquare, Terminal } from 'react-bootstrap-icons';
 import { Form } from 'react-bootstrap';
 import GeneratePromptMain from './generate/prompt/main';
 import TrainingSettingMain from './settings/training/train_main';
 import PromptSettingMain from './settings/generate_prompt/prompt_main';
 import ImageSettingMain from './settings/generate_image/image_main';
 import TrainingMain from './train/main';
-import { CheckIfOllamaIsRunning, CheckIfPythonIsInstalled, Dump, GetAvailableLocalModels, GetGenerateImageConfigValue, GetGeneratePromptConfigValue, GetTrainingConfigValue, CheckAppConfig, GetCurrentProjectDetail, HandleCreateNewProject, GetUserProjectsList, SetSelectedProject } from '../wailsjs/go/main/App';
+import { CheckIfOllamaIsRunning, CheckIfPythonIsInstalled, Dump, GetAvailableLocalModels, GetGenerateImageConfigValue, GetGeneratePromptConfigValue, GetTrainingConfigValue, CheckAppConfig, GetCurrentProjectDetail, HandleCreateNewProject, GetUserProjectsList, SetSelectedProject, DeleteProject } from '../wailsjs/go/main/App';
 import { IConfigGenerateImage, IConfigGeneratePrompt, IConfigTraining, ICurrentProjectDetail } from './interfaces/config.interfaces';
 import logo from './assets/images/appicon.png';
 import Table from 'react-bootstrap/Table';
@@ -35,6 +35,8 @@ function App() {
     const [currentProjectDetail, setCurrentProjectDetail] = useState<ICurrentProjectDetail>({id: "", name: ""})
     const [selectedProject, setSelectedProject] = useState<ICurrentProjectDetail>({id:"", name:""})
     const [availableProjects, setAvailableProjects] = useState<ICurrentProjectDetail[]>()
+    const [showWarningDeleteProject, setShowWarningDeleteProject] = useState<boolean>(false)
+    const [projectToBeDeleted, setProjectToBeDeleted] = useState<string>("")
     // const [availableModels, setAvailableModels] = useState<IAvailableModelList>()
 
     useEffect(() => {
@@ -342,6 +344,12 @@ function App() {
         }).then(() => setMode(Mode.MODE_LOADING))
     }
 
+    function handleDeleteProject(projectId: string) {
+        DeleteProject(projectId).then(() => {
+            setAvailableProjects((prevProjects) => prevProjects?.filter((project) => project.id !== projectId))
+        })
+    }
+
     function renderProjectDetail(contentId: number) {
         return (
             <Container fluid id="App" className={`${animateLoading ? "wails-fade-out" : "wails-fade-in"} d-flex align-items-center justify-content-center pb-4 mb-4`} style={{height:"90vh"}}>
@@ -360,7 +368,7 @@ function App() {
                                     size={"lg"}
                                     onChange={(e) => {setProjectName(e.target.value)}}
                                 />
-                                <Button size='lg' onClick={handleCreateNewProject} disabled={projectName.trim() == ""} className="mt-3 btn-hapax-primary border-hapax-primary hapax-box-shadow rounded-4 w-25">Save</Button>
+                                <Button size='lg' onClick={handleCreateNewProject} disabled={projectName.trim() == ""} className="mt-3 btn-hapax-primary border-hapax-primary hapax-box-shadow rounded-4 w-25"><Floppy2Fill className='me-2' style={{marginTop:"-3px"}} /> Save</Button>
                             </>
                     }
                     {
@@ -371,6 +379,7 @@ function App() {
                                         <thead className="sticky-top top-0 border-hapax-secondary hapax-box-shadow rounded-4"> 
                                             <tr>
                                                 <th style={{cursor:"default"}}>Available Projects</th>
+                                                <th />
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -378,7 +387,19 @@ function App() {
                                                 availableProjects?.map((item) => {
                                                     return (
                                                          <tr className={selectedProject.id == item.id ? 'table-success' : ''} style={{cursor:"pointer"}} id={item.id} onClick={_ => setSelectedProject({id: item.id, name: item.name})}>
-                                                            <td>{item.name}{currentProjectDetail.id == item.id && currentProjectDetail.id !== selectedProject.id ? " (current)" : ''}</td>
+                                                            <td className='w-50'>{item.name}{currentProjectDetail.id == item.id && currentProjectDetail.id !== selectedProject.id ? " (current)" : ''}</td>
+                                                            <td>
+                                                                {<Button size='sm' className={projectToBeDeleted == item.id ? 'd-none' : 'd-flex'} variant='danger' disabled={currentProjectDetail.id == item.id} onClick={_ => {setShowWarningDeleteProject(true); setProjectToBeDeleted(item.id)}}>Delete</Button>}
+                                                                {showWarningDeleteProject && 
+                                                                    projectToBeDeleted == item.id ?
+                                                                        <>
+                                                                            <Button size='sm' className='me-2 btn-hapax-primary' disabled={currentProjectDetail.id == item.id} onClick={_ => {setShowWarningDeleteProject(false); setProjectToBeDeleted("")}}>Cancel</Button>
+                                                                            <Button size='sm' variant='danger' disabled={currentProjectDetail.id == item.id} onClick={_ => handleDeleteProject(item.id)}>Confirm Deletion</Button>
+                                                                        </>
+                                                                        :
+                                                                        <></>
+                                                                }
+                                                            </td>
                                                         </tr>
                                                     )
                                                 })

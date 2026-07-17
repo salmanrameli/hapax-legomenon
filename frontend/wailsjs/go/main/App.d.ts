@@ -10,6 +10,8 @@ export function CheckIfPythonIsInstalled():Promise<boolean>;
 
 export function ConfigureUserProjectsFile(arg1:string):Promise<void>;
 
+export function DeleteProject(arg1:string):Promise<void>;
+
 export function DescriptionsToTokens(arg1:string,arg2:string):Promise<string>;
 
 export function Dump(arg1:any):Promise<void>;

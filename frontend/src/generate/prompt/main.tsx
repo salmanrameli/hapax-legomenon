@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { GenerateMode } from "../../constants/mode"
 import { Button, Col, Row, Spinner } from "react-bootstrap"
 import { GenerateImage, GeneratePrompt, SaveImage, IsPlatformMac } from "../../../wailsjs/go/main/App"
-import { FileEarmarkArrowDownFill, PlayFill } from "react-bootstrap-icons"
+import { BodyText, FileEarmarkArrowDownFill, PlayFill } from "react-bootstrap-icons"
 
 const BTN_PROMPT_DEFAULT_TEXT = 'Generate prompt'
 const BTN_PROMPT_GENERATING_TEXT = ' Generating prompt'
@@ -83,11 +83,11 @@ function GeneratePromptMain(props: IGeneratePromptMain) {
                     </div>
                 </Col>
                 <Col sm={12} md={4}>
-                    <Button size="lg" className="w-100 mt-4 btn-hapax-primary border-hapax-primary hapax-box-shadow rounded-4" disabled={mode == GenerateMode.MODE_GENERATING_PROMPT || mode == GenerateMode.MODE_GENERATING_IMAGE} onClick={generatePrompt}>{mode == GenerateMode.MODE_GENERATING_PROMPT ? BTN_PROMPT_GENERATING_TEXT : BTN_PROMPT_DEFAULT_TEXT} {mode == GenerateMode.MODE_GENERATING_PROMPT ? <Spinner animation="border" style={{color: '#0f3159', width: '1.5rem', height: '1.5rem', borderWidth: '0.3em' }} /> : <PlayFill />}</Button>
+                    <Button size="lg" className="w-100 mt-4 btn-hapax-primary border-hapax-primary hapax-box-shadow rounded-4" disabled={mode == GenerateMode.MODE_GENERATING_PROMPT || mode == GenerateMode.MODE_GENERATING_IMAGE} onClick={generatePrompt}><BodyText style={{marginTop:"-3px"}} className="me-2" />{mode == GenerateMode.MODE_GENERATING_PROMPT ? BTN_PROMPT_GENERATING_TEXT : BTN_PROMPT_DEFAULT_TEXT} {mode == GenerateMode.MODE_GENERATING_PROMPT ? <Spinner animation="border" style={{color: '#0f3159', width: '1.5rem', height: '1.5rem', borderWidth: '0.3em' }} /> : ''}</Button>
                     <br /><br />
                     <Button size="lg" className="w-100 btn-hapax-danger rounded-4" disabled={!isPlatformMac || mode == GenerateMode.MODE_GENERATING_PROMPT || mode == GenerateMode.MODE_GENERATING_IMAGE || prompt == "" || prompt == undefined} onClick={generateImage}>{mode == GenerateMode.MODE_GENERATING_IMAGE ? BTN_IMAGE_GENERATING_TEXT : BTN_IMAGE_DEFAULT_TEXT} {mode == GenerateMode.MODE_GENERATING_IMAGE ? <Spinner animation="border" variant="danger" style={{ width: '1.5rem', height: '1.5rem', borderWidth: '0.3em' }} /> : <PlayFill />}</Button>
                     <br /><br />
-                    <Button size="lg" className="w-100 btn-hapax-primary border-hapax-primary hapax-box-shadow rounded-4" disabled={image == ""} onClick={saveImage}>Save Result <FileEarmarkArrowDownFill style={{marginTop: "-3px"}} /></Button>
+                    <Button size="lg" className="w-100 btn-hapax-primary border-hapax-primary hapax-box-shadow rounded-4" disabled={image == ""} onClick={saveImage}><FileEarmarkArrowDownFill className="me-2" style={{marginTop: "-3px"}} />Save Result</Button>
                 </Col>
                 {
                     image && 

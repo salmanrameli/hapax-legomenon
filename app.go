@@ -15,6 +15,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	goRuntime "runtime"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -434,6 +435,75 @@ func (a *App) checkAppProjectDir(path string, userProjectsDir string) {
 			return
 		}
 	}
+}
+
+func (a *App) DeleteProject(projectId string) error {
+	projectDetail, err := a.getProjectConfigPaths()
+
+	if err != nil {
+		log.Fatalf("DeleteProject getProjectConfigPaths error getting directory: %v\n", err)
+
+		return err
+	}
+
+	content, err := os.ReadFile(projectDetail.ConfigUserProjects)
+
+	if err != nil {
+		log.Fatalf("DeleteProject error opening file: %v\n", err)
+
+		return err
+	}
+
+	var config structs.UserProjects
+
+	err = json.Unmarshal(content, &config)
+
+	if err != nil {
+		log.Fatalf("DeleteProject error parsing JSON: %v\n", err)
+
+		return err
+	}
+
+	file, err := os.OpenFile(projectDetail.ConfigUserProjects, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+
+	if err != nil {
+		log.Fatalf("DeleteProject failed to open file: %v\n", err)
+
+		return err
+	}
+
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+
+	encoder.SetIndent("", "  ")
+
+	projects := slices.DeleteFunc(config.Options, func(p structs.UserProjectItem) bool {
+		return p.ID == projectId
+	})
+
+	updatedValue := &structs.UserProjects{
+		Selected: config.Selected,
+		Options:  projects,
+	}
+
+	err = encoder.Encode(updatedValue)
+
+	if err != nil {
+		log.Fatalf("DeleteProject failed to write JSON: %v\n", err)
+
+		return err
+	}
+
+	err = os.RemoveAll(projectDetail.UserProjectsDir + "/" + projectId)
+
+	if err != nil {
+		log.Fatalf("DeleteProject unable to delete directory: %v\n", err)
+
+		return err
+	}
+
+	return nil
 }
 
 func (a *App) ConfigureUserProjectsFile(path string) {
