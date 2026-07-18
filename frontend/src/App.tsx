@@ -37,9 +37,9 @@ function App() {
     const [availableProjects, setAvailableProjects] = useState<ICurrentProjectDetail[]>()
     const [showWarningDeleteProject, setShowWarningDeleteProject] = useState<boolean>(false)
     const [projectToBeDeleted, setProjectToBeDeleted] = useState<string>("")
-    const [imageModels, setImageModels] = useState<string[]>([])
-    const [visionModels, setVisionModels] = useState<string[]>([])
-    const [completionModels, setCompletionModels] = useState<string[]>([])
+    const [imageModels, setImageModels] = useState<IAvailableModels[]>([])
+    const [visionModels, setVisionModels] = useState<IAvailableModels[]>([])
+    const [completionModels, setCompletionModels] = useState<IAvailableModels[]>([])
     // const [availableModels, setAvailableModels] = useState<IAvailableModelList>()
 
     useEffect(() => {

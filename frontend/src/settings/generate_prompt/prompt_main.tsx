@@ -3,12 +3,12 @@ import SettingGeneratePrompt from "./generate_prompt";
 import { useEffect, useState } from "react";
 import { GetGeneratePromptConfigValue, StoreGeneratePromptConfigValue } from "../../../wailsjs/go/main/App"
 import ConfigPrompt from "./config_prompt";
-import { IConfigGeneratePrompt } from "../../interfaces/config.interfaces";
+import { IAvailableModels, IConfigGeneratePrompt } from "../../interfaces/config.interfaces";
 import { Floppy } from "react-bootstrap-icons";
 
 interface IPromptSettingMain {
     projectId: string
-    availableModels: string[]
+    availableModels: IAvailableModels[]
 }
 
 function PromptSettingMain(props: IPromptSettingMain) {

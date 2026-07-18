@@ -3,12 +3,12 @@ import SettingGenerateImage from "./generate_image";
 import { useEffect, useState } from "react";
 import { GetGenerateImageConfigValue, StoreGenerateImageConfigValue } from "../../../wailsjs/go/main/App"
 import ConfigImage from "./config_image";
-import { IConfigGenerateImage } from "../../interfaces/config.interfaces";
+import { IAvailableModels, IConfigGenerateImage } from "../../interfaces/config.interfaces";
 import { Floppy } from "react-bootstrap-icons";
 
 interface IImageSettingMain {
     projectId: string
-    availableModels: string[]
+    availableModels: IAvailableModels[]
 }
 
 function ImageSettingMain(props: IImageSettingMain) {

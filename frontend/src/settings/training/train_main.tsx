@@ -1,7 +1,7 @@
 import { Button, Col, Row } from "react-bootstrap"
 import { useEffect, useState } from "react";
 import { GetTrainingConfigValue, StoreTrainingConfigValue, ResetPOVText } from "../../../wailsjs/go/main/App"
-import { IConfigTraining } from "../../interfaces/config.interfaces";
+import { IAvailableModels, IConfigTraining } from "../../interfaces/config.interfaces";
 import ConfigTraining from "./config_training";
 import SettingTraining from "./train";
 import { BodyText, Floppy } from "react-bootstrap-icons";
@@ -10,7 +10,7 @@ import { SettingTrainingMode } from "../../constants/mode";
 
 interface ITrainingSettingMain {
     projectId: string
-    availableModels: string[]
+    availableModels: IAvailableModels[]
 }
 
 function TrainingSettingMain(props: ITrainingSettingMain) {

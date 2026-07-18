@@ -76,7 +76,7 @@ function ConfigPrompt(props: IConfigGeneratePromptParams) {
                                         <Dropdown.Menu>
                                             {
                                                 props.availableModels.map((item) => {
-                                                    return (<Dropdown.Item onClick={(e) => handleChange("model", item)}>{item}</Dropdown.Item>)
+                                                    return (<Dropdown.Item disabled={item.Value == promptConfig.Model} onClick={_ => handleChange("model", item.Value)}>{item.Label}</Dropdown.Item>)
                                                 })
                                             }
                                         </Dropdown.Menu>

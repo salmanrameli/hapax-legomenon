@@ -4,9 +4,8 @@ export interface ICurrentProjectDetail {
 }
 
 export interface IAvailableModels {
-    model: string,
-    name: string,
-    capabilities: string[]
+    Label: string
+    Value: string
 }
 
 export interface ISettingTraining {
@@ -34,7 +33,7 @@ export interface IConfigTrainingParams {
     defaultValue: IConfigTraining
     onChangeConfig: (data: IConfigTraining) => void
     onSaveChanges: () => void
-    availableModels: string[]
+    availableModels: IAvailableModels[]
 }
 
 export interface IConfigGeneratePromptParams {
@@ -42,7 +41,7 @@ export interface IConfigGeneratePromptParams {
     defaultValue: IConfigGeneratePrompt
     onChangeConfig: (data: IConfigGeneratePrompt) => void
     onSaveChanges: () => void
-    availableModels: string[]
+    availableModels: IAvailableModels[]
 }
 
 export interface IConfigGenerateImageParams {
@@ -50,7 +49,7 @@ export interface IConfigGenerateImageParams {
     defaultValue: IConfigGenerateImage
     onChangeConfig: (data: IConfigGenerateImage) => void
     onSaveChanges: () => void
-    availableModels: string[]
+    availableModels: IAvailableModels[]
 }
 
 export interface IConfigTraining {

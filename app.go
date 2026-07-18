@@ -538,7 +538,7 @@ func (a *App) ConfigureUserProjectsFile(path string) {
 	}
 }
 
-func (a *App) GetAvailableLocalModels(baseUrl string, requirement string) ([]string, error) {
+func (a *App) GetAvailableLocalModels(baseUrl string, requirement string) ([]*structs.AvailableLocalModels, error) {
 	url := baseUrl + constants.SUFFIX_TAGS
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
@@ -557,7 +557,7 @@ func (a *App) GetAvailableLocalModels(baseUrl string, requirement string) ([]str
 	if err != nil {
 		log.Fatalf("GetAvailableLocalModels error sending request: %v\n", err)
 
-		return []string{}, err
+		return []*structs.AvailableLocalModels{}, err
 	}
 
 	defer resp.Body.Close()
@@ -567,10 +567,10 @@ func (a *App) GetAvailableLocalModels(baseUrl string, requirement string) ([]str
 	if err != nil {
 		log.Fatalf("GetAvailableLocalModels error reading response: %v\n", err)
 
-		return []string{}, err
+		return []*structs.AvailableLocalModels{}, err
 	}
 
-	var result *structs.LocalModelResponseArray
+	var result structs.LocalModelResponseArray
 
 	err = json.Unmarshal(body, &result)
 
@@ -578,11 +578,26 @@ func (a *App) GetAvailableLocalModels(baseUrl string, requirement string) ([]str
 		log.Fatalf("GetAvailableLocalModels Failed to unmarshal JSON: %v\n", err)
 	}
 
-	var results []string
+	var results []*structs.AvailableLocalModels
 
 	for _, item := range result.Models {
 		if slices.Contains(item.Capabilities, requirement) || requirement == "vision" && strings.Contains(item.Name, "gemma") {
-			results = append(results, item.Name)
+			additionalTrait := ""
+
+			if requirement != "image" {
+				additionalTrait = " (completion)"
+
+				if slices.Contains(item.Capabilities, "thinking") {
+					additionalTrait = " (thinking)"
+				}
+			}
+
+			model := &structs.AvailableLocalModels{
+				Label: item.Name + additionalTrait,
+				Value: item.Name,
+			}
+
+			results = append(results, model)
 		}
 	}
 

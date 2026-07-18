@@ -22,7 +22,7 @@ export function GenerateImage(arg1:string,arg2:string):Promise<string>;
 
 export function GeneratePrompt(arg1:string,arg2:string):Promise<string>;
 
-export function GetAvailableLocalModels(arg1:string,arg2:string):Promise<Array<string>>;
+export function GetAvailableLocalModels(arg1:string,arg2:string):Promise<Array<structs.AvailableLocalModels>>;
 
 export function GetCurrentProjectDetail():Promise<structs.UserProjectItem>;
 

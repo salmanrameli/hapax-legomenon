@@ -67,7 +67,6 @@ type LocalModelResponseArray struct {
 }
 
 type AvailableLocalModels struct {
-	Vision     []LocalModelResponseItem
-	Completion []LocalModelResponseItem
-	Image      []LocalModelResponseItem
+	Label string
+	Value string
 }

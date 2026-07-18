@@ -76,7 +76,7 @@ function ConfigTraining(props: IConfigTrainingParams) {
                                         <Dropdown.Menu>
                                             {
                                                 props.availableModels.map((item) => {
-                                                    return (<Dropdown.Item onClick={(e) => handleChange("model", item)}>{item}</Dropdown.Item>)
+                                                    return (<Dropdown.Item disabled={item.Value == trainingConfig.Model} onClick={(_) => handleChange("model", item.Value)}>{item.Label}</Dropdown.Item>)
                                                 })
                                             }
                                         </Dropdown.Menu>

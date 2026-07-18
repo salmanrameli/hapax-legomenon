@@ -1,5 +1,19 @@
 export namespace structs {
 	
+	export class AvailableLocalModels {
+	    Label: string;
+	    Value: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new AvailableLocalModels(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Label = source["Label"];
+	        this.Value = source["Value"];
+	    }
+	}
 	export class ConfigGenerateImage {
 	    mode: string;
 	    model: string;
