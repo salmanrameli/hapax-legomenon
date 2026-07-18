@@ -113,19 +113,20 @@ function App() {
             if (value) {
                 setTrainingConfigData({
                     Mode: value.mode,
-                    Model: value.model,
+                    ModelImageAnalysis: value.model_image_analysis,
+                    ModelTokenizingTexts: value.model_tokenizing_texts,
                     URLLocal: value.url_local,
                     URLCloud: value.url_cloud,
                     APIKeyCloud: value.api_key_cloud
                 })
 
-                if (value.model == "") setDisableTrainingButton(true)
+                if (value.model_image_analysis == "" || value.model_tokenizing_texts == "") setDisableTrainingButton(true)
                 else if (value.mode == TrainingOptions.LOCAL.value && value.url_local == "") setDisableTrainingButton(true)
                 else if (value.mode == TrainingOptions.CLOUD.value && (value.url_cloud == "" || value.api_key_cloud == "")) setDisableTrainingButton(true)
                 else setDisableTrainingButton(false)
 
                 if (!warnOllamaNotRunning && value.mode == TrainingOptions.LOCAL.value && value.url_local !== "") {
-                    GetAvailableLocalModels(value.url_local, TrainingOptions.LOCAL.requirement).then((value) => {
+                    GetAvailableLocalModels(value.url_local, GeneratePromptOptions.LOCAL.requirement).then((value) => {
                         setVisionModels(value)
                     })
                 }
@@ -289,7 +290,7 @@ function App() {
                                         <h5 className='mb-1'>Training Settings</h5>
                                         <p className="mb-4" style={{fontSize:"12px"}}>Configure model training parameters</p>
                                         <p className='fw-light' style={{fontSize:"12px"}}>
-                                            {trainingConfigData?.Model ? "running: " + trainingConfigData.Model + " / " + trainingConfigData.Mode : "not yet set" }
+                                            {trainingConfigData?.ModelImageAnalysis ? "running: " + (trainingConfigData.ModelImageAnalysis == trainingConfigData.ModelTokenizingTexts ? trainingConfigData.ModelImageAnalysis : "multiple") + " / " + trainingConfigData.Mode : "not yet set" }
                                         </p>
                                     </Col>
                             </Button>
@@ -338,7 +339,7 @@ function App() {
             case Mode.MODE_GENERATE_PROMPT:
                 return (<GeneratePromptMain projectId={currentProjectDetail.id} projectName={currentProjectDetail.name} />)
             case Mode.MODE_SETTING_TRAINING:
-                return (<TrainingSettingMain projectId={currentProjectDetail.id} availableModels={visionModels} />)
+                return (<TrainingSettingMain projectId={currentProjectDetail.id} availableVisionModels={visionModels} availableCompletionModels={completionModels} />)
             case Mode.MODE_SETTING_PROMPT:
                 return (<PromptSettingMain projectId={currentProjectDetail.id} availableModels={completionModels} />)
             case Mode.MODE_SETTING_IMAGE:
@@ -415,13 +416,13 @@ function App() {
                                                          <tr className={selectedProject.id == item.id ? 'table-success' : ''} style={{cursor:"pointer"}} id={item.id} onClick={_ => setSelectedProject({id: item.id, name: item.name})}>
                                                             <td className='w-50'>{item.name}{currentProjectDetail.id == item.id && currentProjectDetail.id !== selectedProject.id ? " (current)" : ''}</td>
                                                             <td>
-                                                                {<Button size='sm' className={projectToBeDeleted == item.id ? 'd-none' : 'd-flex'} variant='danger' disabled={currentProjectDetail.id == item.id} onClick={_ => {setShowWarningDeleteProject(true); setProjectToBeDeleted(item.id)}}>Delete</Button>}
+                                                                {<Button size='sm' className={projectToBeDeleted == item.id ? 'd-none' : 'd-flex float-end'} variant='danger' disabled={currentProjectDetail.id == item.id} onClick={_ => {setShowWarningDeleteProject(true); setProjectToBeDeleted(item.id)}}>Delete</Button>}
                                                                 {showWarningDeleteProject && 
                                                                     projectToBeDeleted == item.id ?
-                                                                        <>
+                                                                        <div className='d-flex float-end'>
                                                                             <Button size='sm' className='me-2 btn-hapax-primary' disabled={currentProjectDetail.id == item.id} onClick={_ => {setShowWarningDeleteProject(false); setProjectToBeDeleted("")}}>Cancel</Button>
                                                                             <Button size='sm' variant='danger' disabled={currentProjectDetail.id == item.id} onClick={_ => handleDeleteProject(item.id)}>Confirm Deletion</Button>
-                                                                        </>
+                                                                        </div>
                                                                         :
                                                                         <></>
                                                                 }

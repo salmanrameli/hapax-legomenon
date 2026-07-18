@@ -6,13 +6,14 @@ import { IConfigTraining, IConfigTrainingParams } from '../../interfaces/config.
 import { Link45deg } from 'react-bootstrap-icons';
 
 function ConfigTraining(props: IConfigTrainingParams) {
-    const [trainingConfig, setTrainingConfig] = useState<IConfigTraining>({Mode:props.defaultValue.Mode, Model: props.defaultValue.Model, URLLocal:props.defaultValue.URLLocal, URLCloud:props.defaultValue.URLCloud, APIKeyCloud:props.defaultValue.APIKeyCloud})
+    const [trainingConfig, setTrainingConfig] = useState<IConfigTraining>({Mode:props.defaultValue.Mode, ModelImageAnalysis:props.defaultValue.ModelImageAnalysis, ModelTokenizingTexts:props.defaultValue.ModelTokenizingTexts, URLLocal:props.defaultValue.URLLocal, URLCloud:props.defaultValue.URLCloud, APIKeyCloud:props.defaultValue.APIKeyCloud})
 
     useEffect(() => {
         if (props.defaultValue.URLLocal != "") {
             setTrainingConfig({
                 Mode: props.defaultValue.Mode,
-                Model: props.defaultValue.Model,
+                ModelImageAnalysis: props.defaultValue.ModelImageAnalysis,
+                ModelTokenizingTexts: props.defaultValue.ModelTokenizingTexts,
                 URLLocal: props.defaultValue.URLLocal,
                 URLCloud: props.defaultValue.URLCloud,
                 APIKeyCloud: props.defaultValue.APIKeyCloud
@@ -25,8 +26,10 @@ function ConfigTraining(props: IConfigTrainingParams) {
     }, [trainingConfig])
 
     function handleChange(key: string, value: string) {
-        if (key == "model") {
-            setTrainingConfig({...trainingConfig, Model: value})
+        if (key == "model_image_analysis") {
+            setTrainingConfig({...trainingConfig, ModelImageAnalysis: value})
+        } else if (key == "model_tokenizing_texts") {
+            setTrainingConfig({...trainingConfig, ModelTokenizingTexts: value})
         } else if (key == "url_local") {
             setTrainingConfig({...trainingConfig, URLLocal: value})
         } else if (key == "url_cloud") {
@@ -64,27 +67,51 @@ function ConfigTraining(props: IConfigTrainingParams) {
                             Enter the URL or the IP address of the LLM running on your local machine
                         </Form.Text>
                     </Col>
-                    <Col className="col-12 mt-3">
-                        <div className='d-inline-flex align-items-center justify-content-center'>
-                            <Form.Label className='d-inline-flex align-items-center justify-content-center me-2 mb-0 text-hapax-primary' htmlFor="training_config_local_model_label">{props.availableModels.length > 0 ? "Selected model:" : "No local models available"}</Form.Label>
-                            {
-                                props.availableModels.length > 0 &&
-                                <>
-                                    <Dropdown as={ButtonGroup} drop='up-centered'>
-                                        <Button className='d-inline-flex align-items-center justify-content-center btn-hapax-primary border-hapax-secondary'>{trainingConfig.Model == "" ? "Choose a model" : trainingConfig.Model}</Button>
-                                        <Dropdown.Toggle split className='btn-hapax-primary border-hapax-secondary' id="dropdown-split-basic" />
-                                        <Dropdown.Menu>
-                                            {
-                                                props.availableModels.map((item) => {
-                                                    return (<Dropdown.Item disabled={item.Value == trainingConfig.Model} onClick={(_) => handleChange("model", item.Value)}>{item.Label}</Dropdown.Item>)
-                                                })
-                                            }
-                                        </Dropdown.Menu>
-                                    </Dropdown>
-                                </>
-                                }
-                        </div>
-                    </Col>
+                    <hr className='mt-3' style={{backgroundColor:"#dbc6a7", border:"none", height:"3px"}}></hr>
+                    <div className='d-inline-flex w-100'>
+                        <Col sm={12} md={6} className="mt-2">
+                            <div className='d-inline-flex align-items-center justify-content-center'>
+                                <Form.Label className='d-inline-flex align-items-center justify-content-center me-2 mb-0 text-hapax-primary' htmlFor="training_vision_config_local_model_label">{props.availableVisionModels.length > 0 ? "Model for image analysis:" : "No local models available"}</Form.Label>
+                                {
+                                    props.availableVisionModels.length > 0 &&
+                                    <>
+                                        <Dropdown as={ButtonGroup} drop='up-centered'>
+                                            <Button className='d-inline-flex align-items-center justify-content-center btn-hapax-primary border-hapax-secondary'>{trainingConfig.ModelImageAnalysis == "" ? "Choose a model" : trainingConfig.ModelImageAnalysis}</Button>
+                                            <Dropdown.Toggle split className='btn-hapax-primary border-hapax-secondary' id="dropdown-split-basic" />
+                                            <Dropdown.Menu>
+                                                {
+                                                    props.availableVisionModels.map((item) => {
+                                                        return (<Dropdown.Item disabled={item.Value == trainingConfig.ModelImageAnalysis} onClick={(_) => handleChange("model_image_analysis", item.Value)}>{item.Label}</Dropdown.Item>)
+                                                    })
+                                                }
+                                            </Dropdown.Menu>
+                                        </Dropdown>
+                                    </>
+                                    }
+                            </div>
+                        </Col>
+                        <Col sm={12} md={6} className="mt-2">
+                            <div className='d-inline-flex align-items-center justify-content-center'>
+                                <Form.Label className='d-inline-flex align-items-center justify-content-center me-2 mb-0 text-hapax-primary' htmlFor="training_completion_config_local_model_label">{props.availableCompletionModels.length > 0 ? "Model for tokenizing results:" : "No local models available"}</Form.Label>
+                                {
+                                    props.availableCompletionModels.length > 0 &&
+                                    <>
+                                        <Dropdown as={ButtonGroup} drop='up-centered'>
+                                            <Button className='d-inline-flex align-items-center justify-content-center btn-hapax-primary border-hapax-secondary'>{trainingConfig.ModelTokenizingTexts == "" ? "Choose a model" : trainingConfig.ModelTokenizingTexts}</Button>
+                                            <Dropdown.Toggle split className='btn-hapax-primary border-hapax-secondary' id="dropdown-split-basic" />
+                                            <Dropdown.Menu>
+                                                {
+                                                    props.availableVisionModels.map((item) => {
+                                                        return (<Dropdown.Item disabled={item.Value == trainingConfig.ModelTokenizingTexts} onClick={(_) => handleChange("model_tokenizing_texts", item.Value)}>{item.Label}</Dropdown.Item>)
+                                                    })
+                                                }
+                                            </Dropdown.Menu>
+                                        </Dropdown>
+                                    </>
+                                    }
+                            </div>
+                        </Col>
+                    </div>
                 </>
                 :
                 <>
@@ -115,15 +142,28 @@ function ConfigTraining(props: IConfigTrainingParams) {
                         </Form.Text>
                     </Col>
                     <Col className="col-12">
+                        <Form.Label className='text-hapax-primary' htmlFor="training_image_config_cloud_model_label">Model Name</Form.Label>
+                        <Form.Control
+                            type="text"
+                            id="training_image_config_cloud_model_form_input"
+                            size={"lg"}
+                            value={trainingConfig.ModelImageAnalysis}
+                            onChange={(e) => {handleChange("model_image_analysis", e.target.value)}}
+                        />
+                        <Form.Text id="training_image_config_cloud_model_form_input_info" muted>
+                            Enter the name of the model you will be using to do image analysis
+                        </Form.Text>
+                    </Col>
+                    <Col className="col-12">
                         <Form.Label className='text-hapax-primary' htmlFor="training_config_cloud_model_label">Model Name</Form.Label>
                         <Form.Control
                             type="text"
-                            id="training_config_cloud_model_form_input"
+                            id="training_token_config_cloud_model_form_input"
                             size={"lg"}
-                            value={trainingConfig.Model}
-                            onChange={(e) => {handleChange("model", e.target.value)}}
+                            value={trainingConfig.ModelTokenizingTexts}
+                            onChange={(e) => {handleChange("model_tokenizing_texts", e.target.value)}}
                         />
-                        <Form.Text id="training_config_cloud_model_form_input_info" muted>
+                        <Form.Text id="training_token_config_cloud_model_form_input_info" muted>
                             Enter the name of the model you will be using
                         </Form.Text>
                     </Col>

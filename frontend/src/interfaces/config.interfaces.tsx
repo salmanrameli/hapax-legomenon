@@ -21,7 +21,7 @@ export interface ISettingGeneratePrompt {
 }
 
 export interface ISettingGenerateImage {
-    data: IConfigGenerateImage,
+    data: IConfigGenerateImage
     onChangeSource: (source: string) => void
     onSaveChanges: (data: IConfigGenerateImage) => void
     onChangeDimensionWidth: (dimension: number) => void
@@ -33,7 +33,8 @@ export interface IConfigTrainingParams {
     defaultValue: IConfigTraining
     onChangeConfig: (data: IConfigTraining) => void
     onSaveChanges: () => void
-    availableModels: IAvailableModels[]
+    availableVisionModels: IAvailableModels[]
+    availableCompletionModels: IAvailableModels[]
 }
 
 export interface IConfigGeneratePromptParams {
@@ -53,24 +54,25 @@ export interface IConfigGenerateImageParams {
 }
 
 export interface IConfigTraining {
-    Mode: string,
-    Model: string,
+    Mode: string
+    ModelImageAnalysis: string
+    ModelTokenizingTexts: string
     URLLocal: string
     URLCloud: string
     APIKeyCloud: string
 }
 
 export interface IConfigGeneratePrompt {
-    Mode: string,
-    Model: string,
+    Mode: string
+    Model: string
     URLLocal: string
     URLCloud: string
     APIKeyCloud: string
 }
 
 export interface IConfigGenerateImage {
-    Mode: string,
-    Model: string,
+    Mode: string
+    Model: string
     URLLocal: string
     URLCloud: string
     APIKeyCloud: string

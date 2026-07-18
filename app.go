@@ -647,11 +647,12 @@ func (a *App) configureTrainingConfig(path string) {
 		defer configTraining.Close()
 
 		defaultConfigTraining := structs.ConfigTraining{
-			Mode:        constants.TrainImageMode.LocalValue(),
-			Model:       "",
-			URLLocal:    constants.LOCAL_DEFAULT_URL,
-			URLCloud:    "",
-			APIKeyCloud: "",
+			Mode:                 constants.TrainImageMode.LocalValue(),
+			ModelImageAnalysis:   "",
+			ModelTokenizingTexts: "",
+			URLLocal:             constants.LOCAL_DEFAULT_URL,
+			URLCloud:             "",
+			APIKeyCloud:          "",
 		}
 
 		encoder := json.NewEncoder(configTraining)
@@ -1011,7 +1012,7 @@ func (a *App) DescriptionsToTokens(projectId string, texts string) (string, erro
 		tmpScriptPath,
 		projectId,
 		modelURL,
-		trainingConfig.Model,
+		trainingConfig.ModelTokenizingTexts,
 		projectConfigPath.ProjectPath,
 		tokenDatabasePath,
 		texts,
@@ -1104,7 +1105,7 @@ func (a *App) StartImageTraining(projectId string, imagePath string, createCusto
 		tmpScriptPath,
 		trainingConfig.Mode, // this is the sys.argv[1] in python
 		modelURL,
-		trainingConfig.Model,
+		trainingConfig.ModelImageAnalysis,
 		trainingConfig.APIKeyCloud,
 		tokenDatabasePath,
 		strconv.FormatBool(createCustomPOV),
@@ -1291,11 +1292,12 @@ func (a *App) StoreTrainingConfigValue(projectId string, value *structs.ConfigTr
 	encoder.SetIndent("", "  ")
 
 	err = encoder.Encode(&structs.ConfigTraining{
-		Mode:        value.Mode,
-		Model:       value.Model,
-		URLLocal:    value.URLLocal,
-		URLCloud:    value.URLCloud,
-		APIKeyCloud: value.APIKeyCloud,
+		Mode:                 value.Mode,
+		ModelImageAnalysis:   value.ModelImageAnalysis,
+		ModelTokenizingTexts: value.ModelTokenizingTexts,
+		URLLocal:             value.URLLocal,
+		URLCloud:             value.URLCloud,
+		APIKeyCloud:          value.APIKeyCloud,
 	})
 
 	if err != nil {

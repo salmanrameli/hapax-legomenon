@@ -64,6 +64,7 @@ function ConfigPrompt(props: IConfigGeneratePromptParams) {
                             Enter the URL or the IP address of the LLM running on your local machine
                         </Form.Text>
                     </Col>
+                    <hr className='my-3' style={{backgroundColor:"#dbc6a7", border:"none", height:"3px"}}></hr>
                     <Col className="col-12 mt-3">
                         <div className='d-inline-flex align-items-center justify-content-center'>
                             <Form.Label className='d-inline-flex align-items-center justify-content-center me-2 mb-0 text-hapax-primary' htmlFor="prompt_config_local_model_label">{props.availableModels.length > 0 ? "Selected model:" : "No local models available"}</Form.Label>
