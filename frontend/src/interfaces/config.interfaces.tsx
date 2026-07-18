@@ -1,10 +1,15 @@
 export interface ICurrentProjectDetail {
-    id: string,
+    id: string
     name: string
 }
 
+export interface IAvailableModels {
+    Label: string
+    Value: string
+}
+
 export interface ISettingTraining {
-    data: IConfigTraining,
+    data: IConfigTraining
     onChangeSource: (source: string) => void
     onSaveChanges: (data: IConfigTraining) => void
 }
@@ -16,7 +21,7 @@ export interface ISettingGeneratePrompt {
 }
 
 export interface ISettingGenerateImage {
-    data: IConfigGenerateImage,
+    data: IConfigGenerateImage
     onChangeSource: (source: string) => void
     onSaveChanges: (data: IConfigGenerateImage) => void
     onChangeDimensionWidth: (dimension: number) => void
@@ -28,6 +33,8 @@ export interface IConfigTrainingParams {
     defaultValue: IConfigTraining
     onChangeConfig: (data: IConfigTraining) => void
     onSaveChanges: () => void
+    availableVisionModels: IAvailableModels[]
+    availableCompletionModels: IAvailableModels[]
 }
 
 export interface IConfigGeneratePromptParams {
@@ -35,6 +42,7 @@ export interface IConfigGeneratePromptParams {
     defaultValue: IConfigGeneratePrompt
     onChangeConfig: (data: IConfigGeneratePrompt) => void
     onSaveChanges: () => void
+    availableModels: IAvailableModels[]
 }
 
 export interface IConfigGenerateImageParams {
@@ -42,27 +50,29 @@ export interface IConfigGenerateImageParams {
     defaultValue: IConfigGenerateImage
     onChangeConfig: (data: IConfigGenerateImage) => void
     onSaveChanges: () => void
+    availableModels: IAvailableModels[]
 }
 
 export interface IConfigTraining {
-    Mode: string,
-    Model: string,
+    Mode: string
+    ModelImageAnalysis: string
+    ModelTokenizingTexts: string
     URLLocal: string
     URLCloud: string
     APIKeyCloud: string
 }
 
 export interface IConfigGeneratePrompt {
-    Mode: string,
-    Model: string,
+    Mode: string
+    Model: string
     URLLocal: string
     URLCloud: string
     APIKeyCloud: string
 }
 
 export interface IConfigGenerateImage {
-    Mode: string,
-    Model: string,
+    Mode: string
+    Model: string
     URLLocal: string
     URLCloud: string
     APIKeyCloud: string

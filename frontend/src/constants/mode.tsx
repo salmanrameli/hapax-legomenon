@@ -11,17 +11,17 @@ export const Mode = {
 }
 
 export const TrainingOptions = {
-    LOCAL: {label: "Local Ollama Instance", value: "local"},
+    LOCAL: {label: "Local Ollama Instance", value: "local", requirement: "vision"},
     CLOUD: {label: "Cloud", value: "cloud"}
 }
 
 export const GeneratePromptOptions = {
-    LOCAL: {label: "Local Ollama Instance", value: "local"},
+    LOCAL: {label: "Local Ollama Instance", value: "local", requirement:"completion"},
     CLOUD: {label: "Cloud", value: "cloud"}
 }
 
 export const GenerateImageOptions = {
-    LOCAL: {label: "Local Ollama Instance", value: "local"},
+    LOCAL: {label: "Local Ollama Instance", value: "local", requirement:"image"},
     CLOUD: {label: "Cloud", value: "cloud"}
 }
 

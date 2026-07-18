@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Col } from 'react-bootstrap';
+import { Button, ButtonGroup, Col, Dropdown } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import { GeneratePromptOptions } from '../../constants/mode';
 import { IConfigGeneratePrompt, IConfigGeneratePromptParams } from '../../interfaces/config.interfaces';
@@ -64,19 +64,27 @@ function ConfigPrompt(props: IConfigGeneratePromptParams) {
                             Enter the URL or the IP address of the LLM running on your local machine
                         </Form.Text>
                     </Col>
+                    <hr className='my-3' style={{backgroundColor:"#dbc6a7", border:"none", height:"3px"}}></hr>
                     <Col className="col-12 mt-3">
-                        <Form.Label className='text-hapax-primary' htmlFor="prompt_config_local_model_label">Model Name</Form.Label>
-                        <Form.Control
-                            className='text-hapax-primary'
-                            type="text"
-                            id="prompt_config_local_model_form_input"
-                            size={"lg"}
-                            value={promptConfig.Model}
-                            onChange={(e) => {handleChange("model", e.target.value)}}
-                        />
-                        <Form.Text id="prompt_config_local_model_form_input_info" muted>
-                            Enter the name of the model you will be using
-                        </Form.Text>
+                        <div className='d-inline-flex align-items-center justify-content-center'>
+                            <Form.Label className='d-inline-flex align-items-center justify-content-center me-2 mb-0 text-hapax-primary' htmlFor="prompt_config_local_model_label">{props.availableModels.length > 0 ? "Selected model:" : "No local models available"}</Form.Label>
+                            {
+                                props.availableModels.length > 0 &&
+                                <>
+                                    <Dropdown as={ButtonGroup} drop='up-centered'>
+                                        <Button className='d-inline-flex align-items-center justify-content-center btn-hapax-primary border-hapax-secondary'>{promptConfig.Model == "" ? "Choose a model" : promptConfig.Model}</Button>
+                                        <Dropdown.Toggle split className='btn-hapax-primary border-hapax-secondary' id="dropdown-split-basic" />
+                                        <Dropdown.Menu>
+                                            {
+                                                props.availableModels.map((item) => {
+                                                    return (<Dropdown.Item disabled={item.Value == promptConfig.Model} onClick={_ => handleChange("model", item.Value)}>{item.Label}</Dropdown.Item>)
+                                                })
+                                            }
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                </>
+                                }
+                        </div>
                     </Col>
                 </>
                 :

@@ -12,7 +12,7 @@ import PromptSettingMain from './settings/generate_prompt/prompt_main';
 import ImageSettingMain from './settings/generate_image/image_main';
 import TrainingMain from './train/main';
 import { CheckIfOllamaIsRunning, CheckIfPythonIsInstalled, Dump, GetAvailableLocalModels, GetGenerateImageConfigValue, GetGeneratePromptConfigValue, GetTrainingConfigValue, CheckAppConfig, GetCurrentProjectDetail, HandleCreateNewProject, GetUserProjectsList, SetSelectedProject, DeleteProject } from '../wailsjs/go/main/App';
-import { IConfigGenerateImage, IConfigGeneratePrompt, IConfigTraining, ICurrentProjectDetail } from './interfaces/config.interfaces';
+import { IAvailableModels, IConfigGenerateImage, IConfigGeneratePrompt, IConfigTraining, ICurrentProjectDetail } from './interfaces/config.interfaces';
 import logo from './assets/images/appicon.png';
 import Table from 'react-bootstrap/Table';
 import './App.css'
@@ -37,6 +37,9 @@ function App() {
     const [availableProjects, setAvailableProjects] = useState<ICurrentProjectDetail[]>()
     const [showWarningDeleteProject, setShowWarningDeleteProject] = useState<boolean>(false)
     const [projectToBeDeleted, setProjectToBeDeleted] = useState<string>("")
+    const [imageModels, setImageModels] = useState<IAvailableModels[]>([])
+    const [visionModels, setVisionModels] = useState<IAvailableModels[]>([])
+    const [completionModels, setCompletionModels] = useState<IAvailableModels[]>([])
     // const [availableModels, setAvailableModels] = useState<IAvailableModelList>()
 
     useEffect(() => {
@@ -110,16 +113,23 @@ function App() {
             if (value) {
                 setTrainingConfigData({
                     Mode: value.mode,
-                    Model: value.model,
+                    ModelImageAnalysis: value.model_image_analysis,
+                    ModelTokenizingTexts: value.model_tokenizing_texts,
                     URLLocal: value.url_local,
                     URLCloud: value.url_cloud,
                     APIKeyCloud: value.api_key_cloud
                 })
 
-                if (value.model == "") setDisableTrainingButton(true)
+                if (value.model_image_analysis == "" || value.model_tokenizing_texts == "") setDisableTrainingButton(true)
                 else if (value.mode == TrainingOptions.LOCAL.value && value.url_local == "") setDisableTrainingButton(true)
                 else if (value.mode == TrainingOptions.CLOUD.value && (value.url_cloud == "" || value.api_key_cloud == "")) setDisableTrainingButton(true)
                 else setDisableTrainingButton(false)
+
+                if (!warnOllamaNotRunning && value.mode == TrainingOptions.LOCAL.value && value.url_local !== "") {
+                    GetAvailableLocalModels(value.url_local, GeneratePromptOptions.LOCAL.requirement).then((value) => {
+                        setVisionModels(value)
+                    })
+                }
             }
         })
 
@@ -132,6 +142,17 @@ function App() {
                     URLCloud: value.url_cloud,
                     APIKeyCloud: value.api_key_cloud
                 })
+
+                if (value.model == "") setDisableTrainingButton(true)
+                else if (value.mode == GeneratePromptOptions.LOCAL.value && value.url_local == "") setDisableGenerateButton(true)
+                else if (value.mode == GeneratePromptOptions.CLOUD.value && (value.url_cloud == "" || value.api_key_cloud == "")) setDisableGenerateButton(true)
+                else setDisableGenerateButton(false)
+
+                if (!warnOllamaNotRunning && value.mode == GeneratePromptOptions.LOCAL.value && value.url_local !== "") {
+                    GetAvailableLocalModels(value.url_local, GeneratePromptOptions.LOCAL.requirement).then((value) => {
+                        setCompletionModels(value)
+                    })
+                }
             }
         })
 
@@ -147,6 +168,12 @@ function App() {
                     DimensionWidth: value.dimension_width,
                     DimensionHeight: value.dimension_height
                 })
+
+                if (!warnOllamaNotRunning && value.mode == GenerateImageOptions.LOCAL.value && value.url_local !== "") {
+                    GetAvailableLocalModels(value.url_local, GenerateImageOptions.LOCAL.requirement).then((value) => {
+                        setImageModels(value)
+                    })
+                }
             }
         })
 
@@ -263,7 +290,7 @@ function App() {
                                         <h5 className='mb-1'>Training Settings</h5>
                                         <p className="mb-4" style={{fontSize:"12px"}}>Configure model training parameters</p>
                                         <p className='fw-light' style={{fontSize:"12px"}}>
-                                            {trainingConfigData?.Model ? "running: " + trainingConfigData.Model + " / " + trainingConfigData.Mode : "not yet set" }
+                                            {trainingConfigData?.ModelImageAnalysis ? "running: " + (trainingConfigData.ModelImageAnalysis == trainingConfigData.ModelTokenizingTexts ? trainingConfigData.ModelImageAnalysis : "multiple") + " / " + trainingConfigData.Mode : "not yet set" }
                                         </p>
                                     </Col>
                             </Button>
@@ -312,11 +339,11 @@ function App() {
             case Mode.MODE_GENERATE_PROMPT:
                 return (<GeneratePromptMain projectId={currentProjectDetail.id} projectName={currentProjectDetail.name} />)
             case Mode.MODE_SETTING_TRAINING:
-                return (<TrainingSettingMain projectId={currentProjectDetail.id} />)
+                return (<TrainingSettingMain projectId={currentProjectDetail.id} availableVisionModels={visionModels} availableCompletionModels={completionModels} />)
             case Mode.MODE_SETTING_PROMPT:
-                return (<PromptSettingMain projectId={currentProjectDetail.id} />)
+                return (<PromptSettingMain projectId={currentProjectDetail.id} availableModels={completionModels} />)
             case Mode.MODE_SETTING_IMAGE:
-                return (<ImageSettingMain projectId={currentProjectDetail.id} />)
+                return (<ImageSettingMain projectId={currentProjectDetail.id} availableModels={imageModels} />)
         }
     }
 
@@ -389,13 +416,13 @@ function App() {
                                                          <tr className={selectedProject.id == item.id ? 'table-success' : ''} style={{cursor:"pointer"}} id={item.id} onClick={_ => setSelectedProject({id: item.id, name: item.name})}>
                                                             <td className='w-50'>{item.name}{currentProjectDetail.id == item.id && currentProjectDetail.id !== selectedProject.id ? " (current)" : ''}</td>
                                                             <td>
-                                                                {<Button size='sm' className={projectToBeDeleted == item.id ? 'd-none' : 'd-flex'} variant='danger' disabled={currentProjectDetail.id == item.id} onClick={_ => {setShowWarningDeleteProject(true); setProjectToBeDeleted(item.id)}}>Delete</Button>}
+                                                                {<Button size='sm' className={projectToBeDeleted == item.id ? 'd-none' : 'd-flex float-end'} variant='danger' disabled={currentProjectDetail.id == item.id} onClick={_ => {setShowWarningDeleteProject(true); setProjectToBeDeleted(item.id)}}>Delete</Button>}
                                                                 {showWarningDeleteProject && 
                                                                     projectToBeDeleted == item.id ?
-                                                                        <>
+                                                                        <div className='d-flex float-end'>
                                                                             <Button size='sm' className='me-2 btn-hapax-primary' disabled={currentProjectDetail.id == item.id} onClick={_ => {setShowWarningDeleteProject(false); setProjectToBeDeleted("")}}>Cancel</Button>
                                                                             <Button size='sm' variant='danger' disabled={currentProjectDetail.id == item.id} onClick={_ => handleDeleteProject(item.id)}>Confirm Deletion</Button>
-                                                                        </>
+                                                                        </div>
                                                                         :
                                                                         <></>
                                                                 }

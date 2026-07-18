@@ -538,8 +538,8 @@ func (a *App) ConfigureUserProjectsFile(path string) {
 	}
 }
 
-func (a *App) GetAvailableLocalModels() (*structs.LocalModelResponseArray, error) {
-	url := "http://localhost:11434/api/tags"
+func (a *App) GetAvailableLocalModels(baseUrl string, requirement string) ([]*structs.AvailableLocalModels, error) {
+	url := baseUrl + constants.SUFFIX_TAGS
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 
@@ -557,7 +557,7 @@ func (a *App) GetAvailableLocalModels() (*structs.LocalModelResponseArray, error
 	if err != nil {
 		log.Fatalf("GetAvailableLocalModels error sending request: %v\n", err)
 
-		return &structs.LocalModelResponseArray{}, err
+		return []*structs.AvailableLocalModels{}, err
 	}
 
 	defer resp.Body.Close()
@@ -567,10 +567,10 @@ func (a *App) GetAvailableLocalModels() (*structs.LocalModelResponseArray, error
 	if err != nil {
 		log.Fatalf("GetAvailableLocalModels error reading response: %v\n", err)
 
-		return &structs.LocalModelResponseArray{}, err
+		return []*structs.AvailableLocalModels{}, err
 	}
 
-	var result *structs.LocalModelResponseArray
+	var result structs.LocalModelResponseArray
 
 	err = json.Unmarshal(body, &result)
 
@@ -578,9 +578,30 @@ func (a *App) GetAvailableLocalModels() (*structs.LocalModelResponseArray, error
 		log.Fatalf("GetAvailableLocalModels Failed to unmarshal JSON: %v\n", err)
 	}
 
-	return &structs.LocalModelResponseArray{
-		Models: result.Models,
-	}, nil
+	var results []*structs.AvailableLocalModels
+
+	for _, item := range result.Models {
+		if slices.Contains(item.Capabilities, requirement) || requirement == "vision" && strings.Contains(item.Name, "gemma") {
+			additionalTrait := ""
+
+			if requirement != "image" {
+				additionalTrait = " (completion)"
+
+				if slices.Contains(item.Capabilities, "thinking") {
+					additionalTrait = " (thinking)"
+				}
+			}
+
+			model := &structs.AvailableLocalModels{
+				Label: item.Name + additionalTrait,
+				Value: item.Name,
+			}
+
+			results = append(results, model)
+		}
+	}
+
+	return results, nil
 }
 
 func (a *App) configureTokenDatabaseFile(path string) {
@@ -626,11 +647,12 @@ func (a *App) configureTrainingConfig(path string) {
 		defer configTraining.Close()
 
 		defaultConfigTraining := structs.ConfigTraining{
-			Mode:        constants.TrainImageMode.LocalValue(),
-			Model:       "",
-			URLLocal:    constants.LOCAL_DEFAULT_URL,
-			URLCloud:    "",
-			APIKeyCloud: "",
+			Mode:                 constants.TrainImageMode.LocalValue(),
+			ModelImageAnalysis:   "",
+			ModelTokenizingTexts: "",
+			URLLocal:             constants.LOCAL_DEFAULT_URL,
+			URLCloud:             "",
+			APIKeyCloud:          "",
 		}
 
 		encoder := json.NewEncoder(configTraining)
@@ -990,7 +1012,7 @@ func (a *App) DescriptionsToTokens(projectId string, texts string) (string, erro
 		tmpScriptPath,
 		projectId,
 		modelURL,
-		trainingConfig.Model,
+		trainingConfig.ModelTokenizingTexts,
 		projectConfigPath.ProjectPath,
 		tokenDatabasePath,
 		texts,
@@ -1083,7 +1105,7 @@ func (a *App) StartImageTraining(projectId string, imagePath string, createCusto
 		tmpScriptPath,
 		trainingConfig.Mode, // this is the sys.argv[1] in python
 		modelURL,
-		trainingConfig.Model,
+		trainingConfig.ModelImageAnalysis,
 		trainingConfig.APIKeyCloud,
 		tokenDatabasePath,
 		strconv.FormatBool(createCustomPOV),
@@ -1270,11 +1292,12 @@ func (a *App) StoreTrainingConfigValue(projectId string, value *structs.ConfigTr
 	encoder.SetIndent("", "  ")
 
 	err = encoder.Encode(&structs.ConfigTraining{
-		Mode:        value.Mode,
-		Model:       value.Model,
-		URLLocal:    value.URLLocal,
-		URLCloud:    value.URLCloud,
-		APIKeyCloud: value.APIKeyCloud,
+		Mode:                 value.Mode,
+		ModelImageAnalysis:   value.ModelImageAnalysis,
+		ModelTokenizingTexts: value.ModelTokenizingTexts,
+		URLLocal:             value.URLLocal,
+		URLCloud:             value.URLCloud,
+		APIKeyCloud:          value.APIKeyCloud,
 	})
 
 	if err != nil {

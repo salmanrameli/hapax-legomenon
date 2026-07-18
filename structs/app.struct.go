@@ -19,11 +19,12 @@ type UserProjectItem struct {
 }
 
 type ConfigTraining struct {
-	Mode        string `json:"mode"`
-	Model       string `json:"model"`
-	URLLocal    string `json:"url_local"`
-	URLCloud    string `json:"url_cloud"`
-	APIKeyCloud string `json:"api_key_cloud"`
+	Mode                 string `json:"mode"`
+	ModelImageAnalysis   string `json:"model_image_analysis"`
+	ModelTokenizingTexts string `json:"model_tokenizing_texts"`
+	URLLocal             string `json:"url_local"`
+	URLCloud             string `json:"url_cloud"`
+	APIKeyCloud          string `json:"api_key_cloud"`
 }
 
 type ConfigGeneratePrompt struct {
@@ -57,10 +58,16 @@ type TokenDatabase struct {
 }
 
 type LocalModelResponseItem struct {
-	Model string `json:"model"`
-	Name  string `json:"name"`
+	Model        string   `json:"model"`
+	Name         string   `json:"name"`
+	Capabilities []string `json:"capabilities"`
 }
 
 type LocalModelResponseArray struct {
 	Models []LocalModelResponseItem `json:"models"`
+}
+
+type AvailableLocalModels struct {
+	Label string
+	Value string
 }

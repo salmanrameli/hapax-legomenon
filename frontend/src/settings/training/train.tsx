@@ -6,10 +6,10 @@ import { TrainingOptions } from "../../constants/mode";
 import { HddStack } from "react-bootstrap-icons";
 
 function SettingTraining(props: ISettingTraining) {
-    const [settingTraining, setSettingTraining] = useState<IConfigTraining>({Mode:"", Model: "", URLLocal:"", URLCloud:"", APIKeyCloud:""})
+    const [settingTraining, setSettingTraining] = useState<IConfigTraining>({Mode:"", ModelImageAnalysis: "", ModelTokenizingTexts:"", URLLocal:"", URLCloud:"", APIKeyCloud:""})
 
     useEffect(() => {
-        setSettingTraining({Mode:props.data.Mode, Model: props.data.Model, URLLocal:props.data.URLLocal, URLCloud:props.data.URLCloud, APIKeyCloud:props.data.APIKeyCloud})
+        setSettingTraining({Mode:props.data.Mode, ModelImageAnalysis: props.data.ModelImageAnalysis, ModelTokenizingTexts:props.data.ModelTokenizingTexts, URLLocal:props.data.URLLocal, URLCloud:props.data.URLCloud, APIKeyCloud:props.data.APIKeyCloud})
     }, [props])
 
     const handleModeTrainingChange = (e:any) => {

@@ -1,7 +1,7 @@
 import { Button, Col, Row } from "react-bootstrap"
 import { useEffect, useState } from "react";
 import { GetTrainingConfigValue, StoreTrainingConfigValue, ResetPOVText } from "../../../wailsjs/go/main/App"
-import { IConfigTraining } from "../../interfaces/config.interfaces";
+import { IAvailableModels, IConfigTraining } from "../../interfaces/config.interfaces";
 import ConfigTraining from "./config_training";
 import SettingTraining from "./train";
 import { BodyText, Floppy } from "react-bootstrap-icons";
@@ -10,11 +10,13 @@ import { SettingTrainingMode } from "../../constants/mode";
 
 interface ITrainingSettingMain {
     projectId: string
+    availableVisionModels: IAvailableModels[]
+    availableCompletionModels: IAvailableModels[]
 }
 
 function TrainingSettingMain(props: ITrainingSettingMain) {
     const [mode, setMode] = useState<number>(SettingTrainingMode.MODE_HOME)
-    const [trainingDetail, setTrainingDetail] = useState<IConfigTraining>({Mode:"", Model: "", URLLocal: "", URLCloud: "", APIKeyCloud:""})
+    const [trainingDetail, setTrainingDetail] = useState<IConfigTraining>({Mode:"", ModelImageAnalysis: "", ModelTokenizingTexts:"", URLLocal: "", URLCloud: "", APIKeyCloud:""})
     const [show, setShow] = useState<boolean>(false)
     const [disableSaveButton, setDisableSaveButton] = useState<boolean>(true)
     const [resetButtonText, setResetButtonText] = useState<string>("Reset")
@@ -23,7 +25,8 @@ function TrainingSettingMain(props: ITrainingSettingMain) {
         GetTrainingConfigValue(props.projectId).then((value) => {
             setTrainingDetail({
                 Mode: value.mode,
-                Model: value.model,
+                ModelImageAnalysis: value.model_image_analysis,
+                ModelTokenizingTexts: value.model_tokenizing_texts,
                 URLLocal: value.url_local,
                 URLCloud: value.url_cloud,
                 APIKeyCloud: value.api_key_cloud
@@ -53,7 +56,8 @@ function TrainingSettingMain(props: ITrainingSettingMain) {
     const handleChangeConfig = (data: IConfigTraining) => {
         setTrainingDetail({
             ...trainingDetail,
-            Model: data.Model,
+            ModelImageAnalysis: data.ModelImageAnalysis,
+            ModelTokenizingTexts: data.ModelTokenizingTexts,
             URLLocal: data.URLLocal,
             URLCloud: data.URLCloud,
             APIKeyCloud: data.APIKeyCloud
@@ -65,7 +69,8 @@ function TrainingSettingMain(props: ITrainingSettingMain) {
     const handleSaveChanges = () => {        
         StoreTrainingConfigValue(props.projectId, {
             mode: trainingDetail.Mode,
-            model: trainingDetail.Model,
+            model_image_analysis: trainingDetail.ModelImageAnalysis,
+            model_tokenizing_texts: trainingDetail.ModelTokenizingTexts,
             url_local: trainingDetail.URLLocal,
             url_cloud: trainingDetail.URLCloud,
             api_key_cloud: trainingDetail.APIKeyCloud
@@ -107,7 +112,7 @@ function TrainingSettingMain(props: ITrainingSettingMain) {
                                 </Col>
                             </div>
                             <div className="w-100 mt-3 flex-wrap p-3 rounded-4 border-hapax-primary hapax-box-shadow">
-                                {show && <ConfigTraining source={trainingDetail.Mode} defaultValue={trainingDetail!} onChangeConfig={handleChangeConfig} onSaveChanges={handleSaveChanges} />}
+                                {show && <ConfigTraining source={trainingDetail.Mode} defaultValue={trainingDetail!} onChangeConfig={handleChangeConfig} onSaveChanges={handleSaveChanges} availableVisionModels={props.availableVisionModels} availableCompletionModels={props.availableCompletionModels} />}
                             </div>
                             <Button size="lg" onClick={handleSaveChanges} disabled={disableSaveButton} className="btn-hapax-primary border-hapax-primary hapax-box-shadow rounded-4 mt-3 w-25"><Floppy style={{marginTop:"-3px", marginRight:"5px"}} /> Save</Button>
                         </Col>
