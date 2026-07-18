@@ -85,7 +85,7 @@ function ConfigImage(props: IConfigGenerateImageParams) {
                     </Col>
                     <Col className="col-6 mt-3">
                         <div className='d-inline-flex align-items-center justify-content-center'>
-                            <Form.Label className='d-inline-flex align-items-center justify-content-center me-2 mb-0 text-hapax-primary' htmlFor="image_config_local_model_label">{props.availableModels.length > 0 ? "Selected model:" : "No models available"}</Form.Label>
+                            <Form.Label className='d-inline-flex align-items-center justify-content-center me-2 mb-0 text-hapax-primary' htmlFor="image_config_local_model_label">{props.availableModels.length > 0 ? "Selected model:" : "No local models available"}</Form.Label>
                             {
                                 props.availableModels.length > 0 &&
                                 <>
