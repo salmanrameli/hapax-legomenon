@@ -42,8 +42,8 @@ export function GeneratePrompt(arg1, arg2) {
   return window['go']['main']['App']['GeneratePrompt'](arg1, arg2);
 }
 
-export function GetAvailableLocalModels() {
-  return window['go']['main']['App']['GetAvailableLocalModels']();
+export function GetAvailableLocalModels(arg1, arg2) {
+  return window['go']['main']['App']['GetAvailableLocalModels'](arg1, arg2);
 }
 
 export function GetCurrentProjectDetail() {

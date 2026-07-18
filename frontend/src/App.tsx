@@ -12,7 +12,7 @@ import PromptSettingMain from './settings/generate_prompt/prompt_main';
 import ImageSettingMain from './settings/generate_image/image_main';
 import TrainingMain from './train/main';
 import { CheckIfOllamaIsRunning, CheckIfPythonIsInstalled, Dump, GetAvailableLocalModels, GetGenerateImageConfigValue, GetGeneratePromptConfigValue, GetTrainingConfigValue, CheckAppConfig, GetCurrentProjectDetail, HandleCreateNewProject, GetUserProjectsList, SetSelectedProject, DeleteProject } from '../wailsjs/go/main/App';
-import { IConfigGenerateImage, IConfigGeneratePrompt, IConfigTraining, ICurrentProjectDetail } from './interfaces/config.interfaces';
+import { IAvailableModels, IConfigGenerateImage, IConfigGeneratePrompt, IConfigTraining, ICurrentProjectDetail } from './interfaces/config.interfaces';
 import logo from './assets/images/appicon.png';
 import Table from 'react-bootstrap/Table';
 import './App.css'
@@ -37,6 +37,9 @@ function App() {
     const [availableProjects, setAvailableProjects] = useState<ICurrentProjectDetail[]>()
     const [showWarningDeleteProject, setShowWarningDeleteProject] = useState<boolean>(false)
     const [projectToBeDeleted, setProjectToBeDeleted] = useState<string>("")
+    const [imageModels, setImageModels] = useState<string[]>([])
+    const [visionModels, setVisionModels] = useState<string[]>([])
+    const [completionModels, setCompletionModels] = useState<string[]>([])
     // const [availableModels, setAvailableModels] = useState<IAvailableModelList>()
 
     useEffect(() => {
@@ -120,6 +123,12 @@ function App() {
                 else if (value.mode == TrainingOptions.LOCAL.value && value.url_local == "") setDisableTrainingButton(true)
                 else if (value.mode == TrainingOptions.CLOUD.value && (value.url_cloud == "" || value.api_key_cloud == "")) setDisableTrainingButton(true)
                 else setDisableTrainingButton(false)
+
+                if (!warnOllamaNotRunning && value.mode == TrainingOptions.LOCAL.value && value.url_local !== "") {
+                    GetAvailableLocalModels(value.url_local, TrainingOptions.LOCAL.requirement).then((value) => {
+                        setVisionModels(value)
+                    })
+                }
             }
         })
 
@@ -132,6 +141,17 @@ function App() {
                     URLCloud: value.url_cloud,
                     APIKeyCloud: value.api_key_cloud
                 })
+
+                if (value.model == "") setDisableTrainingButton(true)
+                else if (value.mode == GeneratePromptOptions.LOCAL.value && value.url_local == "") setDisableGenerateButton(true)
+                else if (value.mode == GeneratePromptOptions.CLOUD.value && (value.url_cloud == "" || value.api_key_cloud == "")) setDisableGenerateButton(true)
+                else setDisableGenerateButton(false)
+
+                if (!warnOllamaNotRunning && value.mode == GeneratePromptOptions.LOCAL.value && value.url_local !== "") {
+                    GetAvailableLocalModels(value.url_local, GeneratePromptOptions.LOCAL.requirement).then((value) => {
+                        setCompletionModels(value)
+                    })
+                }
             }
         })
 
@@ -147,6 +167,12 @@ function App() {
                     DimensionWidth: value.dimension_width,
                     DimensionHeight: value.dimension_height
                 })
+
+                if (!warnOllamaNotRunning && value.mode == GenerateImageOptions.LOCAL.value && value.url_local !== "") {
+                    GetAvailableLocalModels(value.url_local, GenerateImageOptions.LOCAL.requirement).then((value) => {
+                        setImageModels(value)
+                    })
+                }
             }
         })
 
@@ -312,11 +338,11 @@ function App() {
             case Mode.MODE_GENERATE_PROMPT:
                 return (<GeneratePromptMain projectId={currentProjectDetail.id} projectName={currentProjectDetail.name} />)
             case Mode.MODE_SETTING_TRAINING:
-                return (<TrainingSettingMain projectId={currentProjectDetail.id} />)
+                return (<TrainingSettingMain projectId={currentProjectDetail.id} availableModels={visionModels} />)
             case Mode.MODE_SETTING_PROMPT:
-                return (<PromptSettingMain projectId={currentProjectDetail.id} />)
+                return (<PromptSettingMain projectId={currentProjectDetail.id} availableModels={completionModels} />)
             case Mode.MODE_SETTING_IMAGE:
-                return (<ImageSettingMain projectId={currentProjectDetail.id} />)
+                return (<ImageSettingMain projectId={currentProjectDetail.id} availableModels={imageModels} />)
         }
     }
 

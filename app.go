@@ -538,8 +538,8 @@ func (a *App) ConfigureUserProjectsFile(path string) {
 	}
 }
 
-func (a *App) GetAvailableLocalModels() (*structs.LocalModelResponseArray, error) {
-	url := "http://localhost:11434/api/tags"
+func (a *App) GetAvailableLocalModels(baseUrl string, requirement string) ([]string, error) {
+	url := baseUrl + constants.SUFFIX_TAGS
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 
@@ -557,7 +557,7 @@ func (a *App) GetAvailableLocalModels() (*structs.LocalModelResponseArray, error
 	if err != nil {
 		log.Fatalf("GetAvailableLocalModels error sending request: %v\n", err)
 
-		return &structs.LocalModelResponseArray{}, err
+		return []string{}, err
 	}
 
 	defer resp.Body.Close()
@@ -567,7 +567,7 @@ func (a *App) GetAvailableLocalModels() (*structs.LocalModelResponseArray, error
 	if err != nil {
 		log.Fatalf("GetAvailableLocalModels error reading response: %v\n", err)
 
-		return &structs.LocalModelResponseArray{}, err
+		return []string{}, err
 	}
 
 	var result *structs.LocalModelResponseArray
@@ -578,9 +578,15 @@ func (a *App) GetAvailableLocalModels() (*structs.LocalModelResponseArray, error
 		log.Fatalf("GetAvailableLocalModels Failed to unmarshal JSON: %v\n", err)
 	}
 
-	return &structs.LocalModelResponseArray{
-		Models: result.Models,
-	}, nil
+	var results []string
+
+	for _, item := range result.Models {
+		if slices.Contains(item.Capabilities, requirement) || requirement == "vision" && strings.Contains(item.Name, "gemma") {
+			results = append(results, item.Name)
+		}
+	}
+
+	return results, nil
 }
 
 func (a *App) configureTokenDatabaseFile(path string) {

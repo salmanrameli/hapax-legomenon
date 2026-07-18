@@ -8,6 +8,7 @@ import { Floppy } from "react-bootstrap-icons";
 
 interface IPromptSettingMain {
     projectId: string
+    availableModels: string[]
 }
 
 function PromptSettingMain(props: IPromptSettingMain) {
@@ -77,7 +78,7 @@ function PromptSettingMain(props: IPromptSettingMain) {
                     <SettingGeneratePrompt data={generatePromptDetail} onChangeSource={handleChangeSourcePrompt} onSaveChanges={handleSaveChanges} />
                 </div>
                 <div className="w-100 mt-3 flex-wrap p-3 rounded-4 border-hapax-primary hapax-box-shadow">
-                    {show && <ConfigPrompt source={generatePromptDetail.Mode} defaultValue={generatePromptDetail!} onChangeConfig={handleChangeConfig} onSaveChanges={handleSaveChanges} />}
+                    {show && <ConfigPrompt source={generatePromptDetail.Mode} defaultValue={generatePromptDetail!} onChangeConfig={handleChangeConfig} onSaveChanges={handleSaveChanges} availableModels={props.availableModels} />}
                 </div>
                 <Button size="lg" onClick={handleSaveChanges} disabled={disableSaveButton} className="btn-hapax-primary border-hapax-primary hapax-box-shadow rounded-4 mt-3 w-25"><Floppy style={{marginTop:"-3px", marginRight:"5px"}} /> Save</Button>
             </Col>

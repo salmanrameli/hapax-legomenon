@@ -57,10 +57,17 @@ type TokenDatabase struct {
 }
 
 type LocalModelResponseItem struct {
-	Model string `json:"model"`
-	Name  string `json:"name"`
+	Model        string   `json:"model"`
+	Name         string   `json:"name"`
+	Capabilities []string `json:"capabilities"`
 }
 
 type LocalModelResponseArray struct {
 	Models []LocalModelResponseItem `json:"models"`
+}
+
+type AvailableLocalModels struct {
+	Vision     []LocalModelResponseItem
+	Completion []LocalModelResponseItem
+	Image      []LocalModelResponseItem
 }

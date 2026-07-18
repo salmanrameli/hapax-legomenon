@@ -10,6 +10,7 @@ import { SettingTrainingMode } from "../../constants/mode";
 
 interface ITrainingSettingMain {
     projectId: string
+    availableModels: string[]
 }
 
 function TrainingSettingMain(props: ITrainingSettingMain) {
@@ -107,7 +108,7 @@ function TrainingSettingMain(props: ITrainingSettingMain) {
                                 </Col>
                             </div>
                             <div className="w-100 mt-3 flex-wrap p-3 rounded-4 border-hapax-primary hapax-box-shadow">
-                                {show && <ConfigTraining source={trainingDetail.Mode} defaultValue={trainingDetail!} onChangeConfig={handleChangeConfig} onSaveChanges={handleSaveChanges} />}
+                                {show && <ConfigTraining source={trainingDetail.Mode} defaultValue={trainingDetail!} onChangeConfig={handleChangeConfig} onSaveChanges={handleSaveChanges} availableModels={props.availableModels} />}
                             </div>
                             <Button size="lg" onClick={handleSaveChanges} disabled={disableSaveButton} className="btn-hapax-primary border-hapax-primary hapax-box-shadow rounded-4 mt-3 w-25"><Floppy style={{marginTop:"-3px", marginRight:"5px"}} /> Save</Button>
                         </Col>
