@@ -25,6 +25,12 @@ export const GenerateImageOptions = {
     CLOUD: {label: "Cloud", value: "cloud"}
 }
 
+export const PoidsOptions = {
+    OFF: {label: "Off", value: "off"},
+    LIGHT: {label: "Light", value: "light"},
+    HEAVY: {label: "Heavy", value: "heavy"},
+}
+
 export const ImageDimensionOptions = {
     sm: {label: "512px", value: 512},
     md: {label: "768px", value: 768},

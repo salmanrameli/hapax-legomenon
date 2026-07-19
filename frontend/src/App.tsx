@@ -39,6 +39,7 @@ function App() {
     const [projectToBeDeleted, setProjectToBeDeleted] = useState<string>("")
     const [imageModels, setImageModels] = useState<IAvailableModels[]>([])
     const [visionModels, setVisionModels] = useState<IAvailableModels[]>([])
+    const [completionTrainingModels, setCompletionTrainingModels] = useState<IAvailableModels[]>([])
     const [completionModels, setCompletionModels] = useState<IAvailableModels[]>([])
     // const [availableModels, setAvailableModels] = useState<IAvailableModelList>()
 
@@ -126,8 +127,12 @@ function App() {
                 else setDisableTrainingButton(false)
 
                 if (!warnOllamaNotRunning && value.mode == TrainingOptions.LOCAL.value && value.url_local !== "") {
-                    GetAvailableLocalModels(value.url_local, GeneratePromptOptions.LOCAL.requirement).then((value) => {
+                    GetAvailableLocalModels(value.url_local, TrainingOptions.LOCAL.requirement).then((value) => {
                         setVisionModels(value)
+                    })
+
+                    GetAvailableLocalModels(value.url_local, GeneratePromptOptions.LOCAL.requirement).then((value) => {
+                        setCompletionTrainingModels(value)
                     })
                 }
             }
@@ -339,7 +344,7 @@ function App() {
             case Mode.MODE_GENERATE_PROMPT:
                 return (<GeneratePromptMain projectId={currentProjectDetail.id} projectName={currentProjectDetail.name} />)
             case Mode.MODE_SETTING_TRAINING:
-                return (<TrainingSettingMain projectId={currentProjectDetail.id} availableVisionModels={visionModels} availableCompletionModels={completionModels} />)
+                return (<TrainingSettingMain projectId={currentProjectDetail.id} availableVisionModels={visionModels} availableCompletionModels={completionTrainingModels} />)
             case Mode.MODE_SETTING_PROMPT:
                 return (<PromptSettingMain projectId={currentProjectDetail.id} availableModels={completionModels} />)
             case Mode.MODE_SETTING_IMAGE:

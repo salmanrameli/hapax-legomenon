@@ -6,7 +6,6 @@ import json
 
 N_TOKENS        = 8 
 N_META_TOKENS   = 2
-POIDS_MODE      = "light"
 XENO_MAX        = 2
 SEED            = None
 
@@ -299,13 +298,14 @@ def main():
     project_dir = sys.argv[3]
     database_token_path = sys.argv[4]
     voice = sys.argv[5]
+    poids = sys.argv[6]
 
     seed_used = SEED if SEED is not None else random.randint(0, 99999)
 
     visual_pool = load_tokens(database_token_path, XENO_MAX, filter_type="")
     meta_pool   = load_tokens(database_token_path, XENO_MAX, filter_type="META")
 
-    visual_tokens = draw_tokens(visual_pool, N_TOKENS, POIDS_MODE, seed_used)
+    visual_tokens = draw_tokens(visual_pool, N_TOKENS, poids, seed_used)
     meta_tokens   = draw_tokens(meta_pool, N_META_TOKENS, "off", seed_used)
 
     # mode 1 = short prompt

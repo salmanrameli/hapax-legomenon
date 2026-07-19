@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import { GenerateMode } from "../../constants/mode"
-import { Button, Col, Row, Spinner } from "react-bootstrap"
+import { GenerateMode, PoidsOptions } from "../../constants/mode"
+import { Button, Col, Form, Row, Spinner } from "react-bootstrap"
 import { GenerateImage, GeneratePrompt, SaveImage, IsPlatformMac } from "../../../wailsjs/go/main/App"
 import { BodyText, FileEarmarkArrowDownFill, PlayFill } from "react-bootstrap-icons"
 
@@ -22,6 +22,7 @@ function GeneratePromptMain(props: IGeneratePromptMain) {
     const [image, setImage] = useState<string>("")
     const [elapsedSeconds, setElapsedSeconds] = useState<number>(0)
     const [isPlatformMac, setIsPlatformMac] = useState<boolean>(false)
+    const [poids, setPoids] = useState<string>(PoidsOptions.OFF.value)
 
     useEffect(() => {
         IsPlatformMac().then((value: boolean) => {
@@ -35,7 +36,7 @@ function GeneratePromptMain(props: IGeneratePromptMain) {
         setImage("")
         setElapsedSeconds(0)
 
-        GeneratePrompt(props.projectId, voice).then((value) => {
+        GeneratePrompt(props.projectId, voice, poids).then((value) => {
             setPrompt(value)
         }).finally(() => {
             setMode(GenerateMode.MODE_DEFAULT)
@@ -90,12 +91,60 @@ function GeneratePromptMain(props: IGeneratePromptMain) {
                         </div>
                     </div>
                 </Col>
+                <Col sm={12}>
+                    <div className="d-flex bg-white mt-3 gap-2 flex-wrap justify-content-center p-3 border-hapax-secondary hapax-box-shadow rounded-4">
+                        <Row className="d-flex w-100">
+                            <Col sm={12}>
+                                <p className="fw-bold" style={{cursor:"default"}}>Structural weighting mode for visual token draw</p>
+                            </Col>
+                            <Col sm={3}>
+                                <Form.Check
+                                    className=""
+                                    type="radio"
+                                    label={PoidsOptions.OFF.label}
+                                    name="poidsOptions"
+                                    id="poids-off"
+                                    value={PoidsOptions.OFF.value}
+                                    checked={poids == PoidsOptions.OFF.value}
+                                    onChange={() => {setPoids(PoidsOptions.OFF.value)}}
+                                />
+                                <small>Equal weight for all structural levels</small>
+                            </Col>
+                            <Col sm={4}>
+                                <Form.Check
+                                    className=""
+                                    type="radio"
+                                    label={PoidsOptions.LIGHT.label}
+                                    name="poidsOptions"
+                                    id="poids-light"
+                                    value={PoidsOptions.LIGHT.value}
+                                    checked={poids == PoidsOptions.LIGHT.value}
+                                    onChange={() => {setPoids(PoidsOptions.LIGHT.value)}}
+                                />
+                                <small>Favors PS3 details (more granular, textural prompts)</small>
+                            </Col>
+                            <Col sm={5}>
+                                <Form.Check
+                                    className=""
+                                    type="radio"
+                                    label={PoidsOptions.HEAVY.label}
+                                    name="poidsOptions"
+                                    id="poids-heavy"
+                                    value={PoidsOptions.HEAVY.value}
+                                    checked={poids == PoidsOptions.HEAVY.value}
+                                    onChange={() => {setPoids(PoidsOptions.HEAVY.value)}}
+                                />
+                                <small>Favors PS1 dominant elements (bolder, more structured prompts)</small>
+                            </Col>
+                        </Row>
+                    </div>
+                </Col>
                 <Col sm={12} md={4}>
                     <Button size="lg" className="w-100 mt-4 btn-hapax-primary border-hapax-primary hapax-box-shadow rounded-4" disabled={mode == GenerateMode.MODE_GENERATING_PROMPT || mode == GenerateMode.MODE_GENERATING_IMAGE} onClick={generatePrompt}><BodyText style={{marginTop:"-3px"}} className="me-2" />{mode == GenerateMode.MODE_GENERATING_PROMPT ? BTN_PROMPT_GENERATING_TEXT : BTN_PROMPT_DEFAULT_TEXT} {mode == GenerateMode.MODE_GENERATING_PROMPT ? <Spinner animation="border" style={{color: '#0f3159', width: '1.5rem', height: '1.5rem', borderWidth: '0.3em' }} /> : ''}</Button>
                     <br /><br />
                     <Button size="lg" className="w-100 btn-hapax-danger rounded-4" disabled={!isPlatformMac || mode == GenerateMode.MODE_GENERATING_PROMPT || mode == GenerateMode.MODE_GENERATING_IMAGE || prompt == "" || prompt == undefined} onClick={generateImage}>{mode == GenerateMode.MODE_GENERATING_IMAGE ? BTN_IMAGE_GENERATING_TEXT : BTN_IMAGE_DEFAULT_TEXT} {mode == GenerateMode.MODE_GENERATING_IMAGE ? <Spinner animation="border" variant="danger" style={{ width: '1.5rem', height: '1.5rem', borderWidth: '0.3em' }} /> : <PlayFill />}</Button>
                     <br /><br />
-                    <Button size="lg" className="w-100 btn-hapax-primary border-hapax-primary hapax-box-shadow rounded-4" disabled={image == ""} onClick={saveImage}><FileEarmarkArrowDownFill className="me-2" style={{marginTop: "-3px"}} />Save Result</Button>
+                    <Button size="lg" className="w-100 btn-hapax-primary border-hapax-primary hapax-box-shadow rounded-4 mb-4" disabled={image == ""} onClick={saveImage}><FileEarmarkArrowDownFill className="me-2" style={{marginTop: "-3px"}} />Save Result</Button>
                 </Col>
                 {
                     image && 

@@ -581,7 +581,7 @@ func (a *App) GetAvailableLocalModels(baseUrl string, requirement string) ([]*st
 	var results []*structs.AvailableLocalModels
 
 	for _, item := range result.Models {
-		if slices.Contains(item.Capabilities, requirement) || requirement == "vision" && strings.Contains(item.Name, "gemma") {
+		if slices.Contains(item.Capabilities, requirement) || (requirement == "vision" && strings.Contains(item.Name, "gemma")) {
 			additionalTrait := ""
 
 			if requirement != "image" {
@@ -741,7 +741,7 @@ func (a *App) configureGenerateImageConfig(path string) {
 	}
 }
 
-func (a *App) GeneratePrompt(projectId string, voice string) (string, error) {
+func (a *App) GeneratePrompt(projectId string, voice string, poids string) (string, error) {
 	promptConfig, err := a.GetGeneratePromptConfigValue(projectId)
 
 	if err != nil {
@@ -802,6 +802,7 @@ func (a *App) GeneratePrompt(projectId string, voice string) (string, error) {
 		projectConfigPath.ProjectPath,
 		tokenDatabasePath,
 		voice,
+		poids,
 	)
 
 	output, err := cmd.CombinedOutput()
