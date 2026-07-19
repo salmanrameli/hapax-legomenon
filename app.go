@@ -581,7 +581,7 @@ func (a *App) GetAvailableLocalModels(baseUrl string, requirement string) ([]*st
 	var results []*structs.AvailableLocalModels
 
 	for _, item := range result.Models {
-		if slices.Contains(item.Capabilities, requirement) || requirement == "vision" && strings.Contains(item.Name, "gemma") {
+		if slices.Contains(item.Capabilities, requirement) || (requirement == "vision" && strings.Contains(item.Name, "gemma")) {
 			additionalTrait := ""
 
 			if requirement != "image" {
