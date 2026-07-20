@@ -1397,6 +1397,35 @@ func (a *App) IsPlatformMac() bool {
 	return goRuntime.GOOS == "darwin"
 }
 
+func (a *App) OpenProjectDirectory(projectId string) {
+	projectDetail, err := a.getProjectConfigPaths()
+
+	if err != nil {
+		log.Fatalf("openProjectDirectory getProjectConfigPaths error getting directory: %v\n", err)
+
+		return
+	}
+
+	var cmd *exec.Cmd
+
+	path := projectDetail.UserProjectsDir + "/" + projectId
+
+	switch goRuntime.GOOS {
+	case "windows":
+		cmd = exec.Command("explorer", path)
+	case "darwin":
+		cmd = exec.Command("open", path)
+	case "linux":
+		cmd = exec.Command("xdg-open", path)
+	default:
+		fmt.Errorf("unsupported platform")
+
+		return
+	}
+
+	cmd.Start()
+}
+
 func (a *App) Dump(item any) {
 	prettyPrint(item)
 }
