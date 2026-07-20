@@ -555,7 +555,7 @@ func (a *App) GetAvailableLocalModels(baseUrl string, requirement string) ([]*st
 	resp, err := client.Do(req)
 
 	if err != nil {
-		log.Fatalf("GetAvailableLocalModels error sending request: %v\n", err)
+		fmt.Printf("GetAvailableLocalModels error sending request: %v\n", err)
 
 		return []*structs.AvailableLocalModels{}, err
 	}

@@ -218,8 +218,8 @@ function App() {
         switch(mode) {
             case Mode.MODE_HOME:
                 return (
-                    <Row className="gx-2 mb-4">
-                        <Col sm={12} md={12} className='d-flex mt-2'>
+                    <Row className="gx-2 mb-4" style={{marginTop:"-20px"}}>
+                        <Col sm={12} md={12} className='d-flex'>
                             <Col sm={3}>
                                 <img src={logo} className='pt-0' style={{width:"220px", height:"220px", cursor:"default", marginBottom:"-20px", marginLeft:"-20px"}} id="logo" alt="logo"/>
                             </Col>
@@ -334,7 +334,7 @@ function App() {
                                     </Col>
                             </Button>
                         </Col>
-                        <Col sm={12} md={12} className='mt-3' style={{cursor:"default", position:"absolute", left:"10px", bottom: "-70px", width:"200px"}}>
+                        <Col sm={12} md={12} className='mt-3' style={{cursor:"default", position:"absolute", left:"10px", bottom: "-45px", width:"200px"}}>
                             <small>version: {APPVERSION}</small>
                         </Col>
                     </Row>
@@ -463,8 +463,8 @@ function App() {
                             <Col className='d-inline-flex' style={{cursor:"default"}}>
                                 {mode == Mode.MODE_HOME ? 
                                     '' : 
-                                    <div className="d-inline-flex mt-4 align-items-center" onClick={handleHomeButtonClicked}>
-                                        <img src={logo} className='mt-2' style={{width:"70px", height:"70px", cursor:"pointer"}} id="logo" alt="logo"/>
+                                    <div className="d-inline-flex align-items-center" onClick={handleHomeButtonClicked}>
+                                        <img src={logo} className='' style={{width:"70px", height:"70px", cursor:"pointer"}} id="logo" alt="logo"/>
                                     </div>}
                             </Col>
                         </Row>

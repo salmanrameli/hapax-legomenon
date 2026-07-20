@@ -101,7 +101,7 @@ function ConfigTraining(props: IConfigTrainingParams) {
                                             <Dropdown.Toggle split className='btn-hapax-primary border-hapax-secondary' id="dropdown-split-basic" />
                                             <Dropdown.Menu>
                                                 {
-                                                    props.availableVisionModels.map((item) => {
+                                                    props.availableCompletionModels.map((item) => {
                                                         return (<Dropdown.Item disabled={item.Value == trainingConfig.ModelTokenizingTexts} onClick={(_) => handleChange("model_tokenizing_texts", item.Value)}>{item.Label}</Dropdown.Item>)
                                                     })
                                                 }
