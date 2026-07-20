@@ -4,14 +4,14 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { GenerateImageOptions, GeneratePromptOptions, Mode, RenderContentID, TrainingOptions } from './constants/mode';
-import { CardImage, FileEarmarkArrowUp, Floppy2Fill, Folder2, GearWideConnected, Magic, PlusSquare, Terminal } from 'react-bootstrap-icons';
+import { CardImage, FileEarmarkArrowUp, Floppy2Fill, Folder2, Folder2Open, GearWideConnected, Magic, PlusSquare, Terminal } from 'react-bootstrap-icons';
 import { Form } from 'react-bootstrap';
 import GeneratePromptMain from './generate/prompt/main';
 import TrainingSettingMain from './settings/training/train_main';
 import PromptSettingMain from './settings/generate_prompt/prompt_main';
 import ImageSettingMain from './settings/generate_image/image_main';
 import TrainingMain from './train/main';
-import { CheckIfOllamaIsRunning, CheckIfPythonIsInstalled, Dump, GetAvailableLocalModels, GetGenerateImageConfigValue, GetGeneratePromptConfigValue, GetTrainingConfigValue, CheckAppConfig, GetCurrentProjectDetail, HandleCreateNewProject, GetUserProjectsList, SetSelectedProject, DeleteProject } from '../wailsjs/go/main/App';
+import { CheckIfOllamaIsRunning, CheckIfPythonIsInstalled, Dump, GetAvailableLocalModels, GetGenerateImageConfigValue, GetGeneratePromptConfigValue, GetTrainingConfigValue, CheckAppConfig, GetCurrentProjectDetail, HandleCreateNewProject, GetUserProjectsList, SetSelectedProject, DeleteProject, OpenProjectDirectory } from '../wailsjs/go/main/App';
 import { IAvailableModels, IConfigGenerateImage, IConfigGeneratePrompt, IConfigTraining, ICurrentProjectDetail } from './interfaces/config.interfaces';
 import logo from './assets/images/appicon.png';
 import Table from 'react-bootstrap/Table';
@@ -214,12 +214,18 @@ function App() {
         setMode(Mode.MODE_SHOW_PROJECTS_LIST)
     }
 
+    function handleOpenDirectory() {
+        OpenProjectDirectory(currentProjectDetail.id).then(() => {
+
+        })
+    }
+
     function showHomeContent() {
         switch(mode) {
             case Mode.MODE_HOME:
                 return (
-                    <Row className="gx-2 mb-4">
-                        <Col sm={12} md={12} className='d-flex mt-2'>
+                    <Row className="gx-2 mb-4" style={{marginTop:"-20px"}}>
+                        <Col sm={12} md={12} className='d-flex'>
                             <Col sm={3}>
                                 <img src={logo} className='pt-0' style={{width:"220px", height:"220px", cursor:"default", marginBottom:"-20px", marginLeft:"-20px"}} id="logo" alt="logo"/>
                             </Col>
@@ -227,7 +233,7 @@ function App() {
                                 <div className='text-hapax-primary' style={{marginTop:"15px"}}>
                                     <h1><b>Hapax Legomenon</b></h1>
                                     <p className='text-hapax-tertiary' style={{cursor:"default", marginTop:"-5px"}}>
-                                        project: {currentProjectDetail.name}&nbsp;[{currentProjectDetail.id}]
+                                        project: {currentProjectDetail.name}&nbsp;[{currentProjectDetail.id}] <Folder2Open className='ms-1' style={{marginTop:"-3px", cursor:"pointer"}} onClick={_ => handleOpenDirectory()} />
                                     </p>
                                 </div>
                             </Col>
@@ -237,7 +243,7 @@ function App() {
                                         {<div className={`rounded-circle ${errorPythonNotInstalled ? "bg-danger" : "bg-success"}`} style={{height:"10px", width:"10px", marginTop:"7px"}} />}&nbsp;&nbsp;Python:&nbsp;{errorPythonNotInstalled ? "not detected" : "detected"}
                                     </div>
                                     <div className='d-flex rounded-pill bg-hapax-secondary border-hapax-secondary py-2 px-3 mt-2 w-100'>
-                                        {<div className={`rounded-circle ${warnOllamaNotRunning ? "bg-danger" : "bg-success"}`} style={{height:"10px", width:"10px", marginTop:"7px"}} />}&nbsp;&nbsp;Ollama:&nbsp;{warnOllamaNotRunning ? "not running" : "running"}
+                                        {<div className={`rounded-circle ${warnOllamaNotRunning ? "bg-warning" : "bg-success"}`} style={{height:"10px", width:"10px", marginTop:"7px"}} />}&nbsp;&nbsp;Ollama:&nbsp;{warnOllamaNotRunning ? "not running" : "running"}
                                     </div>
                                 </div>
                             </Col>
@@ -334,7 +340,7 @@ function App() {
                                     </Col>
                             </Button>
                         </Col>
-                        <Col sm={12} md={12} className='mt-3' style={{cursor:"default", position:"absolute", left:"10px", bottom: "-70px", width:"200px"}}>
+                        <Col sm={12} md={12} className='mt-3' style={{cursor:"default", position:"absolute", left:"10px", bottom: "-45px", width:"200px"}}>
                             <small>version: {APPVERSION}</small>
                         </Col>
                     </Row>
@@ -386,8 +392,13 @@ function App() {
         return (
             <Container fluid id="App" className={`${animateLoading ? "wails-fade-out" : "wails-fade-in"} d-flex align-items-center justify-content-center pb-4 mb-4`} style={{height:"90vh"}}>
                 <Row className={`gx-2 mb-4 w-100`}>
-                    <Col sm={12} md={12} className='d-flex align-items-center justify-content-center'>
-                        <img src={logo} className='pt-0' style={{width:"200px", height:"200px", cursor:"pointer"}} id="logo" alt="logo" onClick={() => setMode(Mode.MODE_LOADING)}/>
+                   <Col sm={3} className='mb-3'>
+                        <img src={logo} className='pt-0' style={{width:"220px", height:"220px", cursor:"pointer", marginBottom:"-20px", marginLeft:"-20px"}} id="logo" alt="logo" onClick={() => setMode(Mode.MODE_LOADING)} />
+                    </Col>
+                    <Col sm={6} className='d-flex align-items-center' style={{marginLeft:"-50px", cursor:"default"}}>
+                        <div className='text-hapax-primary' style={{marginTop:"15px"}}>
+                            <h1><b>Hapax Legomenon</b></h1>
+                        </div>
                     </Col>
                     <Col sm={12} md={12} className=''>
                     {
@@ -463,8 +474,8 @@ function App() {
                             <Col className='d-inline-flex' style={{cursor:"default"}}>
                                 {mode == Mode.MODE_HOME ? 
                                     '' : 
-                                    <div className="d-inline-flex mt-4 align-items-center" onClick={handleHomeButtonClicked}>
-                                        <img src={logo} className='mt-2' style={{width:"70px", height:"70px", cursor:"pointer"}} id="logo" alt="logo"/>
+                                    <div className="d-inline-flex align-items-center" onClick={handleHomeButtonClicked}>
+                                        <img src={logo} className='' style={{width:"70px", height:"70px", cursor:"pointer"}} id="logo" alt="logo"/>
                                     </div>}
                             </Col>
                         </Row>

@@ -555,7 +555,7 @@ func (a *App) GetAvailableLocalModels(baseUrl string, requirement string) ([]*st
 	resp, err := client.Do(req)
 
 	if err != nil {
-		log.Fatalf("GetAvailableLocalModels error sending request: %v\n", err)
+		fmt.Printf("GetAvailableLocalModels error sending request: %v\n", err)
 
 		return []*structs.AvailableLocalModels{}, err
 	}
@@ -1395,6 +1395,35 @@ func (a *App) StoreGenerateImageConfigValue(projectId string, value *structs.Con
 
 func (a *App) IsPlatformMac() bool {
 	return goRuntime.GOOS == "darwin"
+}
+
+func (a *App) OpenProjectDirectory(projectId string) {
+	projectDetail, err := a.getProjectConfigPaths()
+
+	if err != nil {
+		log.Fatalf("openProjectDirectory getProjectConfigPaths error getting directory: %v\n", err)
+
+		return
+	}
+
+	var cmd *exec.Cmd
+
+	path := projectDetail.UserProjectsDir + "/" + projectId
+
+	switch goRuntime.GOOS {
+	case "windows":
+		cmd = exec.Command("explorer", path)
+	case "darwin":
+		cmd = exec.Command("open", path)
+	case "linux":
+		cmd = exec.Command("xdg-open", path)
+	default:
+		fmt.Errorf("unsupported platform")
+
+		return
+	}
+
+	cmd.Start()
 }
 
 func (a *App) Dump(item any) {

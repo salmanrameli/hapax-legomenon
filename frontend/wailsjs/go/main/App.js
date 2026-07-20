@@ -78,6 +78,10 @@ export function IsPlatformMac() {
   return window['go']['main']['App']['IsPlatformMac']();
 }
 
+export function OpenProjectDirectory(arg1) {
+  return window['go']['main']['App']['OpenProjectDirectory'](arg1);
+}
+
 export function ResetPOVText(arg1) {
   return window['go']['main']['App']['ResetPOVText'](arg1);
 }

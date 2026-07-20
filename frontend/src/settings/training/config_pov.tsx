@@ -8,10 +8,13 @@ interface IConfigPOV {
     handleBack: () => void
 }
 
+const BTN_TEXT_DEFAULT = "Save"
+const BTN_TEXT_SAVED = "Saved!"
+
 function ConfigPOV(props: IConfigPOV) {
     const [pov, SetPov] = useState<string>("")
-    const [buttonText, setButtonText] = useState<string>("Save")
-    const [disableSaveButton, setDisableSaveButton] = useState<boolean>(false)
+    const [buttonText, setButtonText] = useState<string>(BTN_TEXT_DEFAULT)
+    const [disableSaveButton, setDisableSaveButton] = useState<boolean>(true)
 
     useEffect(() => {
         GetPOVText(props.projectId).then((value: string) => {
@@ -28,12 +31,18 @@ function ConfigPOV(props: IConfigPOV) {
         }
     }
 
+    const handlePovContentChanged = (e: any) => {
+        SetPov(e.target.value)
+        setDisableSaveButton(false)
+        setButtonText(BTN_TEXT_DEFAULT)
+    }
+
     return (
         <Row>
             <Col sm={12}>
                 <div className="d-flex bg-white gap-2 flex-wrap justify-content-center p-3 border-hapax-secondary hapax-box-shadow rounded-4">
                     <div className="d-flex" style={{height: "400px", width:"100%", overflowY:"scroll"}}>
-                        <textarea style={{width:"100%", height:"100%", resize:"none", boxSizing:"border-box", border:"none", outline:"none"}} value={pov} onChange={(e) => SetPov(e.target.value)} />
+                        <textarea style={{width:"100%", height:"100%", resize:"none", boxSizing:"border-box", border:"none", outline:"none"}} value={pov} onChange={(e) => {handlePovContentChanged(e)}} />
                     </div>
                 </div>
                 <Button size="lg" onClick={() => props.handleBack()} className="btn-hapax-primary border-hapax-primary hapax-box-shadow rounded-4 mt-3 me-3"><ArrowLeftShort style={{marginTop:"-3px", marginRight:"5px"}} /> Back</Button>

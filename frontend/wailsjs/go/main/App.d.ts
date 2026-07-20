@@ -40,6 +40,8 @@ export function HandleCreateNewProject(arg1:string,arg2:boolean):Promise<void>;
 
 export function IsPlatformMac():Promise<boolean>;
 
+export function OpenProjectDirectory(arg1:string):Promise<void>;
+
 export function ResetPOVText(arg1:string):Promise<void>;
 
 export function SaveImage(arg1:string,arg2:string,arg3:string):Promise<void>;
