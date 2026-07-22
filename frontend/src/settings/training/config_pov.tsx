@@ -25,7 +25,7 @@ function ConfigPOV(props: IConfigPOV) {
     function handleSaveChanges() {
         if (pov !== "") {
             StorePOVText(props.projectId, pov).then(() => {
-                setButtonText("Saved!")
+                setButtonText(BTN_TEXT_SAVED)
                 setDisableSaveButton(true)
             })
         }
