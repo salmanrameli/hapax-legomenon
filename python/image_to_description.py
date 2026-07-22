@@ -42,7 +42,11 @@ def pick_meta_pov(db_path, xeno_min=0):
     
     concept = random.choice(tokens)
 
-    pov_str = f'Observe and describe this image through this lens: {concept}. Do not use any formatting style. The only exception is using <br /> tag to separate between each categories.'
+    pov_str = f'''
+        Observe and describe this image through this lens: {concept}. Present your description as a structured report or article. 
+        Your entire response must be formatted strictly in raw HTML. Do not use any Markdown styling, and absolutely avoid any standard HTML text tags (such as <p>, <ul>, <b>, or <div>). You are ONLY permitted to use HTML heading tags (e.g., <h2>, <h3>) for your category titles, and <br /> tags to create new lines. 
+        Structure your report by placing each category title within a heading tag, followed by a <br /> tag, and then your descriptive text. Separate each distinct category or section from the next using exactly two <br /> tags.
+        '''
 
     return pov_str, concept
 
