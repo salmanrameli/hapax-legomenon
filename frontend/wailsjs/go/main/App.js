@@ -50,6 +50,10 @@ export function GetCurrentProjectDetail() {
   return window['go']['main']['App']['GetCurrentProjectDetail']();
 }
 
+export function GetCustomPOV(arg1, arg2) {
+  return window['go']['main']['App']['GetCustomPOV'](arg1, arg2);
+}
+
 export function GetGenerateImageConfigValue(arg1) {
   return window['go']['main']['App']['GetGenerateImageConfigValue'](arg1);
 }

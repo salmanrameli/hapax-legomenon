@@ -4,7 +4,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { GenerateImageOptions, GeneratePromptOptions, Mode, RenderContentID, TrainingOptions } from './constants/mode';
-import { CardImage, FileEarmarkArrowUp, Floppy2Fill, Folder2, Folder2Open, GearWideConnected, Magic, PlusSquare, Terminal } from 'react-bootstrap-icons';
+import { CardImage, FileEarmarkArrowUp, Floppy2Fill, Folder2, Folder2Open, GearWideConnected, Magic, PlusSquare, Terminal, TrashFill } from 'react-bootstrap-icons';
 import { Form } from 'react-bootstrap';
 import GeneratePromptMain from './generate/prompt/main';
 import TrainingSettingMain from './settings/training/train_main';
@@ -41,7 +41,6 @@ function App() {
     const [visionModels, setVisionModels] = useState<IAvailableModels[]>([])
     const [completionTrainingModels, setCompletionTrainingModels] = useState<IAvailableModels[]>([])
     const [completionModels, setCompletionModels] = useState<IAvailableModels[]>([])
-    // const [availableModels, setAvailableModels] = useState<IAvailableModelList>()
 
     useEffect(() => {
         setShowLoading(true)
@@ -54,11 +53,9 @@ function App() {
                 if (value.name == "") {
                     setMode(Mode.MODE_SET_PROJECT_NAME)
                 } else {
-                    // setAnimateHomepage(true)
-                    // setShowLoading(false)
                     setMode(Mode.MODE_HOME)
                 }
-            }, 700)
+            }, 1000)
             
         })
     }
@@ -81,7 +78,6 @@ function App() {
                         name: value.name
                     })
                 })
-                // loadData()
                 break;
             case Mode.MODE_SET_PROJECT_NAME:
                 break;
@@ -432,12 +428,12 @@ function App() {
                                                          <tr className={selectedProject.id == item.id ? 'table-success' : ''} style={{cursor:"pointer"}} id={item.id} onClick={_ => setSelectedProject({id: item.id, name: item.name})}>
                                                             <td className='w-50'>{item.name}{currentProjectDetail.id == item.id && currentProjectDetail.id !== selectedProject.id ? " (current)" : ''}</td>
                                                             <td>
-                                                                {<Button size='sm' className={projectToBeDeleted == item.id ? 'd-none' : 'd-flex float-end'} variant='danger' disabled={currentProjectDetail.id == item.id} onClick={_ => {setShowWarningDeleteProject(true); setProjectToBeDeleted(item.id)}}>Delete</Button>}
+                                                                {<Button size='sm' className={projectToBeDeleted == item.id ? 'd-none' : 'd-flex float-end'} variant='danger' disabled={currentProjectDetail.id == item.id} onClick={_ => {setShowWarningDeleteProject(true); setProjectToBeDeleted(item.id)}}><TrashFill className='mt-1 me-2' /> Delete</Button>}
                                                                 {showWarningDeleteProject && 
                                                                     projectToBeDeleted == item.id ?
                                                                         <div className='d-flex float-end'>
                                                                             <Button size='sm' className='me-2 btn-hapax-primary' disabled={currentProjectDetail.id == item.id} onClick={_ => {setShowWarningDeleteProject(false); setProjectToBeDeleted("")}}>Cancel</Button>
-                                                                            <Button size='sm' variant='danger' disabled={currentProjectDetail.id == item.id} onClick={_ => handleDeleteProject(item.id)}>Confirm Deletion</Button>
+                                                                            <Button size='sm' variant='danger' disabled={currentProjectDetail.id == item.id} onClick={_ => handleDeleteProject(item.id)}><TrashFill className='me-2' /> Confirm Deletion</Button>
                                                                         </div>
                                                                         :
                                                                         <></>

@@ -1,6 +1,6 @@
 package constants
 
-const version = "0.2.6-alpha"
+const version = "0.2.7-alpha"
 
 const (
 	APP_NAME                   = "Hapax-Legomenon"
@@ -27,7 +27,7 @@ const (
 
 const DEFAULT_POV_INSTRUCTION = `Conduct a visual inventory of this image and present the findings as a structured report or article.
 
-Format the entire response strictly in raw HTML. Do not use Markdown or any fancy HTML tags (such as <p>, <ul>, <b>, or <div>). You are only allowed to use HTML heading tags (e.g., <h1>, <h2>, <h3>) for the report title and section headers, and <br /> tags to create new lines and separate the content. 
+Format the entire response strictly in raw HTML. DO NOT USE Markdown or any fancy HTML tags (such as <p>, <ul>, <b>, or <div>). You are only allowed to use HTML heading tags (e.g., <h1>, <h2>, <h3>) for the report title and section headers, and <br /> tags to create new lines and separate the content. 
 
 Structure your report by working through the following seven layers in sequence. Use a <h3> heading tag for each category title, followed by a <br /> tag, and then your analysis. Separate each category from the next using two <br /> tags. 
 

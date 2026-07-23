@@ -6,6 +6,7 @@ export interface ITrainingResult {
     responses: IImageAnalysisResponse[]
     elapsedSeconds: number[]
     onStartProcessingText: () => void
+    customPOV: string
 }
 
 export interface IImageAnalysisResponse {

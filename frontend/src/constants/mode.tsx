@@ -60,3 +60,9 @@ export const SettingTrainingMode = {
     MODE_HOME: 1,
     MODE_SET_POV: 2
 }
+
+export const XENO_INDEX = {
+    0: {label: "Ordinary", value: 0},
+    1: {label: "Slightly Unusual", value: 1},
+    2: {label: "Strange / Unsettling", value: 2}
+}

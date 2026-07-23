@@ -26,6 +26,8 @@ export function GetAvailableLocalModels(arg1:string,arg2:string):Promise<Array<s
 
 export function GetCurrentProjectDetail():Promise<structs.UserProjectItem>;
 
+export function GetCustomPOV(arg1:string,arg2:number):Promise<string>;
+
 export function GetGenerateImageConfigValue(arg1:string):Promise<structs.ConfigGenerateImage>;
 
 export function GetGeneratePromptConfigValue(arg1:string):Promise<structs.ConfigGeneratePrompt>;
@@ -52,7 +54,7 @@ export function SetPOVFile(arg1:string):Promise<void>;
 
 export function SetSelectedProject(arg1:string):Promise<void>;
 
-export function StartImageTraining(arg1:string,arg2:string,arg3:boolean):Promise<string>;
+export function StartImageTraining(arg1:string,arg2:string,arg3:string):Promise<string>;
 
 export function StoreGenerateImageConfigValue(arg1:string,arg2:structs.ConfigGenerateImage):Promise<void>;
 

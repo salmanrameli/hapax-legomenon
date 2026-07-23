@@ -60,21 +60,23 @@ def main():
     model_name = sys.argv[3]
     api_key = sys.argv[4]
     token_csv_path = sys.argv[5]
-    create_custom_pov = sys.argv[6]
-    pov_instruction = sys.argv[7]
+    pov_instruction = sys.argv[6]
+    concept = sys.argv[7]
 
     base64_data = sys.stdin.read().strip()
 
     if not base64_data:
         print("Error: No data received", file=sys.stderr)
         return
-        
-    if create_custom_pov == "true":
-        pov_db, concept = pick_meta_pov(token_csv_path, xeno_min=POV_XENO_MIN)
 
-        if pov_db:
-            suffix = (' ' + POV.strip()) if POV.strip() else ''
-            pov_instruction = pov_db + suffix
+    if concept != "":
+        pov_str = f'''
+                Observe and describe this image through this lens: {concept}. Present your description as a structured report or article. 
+                Your entire response must be formatted strictly in raw HTML. DO NOT USE any Markdown styling, and ABSOLUTELY AVOID any standard HTML text tags (such as <p>, <ul>, <b>, or <div>). You are ONLY permitted to use HTML heading tags (e.g., <h2>, <h3>) for your category titles, and <br /> tags to create new lines. 
+                Structure your report by placing each category title within a heading tag, followed by a <br /> tag, and then your descriptive text. Separate each distinct category or section from the next using exactly two <br /> tags.
+                '''
+    else:
+        pov_str = pov_instruction
 
     result = ""
 
@@ -87,7 +89,7 @@ def main():
             },
             {
                 "role": "user", 
-                "content": pov_instruction,
+                "content": pov_str,
                 "images": [base64_data]
             }
         ],
