@@ -1,1 +1,1 @@
-export const APPVERSION = "0.2.6-alpha"
+export const APPVERSION = "0.2.7-alpha"

@@ -1031,7 +1031,63 @@ func (a *App) DescriptionsToTokens(projectId string, texts string) (string, erro
 	return string(output), nil
 }
 
-func (a *App) StartImageTraining(projectId string, imagePath string, createCustomPOV bool) (string, error) {
+func (a *App) GetCustomPOV(projectId string, xeno_index uint8) string {
+	projectConfigPath, err := a.getProjectConfigPaths()
+
+	if err != nil {
+		log.Fatalf("GetCustomPOV getProjectConfigPaths error: %v\n", err)
+
+		return ""
+	}
+
+	tokenDatabasePath := projectConfigPath.UserProjectsDir + "/" + projectId + "/" + constants.TOKEN_DATABASE
+
+	tmpDir, err := os.MkdirTemp("", "wails_python_*")
+
+	if err != nil {
+		return ""
+	}
+
+	defer os.RemoveAll(tmpDir)
+
+	pythonInterpreter := "python3"
+	scriptName := "get_custom_pov.py"
+
+	scriptData, err := pythonFolder.ReadFile("python/" + scriptName)
+
+	if err != nil {
+		log.Fatalf("GetCustomPOV unable to read file: %v", err)
+
+		return ""
+	}
+
+	tmpScriptPath := filepath.Join(tmpDir, scriptName)
+
+	if err := os.WriteFile(tmpScriptPath, scriptData, 0755); err != nil {
+		log.Fatalf("GetCustomPOV error in writefile: %v", err)
+
+		return ""
+	}
+
+	cmd := exec.Command(
+		pythonInterpreter,
+		tmpScriptPath,
+		tokenDatabasePath, // this is the sys.argv[1] in python
+		strconv.Itoa(int(xeno_index)),
+	)
+
+	output, err := cmd.CombinedOutput()
+
+	if err != nil {
+		log.Fatalf("GetCustomPOV failed to execute script: %v\nOutput: %s\n", err, string(output))
+
+		return ""
+	}
+
+	return string(output)
+}
+
+func (a *App) StartImageTraining(projectId string, imagePath string, concept string) (string, error) {
 	trainingConfig, err := a.GetTrainingConfigValue(projectId)
 
 	if err != nil {
@@ -1109,8 +1165,8 @@ func (a *App) StartImageTraining(projectId string, imagePath string, createCusto
 		trainingConfig.ModelImageAnalysis,
 		trainingConfig.APIKeyCloud,
 		tokenDatabasePath,
-		strconv.FormatBool(createCustomPOV),
 		pov,
+		concept,
 	)
 
 	var stdinBuf bytes.Buffer
